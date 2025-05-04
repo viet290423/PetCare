@@ -38,6 +38,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.onPrimary,
+          // color: Colors.green,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -52,8 +53,10 @@ class _MainScreenState extends State<MainScreen> {
           child: GNav(
             selectedIndex: _currentIndex,
             backgroundColor: Theme.of(context).colorScheme.onPrimary,
-            color: Colors.grey[400],
-            activeColor: Colors.black,
+            // backgroundColor: Colors.green,
+            // color: Colors.grey[400],
+            color: Colors.black,
+            activeColor: Colors.green,
             tabBackgroundColor: Theme.of(context).colorScheme.onPrimary,
             gap: 5,
             tabs:

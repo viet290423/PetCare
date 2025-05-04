@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petcare/data/repository/PetRepositoryImpl.dart';
 import 'package:petcare/data/source/AuthUserDataSource.dart';
 import 'package:petcare/domain/repository/PetRepository.dart';
+import 'package:petcare/domain/usecase/pet/AddPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
+import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
 
 import '../data/repository/AuthUserRepositoryImpl.dart';
@@ -47,6 +49,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
   sl.registerLazySingleton(() => SignOutUseCase(sl()));
   sl.registerLazySingleton(() => PetUseCase(sl()));
+  sl.registerLazySingleton(() => AddPetUseCase(sl()));
 
   // Provider
   sl.registerLazySingleton(() => AuthProvider(
@@ -68,5 +71,8 @@ Future<void> init() async {
     getPetData: sl()
   ));
 
-
+  sl.registerFactory(() => PetViewModel(
+     addPetUseCase: sl(),
+    petUseCase: sl()
+  ));
 }

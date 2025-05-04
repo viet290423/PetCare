@@ -16,6 +16,11 @@ class PetRepositoryImpl implements PetRepository {
   }
 
   @override
+  Future<void> addPet(PetModel pet) async {
+    await _firestore.collection('pets').doc(pet.id).set(pet.toJson());
+  }
+
+  @override
   Future<HealthStatusModel> getHealthStatus(String petId) async {
     final snapshot = await _firestore
         .collection('pets')

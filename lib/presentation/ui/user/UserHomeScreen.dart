@@ -3,6 +3,7 @@ import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
 import 'package:provider/provider.dart';
 import '../auth/AuthViewModel.dart';
 import '../auth/LoginScreen.dart';
+import '../pet/AddPetScreen.dart';
 
 class UserHomeScreen extends StatefulWidget {
   const UserHomeScreen({super.key});
@@ -34,17 +35,43 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         final pets = viewModel.pets;
 
         return Scaffold(
+          appBar: AppBar(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Trang chủ",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () async {
+                    final authViewModel = context.read<AuthViewModel>();
+                    await authViewModel.signOutUser();
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green,
+          ),
           body: Container(
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height,
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.green.shade100, Colors.white],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+            // decoration: BoxDecoration(
+            //   gradient: LinearGradient(
+            //     colors: [Colors.green.shade100, Colors.white],
+            //     begin: Alignment.topCenter,
+            //     end: Alignment.bottomCenter,
+            //   ),
+            // ),
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -77,36 +104,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                             ),
                           ],
                         ),
-                        // CircleAvatar(
-                        //   backgroundColor: Colors.green,
-                        //   child: Icon(Icons.pets, color: Colors.white),
-                        // ),
-                        IconButton(
-                          icon: const Icon(Icons.logout),
-                          onPressed: () async {
-                            final authViewModel = context.read<AuthViewModel>();
-                            await authViewModel.signOutUser();
-                            if (context.mounted) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LoginScreen(),
-                                ),
-                                (Route<dynamic> route) => false,
-                              );
-                            }
-                          },
+                        CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: Icon(Icons.pets, color: Colors.white),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Thú cưng của tôi',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
@@ -118,10 +120,15 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           if (index == pets.length) {
                             return GestureDetector(
                               onTap: () {
-                                // Chuyển đến màn hình thêm thú cưng
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const AddPetScreen(),
+                                  ),
+                                );
                               },
                               child: CircleAvatar(
-                                radius: 40,
+                                radius: 25,
                                 backgroundColor: Colors.grey[300],
                                 child: Icon(Icons.add, color: Colors.green),
                               ),
@@ -143,6 +150,31 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           );
                         },
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_month_outlined,
+                              color: Colors.green,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Nhắc nhở",
+                              style: TextStyle(
+                                fontSize: 21,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.add, color: Colors.green),
+                        ),
+                      ],
                     ),
                   ],
                 ),

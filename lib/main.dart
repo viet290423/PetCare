@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:petcare/presentation/ui/auth/LoginScreen.dart';
 import 'package:petcare/presentation/ui/doctor/DoctorHomeScreen.dart';
 import 'package:petcare/presentation/ui/main/MainScreen.dart';
+import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeScreen.dart';
 import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => di.sl<AuthViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<UserHomeViewModel>()),
+        ChangeNotifierProvider(create: (_) => di.sl<PetViewModel>()),
       ],
       child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
     );
