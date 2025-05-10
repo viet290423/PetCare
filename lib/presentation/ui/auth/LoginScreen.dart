@@ -7,7 +7,7 @@ import 'AuthViewModel.dart';
 import '../doctor/DoctorHomeScreen.dart';
 import '../user/UserHomeScreen.dart';
 import '../widget/CustomButton.dart';
-import '../widget/CustomTextField.dart';
+import '../widget/CustomTextFieldWithIcon.dart';
 import '../widget/HeaderSection.dart';
 import '../widget/NavigationLink.dart';
 
@@ -82,14 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Column(
                           children: [
-                            CustomTextField(
-                              hintText: 'Email',
+                            CustomTextFieldWithIcon(
+                              labelText: 'Email',
                               prefixIcon: Icons.email,
                               controller: _emailController,
                             ),
                             const SizedBox(height: 15),
-                            CustomTextField(
-                              hintText: 'Mật khẩu',
+                            CustomTextFieldWithIcon(
+                              labelText: 'Mật khẩu',
                               prefixIcon: Icons.lock,
                               suffixIcon:
                                   _obscurePassword

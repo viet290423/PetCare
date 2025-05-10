@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
-  final String hintText;
-  final IconData prefixIcon;
+class CustomTextFieldWithIcon extends StatelessWidget {
+  final String labelText;
+  final IconData? prefixIcon;
   final IconData? suffixIcon;
   final bool obscureText;
   final TextEditingController controller;
   final VoidCallback? onSuffixIconPressed;
 
-  const CustomTextField({
+  const CustomTextFieldWithIcon({
     super.key,
-    required this.hintText,
-    required this.prefixIcon,
+    required this.labelText,
+    this.prefixIcon,
     this.suffixIcon,
     this.obscureText = false,
     required this.controller,
@@ -32,7 +32,7 @@ class CustomTextField extends StatelessWidget {
                   onPressed: onSuffixIconPressed,
                 )
                 : null,
-        hintText: hintText,
+        labelText: labelText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Colors.green),

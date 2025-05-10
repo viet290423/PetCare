@@ -6,7 +6,7 @@ import '../doctor/DoctorHomeScreen.dart';
 import '../main/MainScreen.dart';
 import '../user/UserHomeScreen.dart';
 import '../widget/CustomButton.dart';
-import '../widget/CustomTextField.dart';
+import '../widget/CustomTextFieldWithIcon.dart';
 import '../widget/HeaderSection.dart';
 import '../widget/NavigationLink.dart';
 import 'LoginScreen.dart';
@@ -129,24 +129,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Column(
                           children: [
                             // Trường Tên
-                            CustomTextField(
-                              hintText: 'Tên',
+                            CustomTextFieldWithIcon(
+                              labelText: 'Tên',
                               prefixIcon: Icons.person,
                               controller: _nameController,
                             ),
                             const SizedBox(height: 15),
 
                             // Trường Email
-                            CustomTextField(
-                              hintText: 'Email',
+                            CustomTextFieldWithIcon(
+                              labelText: 'Email',
                               prefixIcon: Icons.email,
                               controller: _emailController,
                             ),
                             const SizedBox(height: 15),
 
                             // Trường Mật khẩu
-                            CustomTextField(
-                              hintText: 'Mật khẩu',
+                            CustomTextFieldWithIcon(
+                              labelText: 'Mật khẩu',
                               prefixIcon: Icons.lock,
                               suffixIcon:
                                   _obscurePassword

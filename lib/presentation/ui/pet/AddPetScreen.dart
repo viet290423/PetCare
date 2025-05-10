@@ -1,10 +1,14 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
+import 'package:petcare/presentation/ui/widget/CustomMyTextField.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../data/model/PetModel.dart';
-
 
 class AddPetScreen extends StatefulWidget {
   const AddPetScreen({super.key});
@@ -24,6 +28,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
   String selectedGender = 'Không rõ';
   DateTime? selectedDate;
   String imageUrl = '';
+  String _selectedWeightUnit = 'kg';
 
   @override
   void dispose() {
@@ -44,14 +49,22 @@ class _AddPetScreenState extends State<AddPetScreen> {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        margin: const EdgeInsets.symmetric(horizontal: 4),
+        // margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green.shade100 : Colors.grey.shade200,
+          color: isSelected ? Colors.green.shade100 : Colors.transparent,
+          border:
+              isSelected
+                  ? Border.all(color: Colors.green.shade300, width: 1.5)
+                  : Border.all(color: Colors.grey.shade300, width: 1.5),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 28, color: isSelected ? Colors.green : Colors.black54),
+            Icon(
+              icon,
+              size: 28,
+              color: isSelected ? Colors.green : Colors.black54,
+            ),
             const SizedBox(height: 4),
             Text(type),
           ],
@@ -62,27 +75,57 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
   Widget buildGenderButton(String gender, IconData icon) {
     final isSelected = selectedGender == gender;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            selectedGender = gender;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.green.shade200 : Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: isSelected ? Colors.green : Colors.black),
-              const SizedBox(height: 4),
-              Text(gender, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
-            ],
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedGender = gender;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        // margin: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green.shade200 : Colors.transparent,
+          border:
+              isSelected
+                  ? Border.all(color: Colors.green.shade300, width: 1.5)
+                  : Border.all(color: Colors.grey.shade300, width: 1.5),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: isSelected ? Colors.green : Colors.black),
+            const SizedBox(width: 6),
+            Text(
+              gender,
+              style: TextStyle(color: isSelected ? Colors.white : Colors.black),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUnitButton(String unit) {
+    final bool isSelected = _selectedWeightUnit == unit;
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedWeightUnit = unit;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          unit,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black87,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -95,8 +138,18 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm thú cưng mới'),
-        backgroundColor: Colors.green,
+        centerTitle: true,
+        title: const Text(
+          'Thêm thú cưng mới',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.green.shade500,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(CupertinoIcons.back, size: 30, color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -105,18 +158,57 @@ class _AddPetScreenState extends State<AddPetScreen> {
           child: Column(
             children: [
               // Ảnh
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.green.shade100,
-                child: Icon(Icons.add_a_photo, size: 30, color: Colors.green),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  if (picked != null) {
+                    final file = File(picked.path);
+                    final uploadedUrl = await context
+                        .read<PetViewModel>()
+                        .uploadPetImage(file);
+                    if (uploadedUrl != null) {
+                      setState(() {
+                        imageUrl = uploadedUrl;
+                      });
+                    }
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.green.shade100,
+                  backgroundImage:
+                      imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+                  child:
+                      imageUrl.isEmpty
+                          ? const Icon(
+                            Icons.add_a_photo,
+                            size: 30,
+                            color: Colors.green,
+                          )
+                          : null,
+                ),
               ),
               const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Tên thú cưng *'),
-                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Tên thú cưng *",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 10),
+                  CustomMyTextField(
+                    hintText: "Nhập tên thú cưng",
+                    controller: _nameController,
+                    validator:
+                        (value) =>
+                            value!.isEmpty ? 'Không được để trống' : null,
+                  ),
+                ],
               ),
+
               const SizedBox(height: 12),
 
               // Loại thú cưng
@@ -132,69 +224,149 @@ class _AddPetScreenState extends State<AddPetScreen> {
               ),
               const SizedBox(height: 12),
 
-              TextFormField(
-                controller: _breedController,
-                decoration: const InputDecoration(labelText: 'Giống'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Giống",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 10),
+                  CustomMyTextField(
+                    hintText: "Nhập giống thú cưng",
+                    controller: _breedController,
+                  ),
+                ],
               ),
+
               const SizedBox(height: 12),
 
               // Ngày sinh
-              TextFormField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Ngày sinh',
-                  suffixIcon: const Icon(Icons.calendar_today),
-                ),
-                controller: TextEditingController(
-                  text: selectedDate != null
-                      ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
-                      : '',
-                ),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime.now(),
-                  );
-                  if (picked != null) {
-                    setState(() {
-                      selectedDate = picked;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-
-              // Giới tính
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildGenderButton('Đực', Icons.male),
-                  buildGenderButton('Cái', Icons.female),
-                  buildGenderButton('Không rõ', Icons.help),
+                  Text(
+                    "Ngày sinh",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 10),
+                  CustomMyTextField(
+                    hintText: "DD/MM/YYYY",
+                    suffixIcon: const Icon(Icons.calendar_today),
+                    controller: TextEditingController(
+                      text:
+                          selectedDate != null
+                              ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
+                              : '',
+                    ),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          selectedDate = picked;
+                        });
+                      }
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
 
-              TextFormField(
-                controller: _weightController,
-                decoration: const InputDecoration(
-                  labelText: 'Cân nặng',
-                  suffixText: 'kg',
+              // Giới tính
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Giới tính",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      buildGenderButton('Đực', Icons.male),
+                      SizedBox(width: 12),
+                      buildGenderButton('Cái', Icons.female),
+                      SizedBox(width: 12),
+                      buildGenderButton('Không rõ', Icons.help),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Cân nặng",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomMyTextField(
+                          hintText: "Nhập cân nặng",
+                          controller: _weightController,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            _buildUnitButton('kg'),
+                            _buildUnitButton('g'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Màu sắc",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 10),
+                  CustomMyTextField(
+                    hintText: "Nhập màu sắc",
+                    controller: _colorController,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 10,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 12),
-
-              TextFormField(
-                controller: _colorController,
-                decoration: const InputDecoration(labelText: 'Màu sắc'),
-              ),
-              const SizedBox(height: 12),
-
-              ElevatedButton.icon(
-                icon: const Icon(Icons.save),
-                label: const Text('Lưu thú cưng'),
+                child: const Text(
+                  'Lưu thú cưng',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final pet = PetModel(
@@ -202,6 +374,13 @@ class _AddPetScreenState extends State<AddPetScreen> {
                       name: _nameController.text,
                       imageUrl: imageUrl,
                       breed: _breedController.text,
+                      birthDate:
+                          selectedDate != null
+                              ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
+                              : "",
+                      weight: '${_weightController.text} $_selectedWeightUnit',
+                      gender: selectedGender,
+                      color: _colorController.text,
                     );
                     await viewModel.addPet(pet);
                     if (mounted) Navigator.pop(context);

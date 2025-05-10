@@ -28,5 +28,10 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSCameraUsageDescription</key>
+    <string>App cần dùng camera để chụp ảnh thú cưng</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>App cần truy cập thư viện ảnh để chọn ảnh thú cưng</string>
+
 </dict>
 </plist>

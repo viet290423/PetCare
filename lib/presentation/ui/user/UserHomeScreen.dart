@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
 import 'package:provider/provider.dart';
 import '../auth/AuthViewModel.dart';
@@ -118,21 +119,33 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         itemCount: pets.length + 1,
                         itemBuilder: (context, index) {
                           if (index == pets.length) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const AddPetScreen(),
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const AddPetScreen(),
+                                        ),
+                                      );
+                                      final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
+                                      await viewModel.fetchPets();
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.grey[300],
+                                      child: Icon(Icons.add, color: Colors.green),
+                                    ),
                                   ),
-                                );
-                              },
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.grey[300],
-                                child: Icon(Icons.add, color: Colors.green),
+                                  const SizedBox(height: 5),
+                                  const Text(''),
+                                ],
                               ),
                             );
+
                           }
                           final pet = pets[index];
                           return Padding(
@@ -140,7 +153,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                             child: Column(
                               children: [
                                 CircleAvatar(
-                                  radius: 40,
+                                  radius: 25,
                                   backgroundImage: NetworkImage(pet.imageUrl),
                                 ),
                                 const SizedBox(height: 5),
