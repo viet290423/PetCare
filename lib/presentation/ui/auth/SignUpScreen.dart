@@ -217,24 +217,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             // Nút Đăng ký bằng Google
                             CustomButton(
                               text: 'Đăng ký với Google',
-                              onPressed: () async {
-                                // Hiển thị dialog chọn vai trò
-                                final selectedRole =
-                                    await _showRoleSelectionDialog();
-                                if (selectedRole != null) {
-                                  await viewModel.signInWithGoogle(
-                                    role: selectedRole,
-                                  );
-                                  if (viewModel.error != null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(viewModel.error!),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
+                              // onPressed: () async {
+                              //   // Hiển thị dialog chọn vai trò
+                              //   final selectedRole =
+                              //       await _showRoleSelectionDialog();
+                              //   if (selectedRole != null) {
+                              //     await viewModel.signInWithGoogle(
+                              //       role: selectedRole,
+                              //     );
+                              //     if (viewModel.error != null) {
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         SnackBar(
+                              //           content: Text(viewModel.error!),
+                              //           backgroundColor: Colors.red,
+                              //         ),
+                              //       );
+                              //     }
+                              //   }
+                              // },
+                              onPressed: () {},
                               isOutlined: true,
                               icon: Icons.g_mobiledata,
                               iconColor: Colors.red,
@@ -245,79 +246,80 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             // Nút Đăng ký bằng Facebook
                             CustomButton(
                               text: 'Đăng ký với Facebook',
-                              onPressed: () async {
-                                final selectedRole =
-                                    await _showRoleSelectionDialog();
-                                if (selectedRole != null) {
-                                  await viewModel.signInWithFacebook(
-                                    role: selectedRole,
-                                  );
-                                  if (viewModel.error?.contains('Google') ??
-                                      false) {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder:
-                                          (_) => AlertDialog(
-                                            title: const Text(
-                                              'Liên kết tài khoản',
-                                            ),
-                                            content: const Text(
-                                              'Email này đã được đăng ký với Google. Bạn có muốn đăng nhập Google để liên kết không?',
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      false,
-                                                    ),
-                                                child: const Text('Hủy'),
-                                              ),
-                                              TextButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      true,
-                                                    ),
-                                                child: const Text(
-                                                  'Đăng nhập Google',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                    );
-                                    if (confirm == true) {
-                                      final linked =
-                                          await viewModel
-                                              .linkPendingCredentialWithGoogle();
-                                      if (!mounted) return;
-                                      if (linked && viewModel.user != null) {
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) => MainScreen(
-                                                  user: viewModel.user!,
-                                                ),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              viewModel.error ??
-                                                  'Liên kết tài khoản thất bại',
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  }
-                                }
-                              },
+                              // onPressed: () async {
+                              //   final selectedRole =
+                              //       await _showRoleSelectionDialog();
+                              //   if (selectedRole != null) {
+                              //     await viewModel.signInWithFacebook(
+                              //       role: selectedRole,
+                              //     );
+                              //     if (viewModel.error?.contains('Google') ??
+                              //         false) {
+                              //       final confirm = await showDialog<bool>(
+                              //         context: context,
+                              //         builder:
+                              //             (_) => AlertDialog(
+                              //               title: const Text(
+                              //                 'Liên kết tài khoản',
+                              //               ),
+                              //               content: const Text(
+                              //                 'Email này đã được đăng ký với Google. Bạn có muốn đăng nhập Google để liên kết không?',
+                              //               ),
+                              //               actions: [
+                              //                 TextButton(
+                              //                   onPressed:
+                              //                       () => Navigator.pop(
+                              //                         context,
+                              //                         false,
+                              //                       ),
+                              //                   child: const Text('Hủy'),
+                              //                 ),
+                              //                 TextButton(
+                              //                   onPressed:
+                              //                       () => Navigator.pop(
+                              //                         context,
+                              //                         true,
+                              //                       ),
+                              //                   child: const Text(
+                              //                     'Đăng nhập Google',
+                              //                   ),
+                              //                 ),
+                              //               ],
+                              //             ),
+                              //       );
+                              //       if (confirm == true) {
+                              //         final linked =
+                              //             await viewModel
+                              //                 .linkPendingCredentialWithGoogle();
+                              //         if (!mounted) return;
+                              //         if (linked && viewModel.user != null) {
+                              //           Navigator.pushAndRemoveUntil(
+                              //             context,
+                              //             MaterialPageRoute(
+                              //               builder:
+                              //                   (_) => MainScreen(
+                              //                     user: viewModel.user!,
+                              //                   ),
+                              //             ),
+                              //             (route) => false,
+                              //           );
+                              //         } else {
+                              //           ScaffoldMessenger.of(
+                              //             context,
+                              //           ).showSnackBar(
+                              //             SnackBar(
+                              //               content: Text(
+                              //                 viewModel.error ??
+                              //                     'Liên kết tài khoản thất bại',
+                              //               ),
+                              //             ),
+                              //           );
+                              //         }
+                              //       }
+                              //     }
+                              //   }
+                              // },
+                              onPressed: () {},
                               isOutlined: true,
                               icon: Icons.facebook,
                               iconColor: Colors.blue,

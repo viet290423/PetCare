@@ -9,10 +9,17 @@ abstract class AuthRepository {
     required String role,
     String? name,
   });
+
   Future<Either<Failure, AuthUser>> signIn({
     required String email,
     required String password,
   });
+
+  Future<Either<Failure, AuthUser>> signInWithGoogle();
+
+  Future<Either<Failure, AuthUser>> signInWithFacebook();
+
   Future<Either<Failure, AuthUser>> getCurrentUser();
+
   Future<Either<Failure, void>> signOut();
 }

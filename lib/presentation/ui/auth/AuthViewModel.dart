@@ -1,8 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
+import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
 
+import '../../../core/error/failures.dart';
 import '../../../data/source/FirebaseUserHelperDataSource.dart';
 import '../../../domain/entity/AuthUser.dart';
 import '../../../domain/usecase/auth/GetCurrentUserUseCase.dart';
@@ -13,12 +16,16 @@ import '../../../domain/usecase/auth/SignUpUseCase.dart';
 class AuthViewModel with ChangeNotifier {
   final SignUpUseCase signUpUseCase;
   final SignInUseCase signInUseCase;
+  final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  final SignInWithFacebookUseCase signInWithFacebookUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final SignOutUseCase signOutUseCase;
 
   AuthViewModel({
     required this.signUpUseCase,
     required this.signInUseCase,
+    required this.signInWithGoogleUseCase,
+    required this.signInWithFacebookUseCase,
     required this.getCurrentUserUseCase,
     required this.signOutUseCase,
   });
@@ -26,7 +33,6 @@ class AuthViewModel with ChangeNotifier {
   AuthUser? _user;
   bool _isLoading = false;
   String? _error;
-  AuthCredential? _pendingCredential;
 
   AuthUser? get user => _user;
   bool get isLoading => _isLoading;
@@ -89,28 +95,6 @@ class AuthViewModel with ChangeNotifier {
     _setLoading(false);
   }
 
-  // Future<void> signInUser({
-  //   required String email,
-  //   required String password,
-  //   required BuildContext context,
-  // }) async {
-  //   if (email.isEmpty || password.isEmpty || !_isValidEmail(email)) {
-  //     _setError('Email hoặc mật khẩu không hợp lệ.');
-  //     return;
-  //   }
-  //
-  //   _setLoading(true);
-  //   _setError(null);
-  //
-  //   final result = await signInUseCase(email: email, password: password);
-  //   result.fold(
-  //         (failure) => _setError(failure.message),
-  //         (user) => _setUser(user),
-  //   );
-  //
-  //   _setLoading(false);
-  // }
-
   Future<void> signInUser({
     required String email,
     required String password,
@@ -152,160 +136,7 @@ class AuthViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> signInWithGoogle({required String role}) async {
-    _setLoading(true);
-    _setError(null);
 
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        _setError('Người dùng huỷ đăng nhập Google.');
-        return false;
-      }
-
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      final firebaseUser = userCredential.user;
-      if (firebaseUser == null) {
-        _setError('Không thể lấy người dùng từ Google.');
-        return false;
-      }
-
-      final email = firebaseUser.email ?? 'google_${firebaseUser.uid}@example.com';
-      final name = firebaseUser.displayName ?? 'Người dùng Google';
-      final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser.uid);
-
-      if (firestoreUser != null) {
-        _setUser(firestoreUser);
-      } else {
-        final newUser = AuthUser(
-          uid: firebaseUser.uid,
-          email: email,
-          role: role,
-          name: name,
-        );
-        await FirebaseUserHelper.saveUser(newUser);
-        _setUser(newUser);
-      }
-      return true;
-    } catch (e) {
-      _setError('Lỗi đăng nhập Google: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<bool> signInWithFacebook({required String role}) async {
-    _setLoading(true);
-    _setError(null);
-
-    try {
-      final result = await FacebookAuth.instance.login(permissions: ['email', 'public_profile']);
-      if (result.status != LoginStatus.success) {
-        _setError('Đăng nhập Facebook thất bại.');
-        return false;
-      }
-
-      final token = result.accessToken?.tokenString;
-      if (token == null) {
-        _setError('Không thể lấy token Facebook.');
-        return false;
-      }
-
-      final credential = FacebookAuthProvider.credential(token);
-
-      try {
-        final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-        final firebaseUser = userCredential.user;
-        if (firebaseUser == null) throw Exception('Firebase user null');
-
-        final fbData = await FacebookAuth.instance.getUserData();
-        final email = firebaseUser.email ?? 'fb_${firebaseUser.uid}@example.com';
-        final name = fbData['name'] ?? firebaseUser.displayName ?? 'Người dùng Facebook';
-
-        final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser.uid);
-        if (firestoreUser != null) {
-          _setUser(firestoreUser);
-        } else {
-          final newUser = AuthUser(
-            uid: firebaseUser.uid,
-            email: email,
-            role: role,
-            name: name,
-          );
-          await FirebaseUserHelper.saveUser(newUser);
-          _setUser(newUser);
-        }
-
-        return true;
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'account-exists-with-different-credential') {
-          _pendingCredential = e.credential;
-          _setError('Email đã dùng với Google. Vui lòng đăng nhập bằng Google để liên kết.');
-          return false;
-        }
-        rethrow;
-      }
-    } catch (e) {
-      _setError('Lỗi Facebook: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<bool> linkPendingCredentialWithGoogle() async {
-    _setLoading(true);
-
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        _setError('Huỷ đăng nhập Google.');
-        return false;
-      }
-
-      final googleAuth = await googleUser.authentication;
-      final googleCredential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final googleUserCredential = await FirebaseAuth.instance.signInWithCredential(googleCredential);
-      final firebaseUser = googleUserCredential.user;
-
-      if (_pendingCredential != null && firebaseUser != null) {
-        await firebaseUser.linkWithCredential(_pendingCredential!);
-        _pendingCredential = null;
-      }
-
-      final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser!.uid);
-      if (firestoreUser != null) {
-        _setUser(firestoreUser);
-      } else {
-        final newUser = AuthUser(
-          uid: firebaseUser.uid,
-          email: firebaseUser.email!,
-          role: 'user',
-          name: firebaseUser.displayName ?? 'Người dùng',
-        );
-        await FirebaseUserHelper.saveUser(newUser);
-        _setUser(newUser);
-      }
-
-      return true;
-    } catch (e) {
-      _setError('Lỗi khi liên kết tài khoản: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
 
   Future<void> signOutUser() async {
     _setLoading(true);
@@ -326,4 +157,175 @@ class AuthViewModel with ChangeNotifier {
     );
     _setLoading(false);
   }
+
+  Future<Either<Failure, AuthUser>> signInWithGoogle() async {
+    final result = await signInWithGoogleUseCase();
+    result.fold(
+          (failure) => _setError(failure.message),
+          (user) => _setUser(user),
+    );
+    return result;
+  }
+  Future<Either<Failure, AuthUser>> signInWithFacebook() async {
+    final result = await signInWithFacebookUseCase();
+    result.fold(
+          (failure) => _setError(failure.message),
+          (user) => _setUser(user),
+    );
+    return result;
+  }
+  // Future<bool> signInWithGoogle({required String role}) async {
+  //   _setLoading(true);
+  //   _setError(null);
+  //
+  //   try {
+  //     final googleUser = await GoogleSignIn().signIn();
+  //     if (googleUser == null) {
+  //       _setError('Người dùng huỷ đăng nhập Google.');
+  //       return false;
+  //     }
+  //
+  //     final googleAuth = await googleUser.authentication;
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+  //
+  //     final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  //     final firebaseUser = userCredential.user;
+  //     if (firebaseUser == null) {
+  //       _setError('Không thể lấy người dùng từ Google.');
+  //       return false;
+  //     }
+  //
+  //     final email = firebaseUser.email ?? 'google_${firebaseUser.uid}@example.com';
+  //     final name = firebaseUser.displayName ?? 'Người dùng Google';
+  //     final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser.uid);
+  //
+  //     if (firestoreUser != null) {
+  //       _setUser(firestoreUser);
+  //     } else {
+  //       final newUser = AuthUser(
+  //         uid: firebaseUser.uid,
+  //         email: email,
+  //         role: role,
+  //         name: name,
+  //       );
+  //       await FirebaseUserHelper.saveUser(newUser);
+  //       _setUser(newUser);
+  //     }
+  //     return true;
+  //   } catch (e) {
+  //     _setError('Lỗi đăng nhập Google: $e');
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
+  //
+  // Future<bool> signInWithFacebook({required String role}) async {
+  //   _setLoading(true);
+  //   _setError(null);
+  //
+  //   try {
+  //     final result = await FacebookAuth.instance.login(permissions: ['email', 'public_profile']);
+  //     if (result.status != LoginStatus.success) {
+  //       _setError('Đăng nhập Facebook thất bại.');
+  //       return false;
+  //     }
+  //
+  //     final token = result.accessToken?.tokenString;
+  //     if (token == null) {
+  //       _setError('Không thể lấy token Facebook.');
+  //       return false;
+  //     }
+  //
+  //     final credential = FacebookAuthProvider.credential(token);
+  //
+  //     try {
+  //       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  //       final firebaseUser = userCredential.user;
+  //       if (firebaseUser == null) throw Exception('Firebase user null');
+  //
+  //       final fbData = await FacebookAuth.instance.getUserData();
+  //       final email = firebaseUser.email ?? 'fb_${firebaseUser.uid}@example.com';
+  //       final name = fbData['name'] ?? firebaseUser.displayName ?? 'Người dùng Facebook';
+  //
+  //       final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser.uid);
+  //       if (firestoreUser != null) {
+  //         _setUser(firestoreUser);
+  //       } else {
+  //         final newUser = AuthUser(
+  //           uid: firebaseUser.uid,
+  //           email: email,
+  //           role: role,
+  //           name: name,
+  //         );
+  //         await FirebaseUserHelper.saveUser(newUser);
+  //         _setUser(newUser);
+  //       }
+  //
+  //       return true;
+  //     } on FirebaseAuthException catch (e) {
+  //       if (e.code == 'account-exists-with-different-credential') {
+  //         _pendingCredential = e.credential;
+  //         _setError('Email đã dùng với Google. Vui lòng đăng nhập bằng Google để liên kết.');
+  //         return false;
+  //       }
+  //       rethrow;
+  //     }
+  //   } catch (e) {
+  //     _setError('Lỗi Facebook: $e');
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
+  //
+  // Future<bool> linkPendingCredentialWithGoogle() async {
+  //   _setLoading(true);
+  //
+  //   try {
+  //     final googleUser = await GoogleSignIn().signIn();
+  //     if (googleUser == null) {
+  //       _setError('Huỷ đăng nhập Google.');
+  //       return false;
+  //     }
+  //
+  //     final googleAuth = await googleUser.authentication;
+  //     final googleCredential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+  //
+  //     final googleUserCredential = await FirebaseAuth.instance.signInWithCredential(googleCredential);
+  //     final firebaseUser = googleUserCredential.user;
+  //
+  //     if (_pendingCredential != null && firebaseUser != null) {
+  //       await firebaseUser.linkWithCredential(_pendingCredential!);
+  //       _pendingCredential = null;
+  //     }
+  //
+  //     final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser!.uid);
+  //     if (firestoreUser != null) {
+  //       _setUser(firestoreUser);
+  //     } else {
+  //       final newUser = AuthUser(
+  //         uid: firebaseUser.uid,
+  //         email: firebaseUser.email!,
+  //         role: 'user',
+  //         name: firebaseUser.displayName ?? 'Người dùng',
+  //       );
+  //       await FirebaseUserHelper.saveUser(newUser);
+  //       _setUser(newUser);
+  //     }
+  //
+  //     return true;
+  //   } catch (e) {
+  //     _setError('Lỗi khi liên kết tài khoản: $e');
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
 }

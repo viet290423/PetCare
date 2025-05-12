@@ -1,6 +1,7 @@
 class PetModel {
   final String id;
   final String name;
+  final String type;
   final String imageUrl;
   final String breed;
   final String birthDate;
@@ -11,6 +12,7 @@ class PetModel {
   PetModel({
     required this.id,
     required this.name,
+    required  this.type,
     required this.imageUrl,
     required this.breed,
     required this.birthDate,
@@ -22,6 +24,7 @@ class PetModel {
   factory PetModel.fromJson(Map<String, dynamic> json) => PetModel(
     id: json['id'],
     name: json['name'],
+    type: json['type'],
     imageUrl: json['imageUrl'],
     breed: json['breed'],
     birthDate: json['birthDate'],
@@ -33,6 +36,7 @@ class PetModel {
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
+    'type': type,
     'imageUrl': imageUrl,
     'breed': breed,
     'birthDate': birthDate,

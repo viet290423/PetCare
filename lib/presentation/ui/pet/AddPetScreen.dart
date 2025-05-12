@@ -27,6 +27,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
   String selectedType = 'Chó';
   String selectedGender = 'Không rõ';
   DateTime? selectedDate;
+  File? localImageFile;
   String imageUrl = '';
   String _selectedWeightUnit = 'kg';
 
@@ -141,14 +142,14 @@ class _AddPetScreenState extends State<AddPetScreen> {
         centerTitle: true,
         title: const Text(
           'Thêm thú cưng mới',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.green.shade500,
+        // backgroundColor: Colors.green.shade500,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(CupertinoIcons.back, size: 30, color: Colors.white),
+          icon: Icon(CupertinoIcons.back, size: 30, color: Colors.black),
         ),
       ),
       body: SingleChildScrollView(
@@ -160,34 +161,22 @@ class _AddPetScreenState extends State<AddPetScreen> {
               // Ảnh
               GestureDetector(
                 onTap: () async {
-                  final picked = await ImagePicker().pickImage(
-                    source: ImageSource.gallery,
-                  );
+                  final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (picked != null) {
-                    final file = File(picked.path);
-                    final uploadedUrl = await context
-                        .read<PetViewModel>()
-                        .uploadPetImage(file);
-                    if (uploadedUrl != null) {
-                      setState(() {
-                        imageUrl = uploadedUrl;
-                      });
-                    }
+                    setState(() {
+                      localImageFile = File(picked.path); // chỉ lưu file local
+                    });
                   }
                 },
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.green.shade100,
-                  backgroundImage:
-                      imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
-                  child:
-                      imageUrl.isEmpty
-                          ? const Icon(
-                            Icons.add_a_photo,
-                            size: 30,
-                            color: Colors.green,
-                          )
-                          : null,
+                  backgroundImage: localImageFile != null
+                      ? FileImage(localImageFile!) // dùng ảnh local
+                      : (imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null),
+                  child: localImageFile == null
+                      ? const Icon(Icons.add_a_photo, size: 30, color: Colors.green)
+                      : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -369,9 +358,17 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+                    if (localImageFile != null) {
+                      final uploadedUrl =
+                      await context.read<PetViewModel>().uploadPetImage(localImageFile!);
+                      if (uploadedUrl != null) {
+                        imageUrl = uploadedUrl;
+                      }
+                    }
                     final pet = PetModel(
                       id: const Uuid().v4(),
                       name: _nameController.text,
+                      type: selectedType,
                       imageUrl: imageUrl,
                       breed: _breedController.text,
                       birthDate:

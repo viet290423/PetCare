@@ -17,8 +17,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   void initState() {
     super.initState();
-    final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
-    viewModel.fetchPets();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
+      viewModel.fetchPets();
+    });
   }
 
   @override
@@ -60,7 +62,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 ),
               ],
             ),
-            backgroundColor: Colors.green,
+            // backgroundColor: Colors.green,
           ),
           body: Container(
             constraints: BoxConstraints(
@@ -113,7 +115,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: 100,
+                      height: 95,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: pets.length + 1,
@@ -131,13 +133,20 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                           builder: (_) => const AddPetScreen(),
                                         ),
                                       );
-                                      final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
+                                      final viewModel =
+                                          Provider.of<UserHomeViewModel>(
+                                            context,
+                                            listen: false,
+                                          );
                                       await viewModel.fetchPets();
                                     },
                                     child: CircleAvatar(
                                       radius: 25,
                                       backgroundColor: Colors.grey[300],
-                                      child: Icon(Icons.add, color: Colors.green),
+                                      child: Icon(
+                                        Icons.add,
+                                        color: Colors.green,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 5),
@@ -145,20 +154,30 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 ],
                               ),
                             );
-
                           }
                           final pet = pets[index];
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundImage: NetworkImage(pet.imageUrl),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade100,
+                                border: Border.all(
+                                  color: Colors.green.shade300,
+                                  width: 1.5,
                                 ),
-                                const SizedBox(height: 5),
-                                Text(pet.name),
-                              ],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage: NetworkImage(pet.imageUrl),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(pet.name),
+                                ],
+                              ),
                             ),
                           );
                         },

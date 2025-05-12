@@ -4,11 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petcare/data/repository/PetRepositoryImpl.dart';
 import 'package:petcare/data/source/AuthUserDataSource.dart';
+import 'package:petcare/data/source/PetDataSource.dart';
 import 'package:petcare/domain/repository/PetRepository.dart';
+import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
+import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddPetUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../data/repository/AuthUserRepositoryImpl.dart';
 import '../domain/repository/AuthRepository.dart';
@@ -19,7 +24,6 @@ import '../domain/usecase/auth/SignUpUseCase.dart';
 import '../presentation/provider/AuthProvider.dart';
 import '../presentation/ui/auth/AuthViewModel.dart';
 
-
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -29,50 +33,56 @@ Future<void> init() async {
 
   // Data sources
   sl.registerLazySingleton<AuthUserDataSource>(
-        () => AuthDataSourceImpl(
-      firebaseAuth: sl(),
-      firestore: sl(),
-    ),
+    () => AuthUserDataSourceImpl(Supabase.instance.client),
+  );
+  sl.registerLazySingleton<PetDataSource>(
+    () => PetDataSourceImpl(Supabase.instance.client),
   );
 
   // Repository
-  sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(sl()),
-  );
-  sl.registerLazySingleton<PetRepository>(
-        () => PetRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
+  sl.registerLazySingleton<PetRepository>(() => PetRepositoryImpl(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
   sl.registerLazySingleton(() => SignInUseCase(sl()));
+  sl.registerLazySingleton(() => SignInWithGoogleUseCase(sl()));
+  sl.registerLazySingleton(() => SignInWithFacebookUseCase(sl()));
   sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
   sl.registerLazySingleton(() => SignOutUseCase(sl()));
   sl.registerLazySingleton(() => PetUseCase(sl()));
   sl.registerLazySingleton(() => AddPetUseCase(sl()));
+  sl.registerLazySingleton(() => AddReminderUseCase(sl()));
 
   // Provider
-  sl.registerLazySingleton(() => AuthProvider(
-    signUpUseCase: sl(),
-    signInUseCase: sl(),
-    getCurrentUserUseCase: sl(),
-    signOutUseCase: sl(),
-  ));
+  sl.registerLazySingleton(
+    () => AuthProvider(
+      signUpUseCase: sl(),
+      signInUseCase: sl(),
+      getCurrentUserUseCase: sl(),
+      signOutUseCase: sl(),
+    ),
+  );
 
   // ViewModel
-  sl.registerFactory(() => AuthViewModel(
-    signUpUseCase: sl(),
-    signInUseCase: sl(),
-    getCurrentUserUseCase: sl(),
-    signOutUseCase: sl(),
-  ));
+  sl.registerFactory(
+    () => AuthViewModel(
+      signUpUseCase: sl(),
+      signInUseCase: sl(),
+      getCurrentUserUseCase: sl(),
+      signOutUseCase: sl(),
+      signInWithGoogleUseCase: sl(),
+      signInWithFacebookUseCase: sl(),
+    ),
+  );
 
-  sl.registerFactory(() => UserHomeViewModel(
-    getPetData: sl()
-  ));
+  sl.registerFactory(() => UserHomeViewModel(getPetData: sl()));
 
-  sl.registerFactory(() => PetViewModel(
-     addPetUseCase: sl(),
-    petUseCase: sl()
-  ));
+  sl.registerFactory(
+    () => PetViewModel(
+      addPetUseCase: sl(),
+      petUseCase: sl(),
+      addReminderUseCase: sl(),
+    ),
+  );
 }

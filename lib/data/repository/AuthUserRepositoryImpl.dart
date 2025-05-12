@@ -37,10 +37,27 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final user = await dataSource.signIn(
-        email: email,
-        password: password,
-      );
+      final user = await dataSource.signIn(email: email, password: password);
+      return Right(user);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthUser>> signInWithGoogle() async {
+    try {
+      final user = await dataSource.signInWithGoogle();
+      return Right(user);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthUser>> signInWithFacebook() async {
+    try {
+      final user = await dataSource.signInWithFacebook();
       return Right(user);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));

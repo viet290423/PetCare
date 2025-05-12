@@ -1,50 +1,85 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../data/model/PetModel.dart';
+import '../../../data/model/ReminderModel.dart';
 import '../../../domain/usecase/pet/AddPetUseCase.dart';
 import '../../../domain/usecase/pet/PetUseCase.dart';
 
 class PetViewModel extends ChangeNotifier {
   final PetUseCase petUseCase;
   final AddPetUseCase addPetUseCase;
+  final AddReminderUseCase addReminderUseCase;
 
   PetViewModel({
     required this.petUseCase,
-    required this.addPetUseCase
+    required this.addPetUseCase,
+    required this.addReminderUseCase,
   });
 
   List<PetModel> pets = [];
   bool isLoading = false;
   String? error;
 
+  final SupabaseClient client = Supabase.instance.client;
+
   Future<void> addPet(PetModel pet) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
-
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('pets')
-        .doc(pet.id);
-
-    await docRef.set(pet.toJson());
+    final result = await addPetUseCase(pet);
+    result.fold(
+      (failure) {
+        error = failure;
+        notifyListeners();
+      },
+      (_) {
+        error = null;
+        notifyListeners();
+      },
+    );
   }
 
   Future<String?> uploadPetImage(File file) async {
     try {
-      final fileName = path.basename(file.path);
-      final ref = FirebaseStorage.instance.ref().child('pet_images/$fileName');
-      final uploadTask = await ref.putFile(file);
-      return await uploadTask.ref.getDownloadURL();
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${path.basename(file.path)}';
+      final storagePath = 'uploads/$fileName';
+
+      final bytes = await file.readAsBytes();
+      final response = await client.storage
+          .from('pet-images')
+          .uploadBinary(
+            storagePath,
+            bytes,
+            fileOptions: const FileOptions(upsert: false),
+          );
+
+      if (response.isEmpty) throw Exception('Không thể upload ảnh');
+
+      final imageUrl = client.storage
+          .from('pet-images')
+          .getPublicUrl(storagePath);
+      return imageUrl;
     } catch (e) {
       print('Lỗi khi upload ảnh: $e');
       return null;
+    }
+  }
+
+  Future<void> addReminder(ReminderModel reminder) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      await addReminderUseCase(reminder);
+      error = null;
+    } catch (e) {
+      error = e.toString();
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }

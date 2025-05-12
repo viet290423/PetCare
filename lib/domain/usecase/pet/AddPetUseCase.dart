@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+
 import '../../../data/model/PetModel.dart';
 import '../../repository/PetRepository.dart';
 
@@ -6,7 +8,12 @@ class AddPetUseCase {
 
   AddPetUseCase(this.repository);
 
-  Future<void> call(PetModel pet) async {
-    await repository.addPet(pet);
+  Future<Either<String, void>> call(PetModel pet) async {
+    try {
+      await repository.addPet(pet);
+      return const Right(null);
+    } catch (e) {
+      return Left(e.toString());
+    }
   }
 }

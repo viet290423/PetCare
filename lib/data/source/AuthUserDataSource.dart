@@ -1,5 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/error/exceptions.dart';
 import '../model/AuthUserModel.dart';
@@ -17,19 +20,19 @@ abstract class AuthUserDataSource {
     required String password,
   });
 
+  Future<AuthUserModel> signInWithGoogle();
+
+  Future<AuthUserModel> signInWithFacebook();
+
   Future<AuthUserModel> getCurrentUser();
 
   Future<void> signOut();
 }
 
-class AuthDataSourceImpl implements AuthUserDataSource {
-  final firebase_auth.FirebaseAuth firebaseAuth;
-  final FirebaseFirestore firestore;
+class AuthUserDataSourceImpl implements AuthUserDataSource {
+  final SupabaseClient client;
 
-  AuthDataSourceImpl({
-    required this.firebaseAuth,
-    required this.firestore,
-  });
+  AuthUserDataSourceImpl(this.client);
 
   @override
   Future<AuthUserModel> signUp({
@@ -39,44 +42,24 @@ class AuthDataSourceImpl implements AuthUserDataSource {
     String? name,
   }) async {
     try {
-      final credential = await firebaseAuth.createUserWithEmailAndPassword(
+      final response = await client.auth.signUp(
         email: email,
         password: password,
+        data: {'role': role, 'name': name},
       );
 
-      final user = credential.user;
-      if (user == null) {
-        throw ServerException(message: 'Không thể tạo tài khoản. Vui lòng thử lại.');
-      }
+      final user = response.user;
+      if (user == null)
+        throw ServerException(message: 'Không thể tạo tài khoản.');
 
-      final userData = AuthUserModel(
-        uid: user.uid,
-        email: email,
+      return AuthUserModel(
+        uid: user.id,
+        email: user.email ?? '',
         role: role,
         name: name,
       );
-
-      await firestore.collection('users').doc(user.uid).set(userData.toJson());
-
-      return userData;
-    } on firebase_auth.FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'email-already-in-use':
-          message = 'Email đã được sử dụng. Vui lòng chọn email khác.';
-          break;
-        case 'invalid-email':
-          message = 'Email không hợp lệ. Vui lòng kiểm tra lại.';
-          break;
-        case 'weak-password':
-          message = 'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn.';
-          break;
-        default:
-          message = e.message ?? 'Đăng ký thất bại. Vui lòng thử lại.';
-      }
-      throw ServerException(message: message);
     } catch (e) {
-      throw ServerException(message: 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+      throw ServerException(message: 'Đăng ký thất bại: ${e.toString()}');
     }
   }
 
@@ -86,68 +69,152 @@ class AuthDataSourceImpl implements AuthUserDataSource {
     required String password,
   }) async {
     try {
-      final credential = await firebaseAuth.signInWithEmailAndPassword(
+      final response = await client.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      final user = credential.user;
-      if (user == null) {
-        throw ServerException(message: 'Không thể đăng nhập. Vui lòng thử lại.');
-      }
-
-      final doc = await firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) {
-        throw ServerException(message: 'Dữ liệu người dùng không tồn tại.');
-      }
-
-      return AuthUserModel.fromJson(doc.data()!);
-    } on firebase_auth.FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'Email chưa được đăng ký. Vui lòng đăng ký tài khoản.';
-          break;
-        case 'wrong-password':
-          message = 'Mật khẩu không đúng. Vui lòng kiểm tra lại.';
-          break;
-        case 'invalid-email':
-          message = 'Email không hợp lệ. Vui lòng kiểm tra lại.';
-          break;
-        default:
-          message = e.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.';
-      }
-      throw ServerException(message: message);
+      final user = response.user;
+      final metadata = user?.userMetadata ?? {};
+      return AuthUserModel(
+        uid: user!.id,
+        email: user.email!,
+        role: metadata['role'] ?? 'user',
+        name: metadata['name'],
+      );
     } catch (e) {
-      throw ServerException(message: 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+      throw ServerException(message: 'Đăng nhập thất bại: ${e.toString()}');
     }
   }
 
   @override
-  Future<AuthUserModel> getCurrentUser() async {
+  Future<AuthUserModel> signInWithGoogle() async {
     try {
-      final user = firebaseAuth.currentUser;
-      if (user == null) {
-        throw ServerException(message: 'Không có người dùng nào đang đăng nhập.');
+      const webClientId = '521870006732-ncuognbde5qtvmjg7cdn59fcfc18b6ol.apps.googleusercontent.com';
+      const iosClientId = '521870006732-vnvobl9s8vt313l8i6hj7sak461d4q08.apps.googleusercontent.com';
+
+      final googleSignIn = GoogleSignIn(
+        clientId: iosClientId, // chỉ cần nếu dùng iOS
+        serverClientId: webClientId,
+      );
+
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) throw ServerException(message: 'Người dùng huỷ đăng nhập.');
+
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      final accessToken = googleAuth.accessToken;
+
+      if (idToken == null || accessToken == null) {
+        throw ServerException(message: 'Không lấy được token từ Google.');
       }
 
-      final doc = await firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) {
-        throw ServerException(message: 'Dữ liệu người dùng không tồn tại.');
-      }
+      final authResponse = await Supabase.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
 
-      return AuthUserModel.fromJson(doc.data()!);
+      final user = authResponse.user;
+      if (user == null) throw ServerException(message: 'Đăng nhập thất bại.');
+
+      return AuthUserModel(
+        uid: user.id,
+        email: user.email ?? '',
+        name: user.userMetadata?['full_name'],
+        role: '', // nếu có lưu role riêng thì nên gọi tiếp Supabase.from('users')...
+      );
     } catch (e) {
-      throw ServerException(message: 'Không thể lấy thông tin người dùng.');
+      throw ServerException(message: 'Lỗi Google OAuth: $e');
     }
+  }
+
+  @override
+  Future<AuthUserModel> signInWithFacebook() async {
+    try {
+      // // Đăng nhập với Facebook SDK
+      // final LoginResult result = await FacebookAuth.instance.login(
+      //   permissions: ['email', 'public_profile'],
+      // );
+      //
+      // if (result.status != LoginStatus.success) {
+      //   throw ServerException(message: 'Đăng nhập Facebook thất bại: ${result.status}');
+      // }
+      //
+      // // Lấy access token từ Facebook
+      // final accessToken = result.accessToken?.tokenString;
+      // if (accessToken == null) {
+      //   throw ServerException(message: 'Không lấy được token từ Facebook.');
+      // }
+
+      // Lấy user data từ Facebook
+      final userData = await FacebookAuth.instance.getUserData(fields: "name,email,picture");
+
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.facebook,
+        redirectTo: kIsWeb ? null : 'io.supabase.flutter://login-callback',
+        authScreenLaunchMode: LaunchMode.platformDefault,
+      );
+      // Chờ Supabase xử lý callback và lấy lại thông tin user
+      final user = client.auth.currentUser;
+      if (user == null) {
+        throw ServerException(message: 'Đăng nhập thất bại.');
+      }
+
+      return AuthUserModel(
+        uid: user.id,
+        email: user.email ?? '',
+        name: user.userMetadata?['full_name'] ?? 'Facebook User',
+        role: '', // bạn có thể xử lý logic role sau
+      );
+    } catch (e) {
+      // Ghi log chi tiết hơn để debug
+      print('Chi tiết lỗi Facebook OAuth: $e');
+      throw ServerException(message: 'Lỗi Facebook OAuth: $e');
+    }
+  }
+  //
+  // @override
+  // Future<AuthUserModel> signInWithFacebook() async {
+  //   try {
+  //     await Supabase.instance.client.auth.signInWithOAuth(
+  //       OAuthProvider.facebook,
+  //       redirectTo: kIsWeb ? null : 'io.supabase.flutter://login-callback',
+  //       authScreenLaunchMode: LaunchMode.platformDefault,
+  //     );
+  //     // Chờ Supabase xử lý callback và lấy lại thông tin user
+  //     final user = client.auth.currentUser;
+  //     if (user == null) {
+  //       throw ServerException(message: 'Đăng nhập thất bại.');
+  //     }
+  //
+  //     return AuthUserModel(
+  //       uid: user.id,
+  //       email: user.email ?? '',
+  //       name: user.userMetadata?['full_name'] ?? 'Facebook User',
+  //       role: '', // bạn có thể xử lý logic role sau
+  //     );
+  //   } catch (e) {
+  //     throw ServerException(message: 'Lỗi Facebook OAuth: $e');
+  //   }
+  // }
+
+  @override
+  Future<AuthUserModel> getCurrentUser() async {
+    final user = client.auth.currentUser;
+    if (user == null) throw ServerException(message: 'Chưa đăng nhập.');
+
+    final metadata = user.userMetadata ?? {};
+    return AuthUserModel(
+      uid: user.id,
+      email: user.email!,
+      role: metadata['role'] ?? 'user',
+      name: metadata['name'],
+    );
   }
 
   @override
   Future<void> signOut() async {
-    try {
-      await firebaseAuth.signOut();
-    } catch (e) {
-      throw ServerException(message: 'Đăng xuất thất bại. Vui lòng thử lại.');
-    }
+    await client.auth.signOut();
   }
 }

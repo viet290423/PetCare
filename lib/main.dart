@@ -9,10 +9,15 @@ import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
 import 'package:provider/provider.dart';
 import 'package:petcare/di/injection_container.dart' as di;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Supabase.initialize(
+    url: 'https://rreovfkkdgqsoxfqphrg.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyZW92ZmtrZGdxc294ZnFwaHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzY0MzUsImV4cCI6MjA2MjM1MjQzNX0.WyKpgn6XHC1PuZTju-LqDr_D7T1BWVt0r5KRkWDqnjs',
+  );
   await di.init();
   runApp(const MyApp());
 }

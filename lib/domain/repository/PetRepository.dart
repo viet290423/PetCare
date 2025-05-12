@@ -1,3 +1,5 @@
+import 'package:petcare/data/model/ReminderModel.dart';
+
 import '../../data/model/HealthStatusModel.dart';
 import '../../data/model/PetModel.dart';
 
@@ -6,4 +8,5 @@ abstract class PetRepository {
   Future<HealthStatusModel> getHealthStatus(String petId);
   Future<List<Map<String, dynamic>>> getProductSuggestions();
   Future<void> addPet(PetModel pet);
+  Future<void> addReminder(ReminderModel reminder);
 }
