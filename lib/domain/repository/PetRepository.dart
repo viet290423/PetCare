@@ -9,4 +9,5 @@ abstract class PetRepository {
   Future<List<Map<String, dynamic>>> getProductSuggestions();
   Future<void> addPet(PetModel pet);
   Future<void> addReminder(ReminderModel reminder);
+  Future<List<ReminderModel>> getRemindersByPet(String petId);
 }

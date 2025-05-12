@@ -33,4 +33,8 @@ class PetRepositoryImpl implements PetRepository {
   Future<void> addReminder(ReminderModel reminder) {
     return petDataSource.addReminder(reminder);
   }
+
+  @override
+  Future<List<ReminderModel>> getRemindersByPet(String petId) =>
+      petDataSource.getRemindersByPet(petId);
 }

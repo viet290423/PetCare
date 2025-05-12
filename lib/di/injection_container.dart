@@ -10,6 +10,7 @@ import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
@@ -53,6 +54,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PetUseCase(sl()));
   sl.registerLazySingleton(() => AddPetUseCase(sl()));
   sl.registerLazySingleton(() => AddReminderUseCase(sl()));
+  sl.registerLazySingleton(() => GetRemindersByPetUseCase(sl()));
 
   // Provider
   sl.registerLazySingleton(
@@ -76,7 +78,9 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerFactory(() => UserHomeViewModel(getPetData: sl()));
+  sl.registerFactory(
+    () => UserHomeViewModel(getPetData: sl(), getRemindersByPetUseCase: sl()),
+  );
 
   sl.registerFactory(
     () => PetViewModel(

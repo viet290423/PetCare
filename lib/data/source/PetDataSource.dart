@@ -15,6 +15,8 @@ abstract class PetDataSource {
 
   Future<void> addReminder(ReminderModel reminder);
 
+  Future<List<ReminderModel>> getRemindersByPet(String petId);
+
 }
 
 class PetDataSourceImpl implements PetDataSource {
@@ -80,10 +82,26 @@ class PetDataSourceImpl implements PetDataSource {
 
   @override
   Future<void> addReminder(ReminderModel reminder) async {
-    final response = await client.from('reminders').insert(reminder.toJson());
+    try{
+      await client.from('reminders').insert(reminder.toJson());
+    }catch (e){
+      throw Exception("Lỗi khi thêm nhắc nhở: $e");
+    }
+  }
 
-    if (response == null) {
-      throw Exception("Lỗi khi thêm nhắc nhở");
+  @override
+  Future<List<ReminderModel>> getRemindersByPet(String petId) async {
+    try {
+      final response = await client
+          .from('reminders')
+          .select()
+          .eq('pet_id', petId)
+          .order('date_time');
+      return (response as List)
+          .map((e) => ReminderModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      throw Exception("Lỗi khi lấy danh sách nhắc nhở: $e");
     }
   }
 }
