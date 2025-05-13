@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
 import 'package:provider/provider.dart';
+import '../../../data/model/ReminderModel.dart';
 import '../auth/AuthViewModel.dart';
 import '../auth/LoginScreen.dart';
 import '../pet/AddPetScreen.dart';
@@ -37,9 +39,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   Widget build(BuildContext context) {
     return Consumer<UserHomeViewModel>(
       builder: (context, viewModel, child) {
-        if (viewModel.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        // if (viewModel.isLoading) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
 
         if (viewModel.error != null) {
           return Center(child: Text('Lỗi: ${viewModel.error}'));
@@ -179,13 +181,16 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         ],
                       ),
                       IconButton(
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => AddReminderScreen(pets: viewModel.pets),
                             ),
                           );
+                          if (result == true && selectedPetId != null) {
+                            await viewModel.fetchReminders(selectedPetId!); // 🔁 reload
+                          }
                         },
                         icon: const Icon(Icons.add, color: Colors.green),
                       ),
@@ -193,24 +198,65 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: viewModel.isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                      itemCount: viewModel.reminders.length,
-                      itemBuilder: (context, index) {
-                        final r = viewModel.reminders[index];
-                        return Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.check_circle_outline),
-                            title: Text(r.title),
-                            subtitle: Text(
-                              "${r.type} • ${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year} • ${r.repeatType}",
+                    child: selectedPetId == null
+                        ? const Center(child: Text('Hãy chọn thú cưng để xem nhắc nhở'))
+                        : Consumer<UserHomeViewModel>(
+                      builder: (context, viewModel, _) {
+                        final reminders = viewModel.reminders;
+
+                        if (reminders.isEmpty) {
+                          return const Center(child: Text('Không có nhắc nhở nào.'));
+                        }
+
+                        // Lấy 2 lời nhắc mới nhất
+                        final recentReminders = reminders.take(2).toList();
+
+                        return Column(
+                          children: [
+                            ...recentReminders.map(
+                                  (r) => Card(
+                                child: ListTile(
+                                  leading: Icon(CupertinoIcons.bell, color: Colors.green,),
+                                  title: Text(r.title, style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  ),),
+                                  // subtitle: Text(
+                                  //   "${r.type} • ${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year} • ${r.repeatType}",
+                                  // ),
+                                  subtitle: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Icon(CupertinoIcons.tag_solid, color: Colors.green, size: 12,),
+                                      Text(r.type),
+                                      Icon(CupertinoIcons.calendar, color: Colors.green, size: 12,),
+                                      Text("${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}"),
+                                      Icon(CupertinoIcons.repeat, color: Colors.green, size: 12,),
+                                      Text(r.repeatType)
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                            if (reminders.length > 2)
+                              TextButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                                    ),
+                                    builder: (_) => _AllRemindersSheet(reminders: reminders),
+                                  );
+                                },
+                                child: const Text('Xem tất cả', style: TextStyle(color: Colors.green)),
+                              ),
+                          ],
                         );
                       },
                     ),
                   ),
+
                 ],
               ),
             ),
@@ -220,3 +266,60 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     );
   }
 }
+
+class _AllRemindersSheet extends StatelessWidget {
+  final List<ReminderModel> reminders;
+
+  const _AllRemindersSheet({super.key, required this.reminders});
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.8,
+      maxChildSize: 0.95,
+      minChildSize: 0.5,
+      expand: false,
+      builder: (_, scrollController) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                'Tất cả lời nhắc',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: reminders.length,
+                  itemBuilder: (context, index) {
+                    final r = reminders[index];
+                    return Card(
+                      child: ListTile(
+                        leading: const Icon(CupertinoIcons.bell, color: Colors.green),
+                        title: Text(r.title),
+                        subtitle: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(CupertinoIcons.tag_solid, color: Colors.green, size: 12,),
+                            Text(r.type),
+                            Icon(CupertinoIcons.calendar, color: Colors.green, size: 12,),
+                            Text("${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}"),
+                            Icon(CupertinoIcons.repeat, color: Colors.green, size: 12,),
+                            Text(r.repeatType)
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
