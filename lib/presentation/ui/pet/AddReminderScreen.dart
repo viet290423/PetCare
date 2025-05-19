@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/widget/CustomMyTextField.dart';
@@ -103,7 +104,20 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Thêm nhắc nhở')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          'Thêm lời nhắc nhở',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        // backgroundColor: Colors.green.shade500,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(CupertinoIcons.back, size: 30, color: Colors.black),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -137,7 +151,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                             color:
                                 isSelected
                                     ? Colors.green.shade100
-                                    : Colors.grey.shade100,
+                                    : Colors.white,
                             border: Border.all(
                               color:
                                   isSelected

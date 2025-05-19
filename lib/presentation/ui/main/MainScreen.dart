@@ -113,7 +113,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       GButton(
-                        icon: Iconsax.notification,
+                        icon: Iconsax.heart_circle,
                         iconSize: 30,
                         padding: EdgeInsets.symmetric(
                           horizontal: 10,
@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       GButton(
-                        icon: Iconsax.camera,
+                        icon: Iconsax.health,
                         iconSize: 30,
                         padding: EdgeInsets.symmetric(
                           horizontal: 10,
@@ -129,7 +129,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       GButton(
-                        icon: Iconsax.messages,
+                        icon: Iconsax.profile_2user,
                         iconSize: 30,
                         padding: EdgeInsets.symmetric(
                           horizontal: 10,
