@@ -100,9 +100,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 const SizedBox(height: 24),
 
                 // Dịch vụ chăm sóc
-                const Text(
-                  'Dịch Vụ Chăm Sóc',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Dịch Vụ Chăm Sóc',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    GestureDetector(
+                      onTap: (){
+
+                      },
+                      child: Text("Xem tất cả", style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold
+                      ),),
+                    )
+                  ],
                 ),
                 const SizedBox(height: 16),
                 GridView.count(
@@ -137,9 +151,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 const SizedBox(height: 24),
 
                 // Bệnh thường gặp
-                const Text(
-                  'Bệnh Thường Gặp',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Bệnh Thường Gặp',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    GestureDetector(
+                      onTap: (){
+
+                      },
+                      child: Text("Xem tất cả", style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold
+                      ),),
+                    )
+                  ],
                 ),
                 const SizedBox(height: 16),
                 ListView.builder(
