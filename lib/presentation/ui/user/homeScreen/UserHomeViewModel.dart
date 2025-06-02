@@ -4,7 +4,7 @@ import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../data/model/ReminderModel.dart';
+import '../../../../data/model/ReminderModel.dart';
 
 class UserHomeViewModel with ChangeNotifier {
   final PetUseCase getPetData;

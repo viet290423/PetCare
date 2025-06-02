@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:petcare/presentation/ui/user/UserHomeViewModel.dart';
 import 'package:provider/provider.dart';
-import '../auth/AuthViewModel.dart';
-import '../auth/LoginScreen.dart';
+import '../../../mapper/Icon_Mapper.dart';
+import '../../auth/AuthViewModel.dart';
+import '../../auth/LoginScreen.dart';
+import '../serviceScreen/ServiceDetailScreen.dart';
+import '../serviceScreen/ServiceViewModel.dart';
 
 class UserHomeScreen extends StatefulWidget {
-  const UserHomeScreen({super.key});
+  final void Function(int index)? onTabNavigate;
+
+  const UserHomeScreen({super.key, this.onTabNavigate});
 
   @override
   State<UserHomeScreen> createState() => _UserHomeScreenState();
 }
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final serviceViewModel = Provider.of<ServicesViewModel>(
+        context,
+        listen: false,
+      );
+      await serviceViewModel.fetchServices();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final serviceViewModel = Provider.of<ServicesViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -57,9 +73,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     image: const DecorationImage(
-                      image: AssetImage(
-                        'assets/images/banner.jpg',
-                      ),
+                      image: AssetImage('assets/images/banner.jpg'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -105,68 +119,85 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   children: [
                     const Text(
                       'Dịch Vụ Chăm Sóc',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     GestureDetector(
-                      onTap: (){
-
+                      onTap: () {
+                        widget.onTabNavigate?.call(2);
                       },
-                      child: Text("Xem tất cả", style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold
-                      ),),
-                    )
+                      child: Text(
+                        "Xem tất cả",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  children: [
-                    _buildServiceCard(
-                      icon: Icons.medical_services,
-                      title: 'Khám Bệnh',
-                      description: 'Khám và điều trị bệnh cho thú cưng',
+                serviceViewModel.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : serviceViewModel.error != null
+                    ? Center(child: Text('Lỗi: ${serviceViewModel.error}'))
+                    : GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: serviceViewModel.services.length.clamp(0, 4),
+                      // hiển thị tối đa 4 dịch vụ
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                            childAspectRatio: 1,
+                          ),
+                      itemBuilder: (context, index) {
+                        final service = serviceViewModel.services[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) =>
+                                        ServiceDetailScreen(service: service),
+                              ),
+                            );
+                          },
+                          child: _buildServiceCard(
+                            icon: getIconFromName(service.icon),
+                            title: service.title,
+                            description: service.description,
+                          ),
+                        );
+                      },
                     ),
-                    _buildServiceCard(
-                      icon: Icons.spa,
-                      title: 'Chăm Sóc Spa',
-                      description: 'Tắm rửa, cắt tỉa lông, móng',
-                    ),
-                    _buildServiceCard(
-                      icon: Icons.vaccines,
-                      title: 'Tiêm Chủng',
-                      description: 'Tiêm phòng và tư vấn sức khỏe',
-                    ),
-                    _buildServiceCard(
-                      icon: Icons.restaurant,
-                      title: 'Dinh Dưỡng',
-                      description: 'Tư vấn chế độ ăn phù hợp',
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 24),
-
                 // Bệnh thường gặp
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       'Bệnh Thường Gặp',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     GestureDetector(
-                      onTap: (){
-
-                      },
-                      child: Text("Xem tất cả", style: TextStyle(
+                      onTap: () {},
+                      child: Text(
+                        "Xem tất cả",
+                        style: TextStyle(
                           color: Colors.green,
-                          fontWeight: FontWeight.bold
-                      ),),
-                    )
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),

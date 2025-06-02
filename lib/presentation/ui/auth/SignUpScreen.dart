@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../doctor/DoctorHomeScreen.dart';
 import '../main/MainScreen.dart';
-import '../user/UserHomeScreen.dart';
+import '../user/homeScreen/UserHomeScreen.dart';
 import '../widget/CustomButton.dart';
 import '../widget/CustomTextFieldWithIcon.dart';
 import '../widget/HeaderSection.dart';

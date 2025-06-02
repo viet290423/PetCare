@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:petcare/presentation/ui/doctor/DoctorHomeScreen.dart';
-import 'package:petcare/presentation/ui/user/UserHomeScreen.dart';
+import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
+import 'package:petcare/presentation/ui/user/petScreen/PetScreen.dart';
+import 'package:petcare/presentation/ui/user/serviceScreen/ServiceScreen.dart';
 
 import '../../../domain/entity/AuthUser.dart';
 
@@ -179,12 +181,12 @@ class _MainScreenState extends State<MainScreen> {
     } else {
       switch (index) {
         case 0:
-          return UserHomeScreen();
+          return UserHomeScreen(onTabNavigate: (i) => navigateToTab(i));
         case 1:
-          return UserHomeScreen();
+          return PetScreen();
 
         case 2:
-          return UserHomeScreen();
+          return ServicesScreen();
 
         case 3:
           return UserHomeScreen();
