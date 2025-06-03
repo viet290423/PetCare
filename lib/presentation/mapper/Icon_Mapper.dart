@@ -18,7 +18,8 @@ IconData getIconFromName(String name) {
       return Icons.warning;
     case 'pets':
       return Icons.pets;
-  // Thêm các icon khác tại đây
+    case 'house_siding':
+      return Icons.house_siding;
     default:
       return Icons.help_outline;
   }

@@ -7,7 +7,6 @@ import '../../pet/AddPetScreen.dart';
 import '../../pet/AddReminderScreen.dart';
 import '../homeScreen/UserHomeViewModel.dart';
 
-
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
 
@@ -34,14 +33,17 @@ class _PetScreenState extends State<PetScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<UserHomeViewModel>(
       builder: (context, viewModel, child) {
-        // if (viewModel.isLoading) {
-        //   return const Center(child: CircularProgressIndicator());
-        // }
+        if (viewModel.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+            ),
+          );
+        }
 
         if (viewModel.error != null) {
           return Center(child: Text('Lỗi: ${viewModel.error}'));
@@ -50,22 +52,24 @@ class _PetScreenState extends State<PetScreen> {
         final pets = viewModel.pets;
 
         return Scaffold(
+          backgroundColor: Colors.grey[50],
           appBar: AppBar(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  selectedPetId != null
-                      ? 'Hôm nay ${pets.firstWhere((p) => p.id == selectedPetId).name} thế nào?'
-                      : 'Hãy chọn thú cưng để xem nhắc nhở',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+            forceMaterialTransparency: true,
+            elevation: 0,
+            backgroundColor: Colors.white,
+            title: Text(
+              selectedPetId != null
+                  ? 'Hôm nay ${pets.firstWhere((p) => p.id == selectedPetId).name} thế nào?'
+                  : 'Hãy chọn thú cưng để xem nhắc nhở',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 10,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -84,15 +88,24 @@ class _PetScreenState extends State<PetScreen> {
                                   onTap: () async {
                                     await Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (_) => const AddPetScreen()),
+                                      MaterialPageRoute(
+                                        builder: (_) => const AddPetScreen(),
+                                      ),
                                     );
-                                    final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
+                                    final viewModel =
+                                        Provider.of<UserHomeViewModel>(
+                                          context,
+                                          listen: false,
+                                        );
                                     await viewModel.fetchPets();
                                   },
                                   child: CircleAvatar(
                                     radius: 25,
                                     backgroundColor: Colors.grey[300],
-                                    child: const Icon(Icons.add, color: Colors.green),
+                                    child: const Icon(
+                                      Icons.add,
+                                      color: Colors.green,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 5),
@@ -113,11 +126,20 @@ class _PetScreenState extends State<PetScreen> {
                           child: Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
-                                color: isSelected ? Colors.green.shade100 : Colors.transparent,
+                                color:
+                                    isSelected
+                                        ? Colors.green.shade100
+                                        : Colors.transparent,
                                 border: Border.all(
-                                  color: isSelected ? Colors.green.shade300: Colors.grey.shade300,
+                                  color:
+                                      isSelected
+                                          ? Colors.green.shade300
+                                          : Colors.grey.shade300,
                                   width: 1.5,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
@@ -144,9 +166,18 @@ class _PetScreenState extends State<PetScreen> {
                     children: [
                       Row(
                         children: const [
-                          Icon(Icons.calendar_month_outlined, color: Colors.green),
+                          Icon(
+                            Icons.calendar_month_outlined,
+                            color: Colors.green,
+                          ),
                           SizedBox(width: 10),
-                          Text("Nhắc nhở", style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
+                          Text(
+                            "Nhắc nhở",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                       IconButton(
@@ -154,11 +185,15 @@ class _PetScreenState extends State<PetScreen> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => AddReminderScreen(pets: viewModel.pets),
+                              builder:
+                                  (_) =>
+                                      AddReminderScreen(pets: viewModel.pets),
                             ),
                           );
                           if (result == true && selectedPetId != null) {
-                            await viewModel.fetchReminders(selectedPetId!); // 🔁 reload
+                            await viewModel.fetchReminders(
+                              selectedPetId!,
+                            ); // 🔁 reload
                           }
                         },
                         icon: const Icon(Icons.add, color: Colors.green),
@@ -167,65 +202,100 @@ class _PetScreenState extends State<PetScreen> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: selectedPetId == null
-                        ? const Center(child: Text('Hãy chọn thú cưng để xem nhắc nhở'))
-                        : Consumer<UserHomeViewModel>(
-                      builder: (context, viewModel, _) {
-                        final reminders = viewModel.reminders;
+                    child:
+                        selectedPetId == null
+                            ? const Center(
+                              child: Text('Hãy chọn thú cưng để xem nhắc nhở'),
+                            )
+                            : Consumer<UserHomeViewModel>(
+                              builder: (context, viewModel, _) {
+                                final reminders = viewModel.reminders;
 
-                        if (reminders.isEmpty) {
-                          return const Center(child: Text('Không có nhắc nhở nào.'));
-                        }
-
-                        // Lấy 2 lời nhắc mới nhất
-                        final recentReminders = reminders.take(2).toList();
-
-                        return Column(
-                          children: [
-                            ...recentReminders.map(
-                                  (r) => Card(
-                                child: ListTile(
-                                  leading: Icon(CupertinoIcons.bell, color: Colors.green,),
-                                  title: Text(r.title, style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                  ),),
-                                  // subtitle: Text(
-                                  //   "${r.type} • ${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year} • ${r.repeatType}",
-                                  // ),
-                                  subtitle: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(CupertinoIcons.tag_solid, color: Colors.green, size: 12,),
-                                      Text(r.type),
-                                      Icon(CupertinoIcons.calendar, color: Colors.green, size: 12,),
-                                      Text("${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}"),
-                                      Icon(CupertinoIcons.repeat, color: Colors.green, size: 12,),
-                                      Text(r.repeatType)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (reminders.length > 2)
-                              TextButton(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                                    ),
-                                    builder: (_) => _AllRemindersSheet(reminders: reminders),
+                                if (reminders.isEmpty) {
+                                  return const Center(
+                                    child: Text('Không có nhắc nhở nào.'),
                                   );
-                                },
-                                child: const Text('Xem tất cả', style: TextStyle(color: Colors.green)),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                                }
 
+                                // Lấy 2 lời nhắc mới nhất
+                                final recentReminders =
+                                    reminders.take(2).toList();
+
+                                return Column(
+                                  children: [
+                                    ...recentReminders.map(
+                                      (r) => Card(
+                                        child: ListTile(
+                                          leading: Icon(
+                                            CupertinoIcons.bell,
+                                            color: Colors.green,
+                                          ),
+                                          title: Text(
+                                            r.title,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          // subtitle: Text(
+                                          //   "${r.type} • ${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year} • ${r.repeatType}",
+                                          // ),
+                                          subtitle: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Icon(
+                                                CupertinoIcons.tag_solid,
+                                                color: Colors.green,
+                                                size: 12,
+                                              ),
+                                              Text(r.type),
+                                              Icon(
+                                                CupertinoIcons.calendar,
+                                                color: Colors.green,
+                                                size: 12,
+                                              ),
+                                              Text(
+                                                "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
+                                              ),
+                                              Icon(
+                                                CupertinoIcons.repeat,
+                                                color: Colors.green,
+                                                size: 12,
+                                              ),
+                                              Text(r.repeatType),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if (reminders.length > 2)
+                                      TextButton(
+                                        onPressed: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                    top: Radius.circular(16),
+                                                  ),
+                                            ),
+                                            builder:
+                                                (_) => _AllRemindersSheet(
+                                                  reminders: reminders,
+                                                ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Xem tất cả',
+                                          style: TextStyle(color: Colors.green),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                  ),
                 ],
               ),
             ),
@@ -266,17 +336,34 @@ class _AllRemindersSheet extends StatelessWidget {
                     final r = reminders[index];
                     return Card(
                       child: ListTile(
-                        leading: const Icon(CupertinoIcons.bell, color: Colors.green),
+                        leading: const Icon(
+                          CupertinoIcons.bell,
+                          color: Colors.green,
+                        ),
                         title: Text(r.title),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(CupertinoIcons.tag_solid, color: Colors.green, size: 12,),
+                            Icon(
+                              CupertinoIcons.tag_solid,
+                              color: Colors.green,
+                              size: 12,
+                            ),
                             Text(r.type),
-                            Icon(CupertinoIcons.calendar, color: Colors.green, size: 12,),
-                            Text("${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}"),
-                            Icon(CupertinoIcons.repeat, color: Colors.green, size: 12,),
-                            Text(r.repeatType)
+                            Icon(
+                              CupertinoIcons.calendar,
+                              color: Colors.green,
+                              size: 12,
+                            ),
+                            Text(
+                              "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
+                            ),
+                            Icon(
+                              CupertinoIcons.repeat,
+                              color: Colors.green,
+                              size: 12,
+                            ),
+                            Text(r.repeatType),
                           ],
                         ),
                       ),

@@ -14,6 +14,7 @@ class ServiceDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        forceMaterialTransparency: true,
         elevation: 0,
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -34,7 +35,6 @@ class ServiceDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero image section with gradient overlay
             Container(
               height: 250,
               width: double.infinity,

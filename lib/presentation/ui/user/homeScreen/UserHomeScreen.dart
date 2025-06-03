@@ -31,7 +31,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   Widget build(BuildContext context) {
     final serviceViewModel = Provider.of<ServicesViewModel>(context);
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        forceMaterialTransparency: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
         title: const Text(
           'Pet Care',
           style: TextStyle(
@@ -140,7 +144,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 serviceViewModel.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      ),
+                    )
                     : serviceViewModel.error != null
                     ? Center(child: Text('Lỗi: ${serviceViewModel.error}'))
                     : GridView.builder(
@@ -287,6 +295,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   }) {
     return Card(
       elevation: 2,
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
