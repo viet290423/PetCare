@@ -11,6 +11,7 @@ import 'package:petcare/domain/repository/PetRepository.dart';
 import 'package:petcare/domain/repository/ServiceRepository.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddAppointmentUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
 import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
@@ -69,6 +70,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetRemindersByPetUseCase(sl()));
   sl.registerLazySingleton(() => AddServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetServicesUseCase(sl()));
+  sl.registerLazySingleton(() => AddAppointmentUseCase(sl()));
 
   // Provider
   sl.registerLazySingleton(
@@ -104,5 +106,10 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerFactory(() => ServicesViewModel(getServicesUseCase: sl()));
+  sl.registerFactory(
+    () => ServicesViewModel(
+      getServicesUseCase: sl(),
+      addAppointmentUseCase: sl(),
+    ),
+  );
 }

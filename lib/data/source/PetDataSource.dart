@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../model/AppointmentModel.dart';
 import '../model/HealthStatusModel.dart';
 import '../model/PetModel.dart';
 import '../model/ReminderModel.dart';
@@ -17,6 +18,7 @@ abstract class PetDataSource {
 
   Future<List<ReminderModel>> getRemindersByPet(String petId);
 
+  Future<void> addAppointment(AppointmentModel appointment);
 }
 
 class PetDataSourceImpl implements PetDataSource {
@@ -43,10 +45,7 @@ class PetDataSourceImpl implements PetDataSource {
     final userId = client.auth.currentUser?.id;
     if (userId == null) throw Exception('Người dùng chưa đăng nhập');
 
-    final data = {
-      ...pet.toJson(),
-      'user_id': userId,
-    };
+    final data = {...pet.toJson(), 'user_id': userId};
 
     try {
       await client.from('pets').insert(data);
@@ -82,9 +81,9 @@ class PetDataSourceImpl implements PetDataSource {
 
   @override
   Future<void> addReminder(ReminderModel reminder) async {
-    try{
+    try {
       await client.from('reminders').insert(reminder.toJson());
-    }catch (e){
+    } catch (e) {
       throw Exception("Lỗi khi thêm nhắc nhở: $e");
     }
   }
@@ -97,11 +96,17 @@ class PetDataSourceImpl implements PetDataSource {
           .select()
           .eq('pet_id', petId)
           .order('date_time');
-      return (response as List)
-          .map((e) => ReminderModel.fromJson(e))
-          .toList();
+      return (response as List).map((e) => ReminderModel.fromJson(e)).toList();
     } catch (e) {
       throw Exception("Lỗi khi lấy danh sách nhắc nhở: $e");
+    }
+  }
+
+  Future<void> addAppointment(AppointmentModel appointment) async {
+    try {
+      await client.from('appointments').insert(appointment.toJson());
+    } catch (e) {
+      throw Exception('Lỗi khi thêm lịch hẹn: $e');
     }
   }
 }

@@ -5,6 +5,10 @@ import 'package:petcare/presentation/ui/doctor/DoctorHomeScreen.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetScreen.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceScreen.dart';
+import 'package:petcare/presentation/ui/library/LibraryScreen.dart';
+import 'package:petcare/presentation/ui/community/CommunityScreen.dart';
+import 'package:petcare/presentation/ui/profile/ProfileScreen.dart';
+import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
 
 import '../../../domain/entity/AuthUser.dart';
 
@@ -40,7 +44,6 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.onPrimary,
-          // color: Colors.green,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -189,10 +192,10 @@ class _MainScreenState extends State<MainScreen> {
           return ServicesScreen();
 
         case 3:
-          return UserHomeScreen();
+          return CommunityScreen();
 
         case 4:
-          return UserHomeScreen();
+          return ProfileScreen();
 
         default:
           return UserHomeScreen();

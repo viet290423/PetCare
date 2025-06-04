@@ -1,4 +1,5 @@
 import '../../domain/repository/PetRepository.dart';
+import '../model/AppointmentModel.dart';
 import '../model/HealthStatusModel.dart';
 import '../model/PetModel.dart';
 import '../model/ReminderModel.dart';
@@ -37,4 +38,9 @@ class PetRepositoryImpl implements PetRepository {
   @override
   Future<List<ReminderModel>> getRemindersByPet(String petId) =>
       petDataSource.getRemindersByPet(petId);
+
+  @override
+  Future<void> addAppointment(AppointmentModel appointment) {
+    return petDataSource.addAppointment(appointment);
+  }
 }

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../data/model/DiseaseModel.dart';
 import '../../../mapper/Icon_Mapper.dart';
 import '../../auth/AuthViewModel.dart';
 import '../../auth/LoginScreen.dart';
+import '../../disease/DiseaseDetailScreen.dart';
+import '../../disease/DiseaseViewModel.dart';
 import '../serviceScreen/ServiceDetailScreen.dart';
 import '../serviceScreen/ServiceViewModel.dart';
+
 
 class UserHomeScreen extends StatefulWidget {
   final void Function(int index)? onTabNavigate;
@@ -23,7 +27,14 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         context,
         listen: false,
       );
-      await serviceViewModel.fetchServices();
+      final diseaseViewModel = Provider.of<DiseaseViewModel>(
+        context,
+        listen: false,
+      );
+      await Future.wait([
+        serviceViewModel.fetchServices(),
+        diseaseViewModel.fetchDiseases(),
+      ]);
     });
   }
 
@@ -197,7 +208,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        // TODO: Navigate to all diseases screen
+                      },
                       child: Text(
                         "Xem tất cả",
                         style: TextStyle(
@@ -209,45 +222,65 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    final diseases = [
-                      {
-                        'title': 'Bệnh Dại',
-                        'description':
-                            'Bệnh truyền nhiễm nguy hiểm, cần tiêm phòng định kỳ',
-                        'icon': Icons.warning,
-                      },
-                      {
-                        'title': 'Bệnh Parvo',
-                        'description':
-                            'Bệnh đường ruột nguy hiểm ở chó, cần phát hiện sớm',
-                        'icon': Icons.sick,
-                      },
-                      {
-                        'title': 'Bệnh Giun Sán',
-                        'description':
-                            'Ký sinh trùng phổ biến, cần tẩy giun định kỳ',
-                        'icon': Icons.bug_report,
-                      },
-                    ];
-                    final disease = diseases[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: Icon(
-                          disease['icon'] as IconData,
-                          color: Colors.green,
+                Consumer<DiseaseViewModel>(
+                  builder: (context, diseaseViewModel, child) {
+                    if (diseaseViewModel.isLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.green,
+                          ),
                         ),
-                        title: Text(
-                          disease['title'] as String,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                      );
+                    }
+
+                    if (diseaseViewModel.error != null) {
+                      return Center(
+                        child: Text('Lỗi: ${diseaseViewModel.error}'),
+                      );
+                    }
+
+                    final diseases = diseaseViewModel.diseases;
+                    return Column(
+                      children: [
+                        // Search bar
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Tìm kiếm bệnh...',
+                              prefixIcon: const Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              // TODO: Implement search functionality
+                            },
+                          ),
                         ),
-                        subtitle: Text(disease['description'] as String),
-                      ),
+                        // Disease cards
+                        ...diseases
+                            .take(3)
+                            .map((disease) => _buildDiseaseCard(disease)),
+                      ],
                     );
                   },
                 ),
@@ -329,6 +362,132 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           const SizedBox(width: 12),
           Expanded(child: Text(text, style: const TextStyle(fontSize: 16))),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDiseaseCard(DiseaseModel disease) {
+    Color severityColor;
+    switch (disease.severity) {
+      case 'high':
+        severityColor = Colors.red;
+        break;
+      case 'medium':
+        severityColor = Colors.orange;
+        break;
+      case 'low':
+        severityColor = Colors.green;
+        break;
+      default:
+        severityColor = Colors.grey;
+    }
+
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DiseaseDetailScreen(disease: disease),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: severityColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.warning, color: severityColor, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          disease.severity == 'high'
+                              ? 'Nguy hiểm cao'
+                              : disease.severity == 'medium'
+                              ? 'Nguy hiểm trung bình'
+                              : 'Nguy hiểm thấp',
+                          style: TextStyle(
+                            color: severityColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      disease.petType == 'both'
+                          ? 'Chó & Mèo'
+                          : disease.petType == 'dog'
+                          ? 'Chó'
+                          : 'Mèo',
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                disease.title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                disease.description,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.info_outline, size: 16, color: Colors.green),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${disease.symptoms.length} triệu chứng chính',
+                    style: const TextStyle(fontSize: 12, color: Colors.green),
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

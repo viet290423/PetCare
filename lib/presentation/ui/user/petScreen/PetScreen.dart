@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../data/model/ReminderModel.dart';
+import '../../../../data/model/AppointmentModel.dart'; // Thêm import
 import '../../pet/AddPetScreen.dart';
 import '../../pet/AddReminderScreen.dart';
 import '../homeScreen/UserHomeViewModel.dart';
@@ -29,6 +30,7 @@ class _PetScreenState extends State<PetScreen> {
           selectedPetId = viewModel.pets.first.id;
         });
         await viewModel.fetchReminders(selectedPetId!);
+        await viewModel.fetchAppointments(selectedPetId!);
       }
     });
   }
@@ -122,6 +124,7 @@ class _PetScreenState extends State<PetScreen> {
                               selectedPetId = pet.id;
                             });
                             await viewModel.fetchReminders(pet.id);
+                            await viewModel.fetchAppointments(pet.id);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 10),
@@ -161,46 +164,6 @@ class _PetScreenState extends State<PetScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(
-                            Icons.calendar_month_outlined,
-                            color: Colors.green,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Nhắc nhở",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (_) =>
-                                      AddReminderScreen(pets: viewModel.pets),
-                            ),
-                          );
-                          if (result == true && selectedPetId != null) {
-                            await viewModel.fetchReminders(
-                              selectedPetId!,
-                            ); // 🔁 reload
-                          }
-                        },
-                        icon: const Icon(Icons.add, color: Colors.green),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
                   Expanded(
                     child:
                         selectedPetId == null
@@ -210,88 +173,256 @@ class _PetScreenState extends State<PetScreen> {
                             : Consumer<UserHomeViewModel>(
                               builder: (context, viewModel, _) {
                                 final reminders = viewModel.reminders;
+                                final appointments =
+                                    viewModel
+                                        .appointments; // Lấy danh sách lịch hẹn
 
-                                if (reminders.isEmpty) {
-                                  return const Center(
-                                    child: Text('Không có nhắc nhở nào.'),
-                                  );
-                                }
-
-                                // Lấy 2 lời nhắc mới nhất
-                                final recentReminders =
-                                    reminders.take(2).toList();
-
-                                return Column(
-                                  children: [
-                                    ...recentReminders.map(
-                                      (r) => Card(
-                                        child: ListTile(
-                                          leading: Icon(
-                                            CupertinoIcons.bell,
-                                            color: Colors.green,
-                                          ),
-                                          title: Text(
-                                            r.title,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          // subtitle: Text(
-                                          //   "${r.type} • ${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year} • ${r.repeatType}",
-                                          // ),
-                                          subtitle: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
+                                return SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Phần Nhắc nhở
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: const [
                                               Icon(
-                                                CupertinoIcons.tag_solid,
+                                                Icons.calendar_month_outlined,
                                                 color: Colors.green,
-                                                size: 12,
                                               ),
-                                              Text(r.type),
-                                              Icon(
-                                                CupertinoIcons.calendar,
-                                                color: Colors.green,
-                                                size: 12,
-                                              ),
+                                              SizedBox(width: 10),
                                               Text(
-                                                "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
+                                                "Nhắc nhở",
+                                                style: TextStyle(
+                                                  fontSize: 21,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                              Icon(
-                                                CupertinoIcons.repeat,
-                                                color: Colors.green,
-                                                size: 12,
-                                              ),
-                                              Text(r.repeatType),
                                             ],
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    if (reminders.length > 2)
-                                      TextButton(
-                                        onPressed: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.vertical(
-                                                    top: Radius.circular(16),
-                                                  ),
+                                          IconButton(
+                                            onPressed: () async {
+                                              final result =
+                                                  await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (_) =>
+                                                              AddReminderScreen(
+                                                                pets:
+                                                                    viewModel
+                                                                        .pets,
+                                                              ),
+                                                    ),
+                                                  );
+                                              if (result == true &&
+                                                  selectedPetId != null) {
+                                                await viewModel.fetchReminders(
+                                                  selectedPetId!,
+                                                );
+                                                await viewModel
+                                                    .fetchAppointments(
+                                                      selectedPetId!,
+                                                    ); // Cập nhật lại lịch hẹn
+                                              }
+                                            },
+                                            icon: const Icon(
+                                              Icons.add,
+                                              color: Colors.green,
                                             ),
-                                            builder:
-                                                (_) => _AllRemindersSheet(
-                                                  reminders: reminders,
-                                                ),
-                                          );
-                                        },
-                                        child: const Text(
-                                          'Xem tất cả',
-                                          style: TextStyle(color: Colors.green),
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                  ],
+                                      const SizedBox(height: 10),
+                                      if (reminders.isEmpty)
+                                        const Center(
+                                          child: Text('Không có nhắc nhở nào.'),
+                                        )
+                                      else ...[
+                                        ...reminders
+                                            .take(2)
+                                            .map(
+                                              (r) => Card(
+                                                color: Colors.white,
+                                                child: ListTile(
+                                                  leading: Icon(
+                                                    CupertinoIcons.bell,
+                                                    color: Colors.green,
+                                                  ),
+                                                  title: Text(
+                                                    r.title,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  subtitle: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Icon(
+                                                        CupertinoIcons
+                                                            .tag_solid,
+                                                        color: Colors.green,
+                                                        size: 12,
+                                                      ),
+                                                      Text(r.type),
+                                                      Icon(
+                                                        CupertinoIcons.calendar,
+                                                        color: Colors.green,
+                                                        size: 12,
+                                                      ),
+                                                      Text(
+                                                        "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
+                                                      ),
+                                                      Icon(
+                                                        CupertinoIcons.repeat,
+                                                        color: Colors.green,
+                                                        size: 12,
+                                                      ),
+                                                      Text(r.repeatType),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                        if (reminders.length > 2)
+                                          TextButton(
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                isScrollControlled: true,
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.vertical(
+                                                            top:
+                                                                Radius.circular(
+                                                                  16,
+                                                                ),
+                                                          ),
+                                                    ),
+                                                builder:
+                                                    (_) => _AllRemindersSheet(
+                                                      reminders: reminders,
+                                                    ),
+                                              );
+                                            },
+                                            child: const Text(
+                                              'Xem tất cả',
+                                              style: TextStyle(
+                                                color: Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                      const SizedBox(height: 20),
+
+                                      // Phần Lịch hẹn
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: const [
+                                              Icon(
+                                                Icons.event_available,
+                                                color: Colors.green,
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                "Lịch hẹn",
+                                                style: TextStyle(
+                                                  fontSize: 21,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      if (appointments.isEmpty)
+                                        const Center(
+                                          child: Text('Không có lịch hẹn nào.'),
+                                        )
+                                      else ...[
+                                        ...appointments
+                                            .take(2)
+                                            .map(
+                                              (a) => Card(
+                                                color: Colors.white,
+                                                child: ListTile(
+                                                  leading: Icon(
+                                                    CupertinoIcons.calendar,
+                                                    color: Colors.green,
+                                                  ),
+                                                  title: Text(
+                                                    a.serviceTitle != null
+                                                        ? a.serviceTitle!
+                                                        : 'Lịch hẹn #${a.id}',
+                                                    // Hiển thị tên dịch vụ
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  subtitle: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Thời gian: ${a.appointmentTime.toString().substring(0, 16)}',
+                                                      ),
+                                                      Text(
+                                                        'Trạng thái: ${a.status}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                        if (appointments.length > 2)
+                                          Center(
+                                            child: TextButton(
+                                              onPressed: () {
+                                                showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  shape:
+                                                      const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.vertical(
+                                                              top:
+                                                                  Radius.circular(
+                                                                    16,
+                                                                  ),
+                                                            ),
+                                                      ),
+                                                  builder:
+                                                      (_) =>
+                                                          _AllAppointmentsSheet(
+                                                            appointments:
+                                                                appointments,
+                                                          ),
+                                                );
+                                              },
+                                              child: const Text(
+                                                'Xem tất cả',
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ],
+                                  ),
                                 );
                               },
                             ),
@@ -364,6 +495,68 @@ class _AllRemindersSheet extends StatelessWidget {
                               size: 12,
                             ),
                             Text(r.repeatType),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AllAppointmentsSheet extends StatelessWidget {
+  final List<AppointmentModel> appointments;
+
+  const _AllAppointmentsSheet({super.key, required this.appointments});
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.8,
+      maxChildSize: 0.95,
+      minChildSize: 0.5,
+      expand: false,
+      builder: (_, scrollController) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                'Tất cả lịch hẹn',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: appointments.length,
+                  itemBuilder: (context, index) {
+                    final a = appointments[index];
+                    return Card(
+                      child: ListTile(
+                        leading: Icon(
+                          CupertinoIcons.calendar,
+                          color: Colors.green,
+                        ),
+                        title: Text(
+                          a.serviceTitle != null
+                              ? a.serviceTitle!
+                              : 'Lịch hẹn #${a.id}', // Hiển thị tên dịch vụ
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Thời gian: ${a.appointmentTime.toString().substring(0, 16)}',
+                            ),
+                            Text('Trạng thái: ${a.status}'),
                           ],
                         ),
                       ),

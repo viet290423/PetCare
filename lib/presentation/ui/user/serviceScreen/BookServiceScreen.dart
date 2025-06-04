@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../data/model/PetModel.dart';
 import '../../../../data/model/ServiceModel.dart';
-import '../../pet/PetViewModel.dart';
+import '../../../../data/model/AppointmentModel.dart';
+import 'ServiceViewModel.dart';
 
 class BookServiceScreen extends StatefulWidget {
   final ServiceModel service;
@@ -29,10 +30,8 @@ class _BookServiceScreenState extends State<BookServiceScreen>
   @override
   void initState() {
     super.initState();
-    // Initialize locale data
     initializeDateFormatting('vi_VN', null);
 
-    // Load pet list when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final petViewModel = Provider.of<UserHomeViewModel>(
         context,
@@ -57,6 +56,62 @@ class _BookServiceScreenState extends State<BookServiceScreen>
     super.dispose();
   }
 
+  Future<void> _bookAppointment() async {
+    final servicesViewModel = Provider.of<ServicesViewModel>(context, listen: false);
+    final appointment = AppointmentModel(
+      serviceId: widget.service.id,
+      petId: selectedPet!.id,
+      userId: Supabase.instance.client.auth.currentUser!.id,
+      appointmentTime: selectedDateTime!,
+      status: 'pending',
+    );
+
+    final result = await servicesViewModel.addAppointment(appointment);
+    result.fold(
+          (error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('Lỗi: $error'),
+                ],
+              ),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
+      },
+          (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  const Text('Đặt lịch thành công!'),
+                ],
+              ),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+          Navigator.pop(context);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final petViewModel = Provider.of<UserHomeViewModel>(context);
@@ -64,7 +119,6 @@ class _BookServiceScreenState extends State<BookServiceScreen>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      // backgroundColor: Colors.green.shade50,
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -156,9 +210,9 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                 Text(
                                   (widget.service.price != null)
                                       ? NumberFormat.currency(
-                                        locale: 'vi_VN',
-                                        symbol: '₫',
-                                      ).format(widget.service.price)
+                                    locale: 'vi_VN',
+                                    symbol: '₫',
+                                  ).format(widget.service.price)
                                       : 'Liên hệ để biết giá',
                                   style: const TextStyle(
                                     fontSize: 16,
@@ -239,7 +293,6 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(18),
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -330,12 +383,12 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 1.05,
-                                  crossAxisSpacing: 18,
-                                  mainAxisSpacing: 18,
-                                ),
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.05,
+                              crossAxisSpacing: 18,
+                              mainAxisSpacing: 18,
+                            ),
                             itemCount: pets.length,
                             itemBuilder: (context, index) {
                               final pet = pets[index];
@@ -350,34 +403,31 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                   duration: const Duration(milliseconds: 200),
                                   curve: Curves.easeInOut,
                                   decoration: BoxDecoration(
-                                    gradient:
-                                        isSelected
-                                            ? LinearGradient(
-                                              colors: [
-                                                Colors.green.shade100,
-                                                Colors.green.shade50,
-                                              ],
-                                            )
-                                            : LinearGradient(
-                                              colors: [
-                                                Colors.white,
-                                                Colors.grey.shade50,
-                                              ],
-                                            ),
+                                    gradient: isSelected
+                                        ? LinearGradient(
+                                      colors: [
+                                        Colors.green.shade100,
+                                        Colors.green.shade50,
+                                      ],
+                                    )
+                                        : LinearGradient(
+                                      colors: [
+                                        Colors.white,
+                                        Colors.grey.shade50,
+                                      ],
+                                    ),
                                     borderRadius: BorderRadius.circular(22),
                                     border: Border.all(
-                                      color:
-                                          isSelected
-                                              ? Colors.green
-                                              : Colors.transparent,
+                                      color: isSelected
+                                          ? Colors.green
+                                          : Colors.transparent,
                                       width: 2.5,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color:
-                                            isSelected
-                                                ? Colors.green.withOpacity(0.18)
-                                                : Colors.grey.withOpacity(0.10),
+                                        color: isSelected
+                                            ? Colors.green.withOpacity(0.18)
+                                            : Colors.grey.withOpacity(0.10),
                                         blurRadius: 16,
                                         offset: const Offset(0, 4),
                                       ),
@@ -388,7 +438,7 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                       Center(
                                         child: Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                           children: [
                                             Container(
                                               decoration: BoxDecoration(
@@ -402,10 +452,9 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                                   ),
                                                 ],
                                                 border: Border.all(
-                                                  color:
-                                                      isSelected
-                                                          ? Colors.green
-                                                          : Colors.black38,
+                                                  color: isSelected
+                                                      ? Colors.green
+                                                      : Colors.black38,
                                                   width: isSelected ? 3 : 2,
                                                 ),
                                               ),
@@ -425,10 +474,9 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
-                                                color:
-                                                    isSelected
-                                                        ? Colors.green[800]
-                                                        : Colors.black87,
+                                                color: isSelected
+                                                    ? Colors.green[800]
+                                                    : Colors.black87,
                                               ),
                                               textAlign: TextAlign.center,
                                               maxLines: 1,
@@ -606,16 +654,15 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                     selectedDateTime == null
                                         ? 'Chọn ngày và giờ'
                                         : DateFormat(
-                                          'EEEE, dd/MM/yyyy HH:mm',
-                                          'vi_VN',
-                                        ).format(selectedDateTime!),
+                                      'EEEE, dd/MM/yyyy HH:mm',
+                                      'vi_VN',
+                                    ).format(selectedDateTime!),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color:
-                                          selectedDateTime == null
-                                              ? Colors.grey[600]
-                                              : Colors.black87,
+                                      color: selectedDateTime == null
+                                          ? Colors.grey[600]
+                                          : Colors.black87,
                                     ),
                                   ),
                                 ],
@@ -638,74 +685,11 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed:
-                        selectedPet != null && selectedDateTime != null
-                            ? () async {
-                              final appointment = {
-                                'service_id': widget.service.id,
-                                'pet_id': selectedPet!.id,
-                                'user_id':
-                                    Supabase
-                                        .instance
-                                        .client
-                                        .auth
-                                        .currentUser!
-                                        .id,
-                                'appointment_time':
-                                    selectedDateTime!.toIso8601String(),
-                                'status': 'pending',
-                              };
-                              try {
-                                await Supabase.instance.client
-                                    .from('appointments')
-                                    .insert(appointment);
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          const Text('Đặt lịch thành công!'),
-                                        ],
-                                      ),
-                                      backgroundColor: Colors.green,
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                  );
-                                  Navigator.pop(context);
-                                }
-                              } catch (error) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.error_outline,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text('Lỗi: ${error.toString()}'),
-                                        ],
-                                      ),
-                                      backgroundColor: Colors.red,
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            }
-                            : null,
+                    onPressed: selectedPet != null && selectedDateTime != null
+                        ? () async {
+                      await _bookAppointment();
+                    }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
