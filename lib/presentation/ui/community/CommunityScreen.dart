@@ -7,16 +7,25 @@ class CommunityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cộng đồng thú cưng'),
-        backgroundColor: Colors.orange.shade400,
-        leading: const Icon(Icons.groups, color: Colors.white),
-        elevation: 2,
+        forceMaterialTransparency: true,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Cộng đồng thú cưng',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        leading: const Icon(Icons.groups, color: Colors.green),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.groups, size: 80, color: Colors.orange.shade200),
+            Icon(Icons.groups, size: 80, color: Colors.green),
             const SizedBox(height: 20),
             const Text(
               'Cộng đồng yêu thú cưng',

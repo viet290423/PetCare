@@ -10,6 +10,7 @@ class DiseaseDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(disease.title),
         backgroundColor: Colors.white,
@@ -89,8 +90,11 @@ class DiseaseDetailScreen extends StatelessWidget {
                       onPressed: () {
                         // TODO: Implement find nearby vet functionality
                       },
-                      icon: const Icon(Icons.location_on),
-                      label: const Text('Tìm bác sĩ thú y gần đây'),
+                      icon: const Icon(Icons.location_on, color: Colors.white,),
+                      label: const Text(
+                        'Đặt lịch khám ngay',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         padding: const EdgeInsets.symmetric(vertical: 16),

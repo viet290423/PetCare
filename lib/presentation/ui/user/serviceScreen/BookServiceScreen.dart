@@ -57,7 +57,10 @@ class _BookServiceScreenState extends State<BookServiceScreen>
   }
 
   Future<void> _bookAppointment() async {
-    final servicesViewModel = Provider.of<ServicesViewModel>(context, listen: false);
+    final servicesViewModel = Provider.of<ServicesViewModel>(
+      context,
+      listen: false,
+    );
     final appointment = AppointmentModel(
       serviceId: widget.service.id,
       petId: selectedPet!.id,
@@ -68,7 +71,7 @@ class _BookServiceScreenState extends State<BookServiceScreen>
 
     final result = await servicesViewModel.addAppointment(appointment);
     result.fold(
-          (error) {
+      (error) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -88,7 +91,7 @@ class _BookServiceScreenState extends State<BookServiceScreen>
           );
         }
       },
-          (_) {
+      (_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -208,11 +211,13 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  (widget.service.price != null)
-                                      ? NumberFormat.currency(
-                                    locale: 'vi_VN',
-                                    symbol: '₫',
-                                  ).format(widget.service.price)
+                                  widget.service.price != null
+                                      ? NumberFormat('#,###', 'vi_VN')
+                                          .format(widget.service.price)
+                                          .replaceAll(
+                                            ',',
+                                            '.',
+                                          ) // Chuyển ',' thành '.'
                                       : 'Liên hệ để biết giá',
                                   style: const TextStyle(
                                     fontSize: 16,
@@ -383,12 +388,12 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 1.05,
-                              crossAxisSpacing: 18,
-                              mainAxisSpacing: 18,
-                            ),
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 1.05,
+                                  crossAxisSpacing: 18,
+                                  mainAxisSpacing: 18,
+                                ),
                             itemCount: pets.length,
                             itemBuilder: (context, index) {
                               final pet = pets[index];
@@ -403,31 +408,34 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                   duration: const Duration(milliseconds: 200),
                                   curve: Curves.easeInOut,
                                   decoration: BoxDecoration(
-                                    gradient: isSelected
-                                        ? LinearGradient(
-                                      colors: [
-                                        Colors.green.shade100,
-                                        Colors.green.shade50,
-                                      ],
-                                    )
-                                        : LinearGradient(
-                                      colors: [
-                                        Colors.white,
-                                        Colors.grey.shade50,
-                                      ],
-                                    ),
+                                    gradient:
+                                        isSelected
+                                            ? LinearGradient(
+                                              colors: [
+                                                Colors.green.shade100,
+                                                Colors.green.shade50,
+                                              ],
+                                            )
+                                            : LinearGradient(
+                                              colors: [
+                                                Colors.white,
+                                                Colors.grey.shade50,
+                                              ],
+                                            ),
                                     borderRadius: BorderRadius.circular(22),
                                     border: Border.all(
-                                      color: isSelected
-                                          ? Colors.green
-                                          : Colors.transparent,
+                                      color:
+                                          isSelected
+                                              ? Colors.green
+                                              : Colors.transparent,
                                       width: 2.5,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: isSelected
-                                            ? Colors.green.withOpacity(0.18)
-                                            : Colors.grey.withOpacity(0.10),
+                                        color:
+                                            isSelected
+                                                ? Colors.green.withOpacity(0.18)
+                                                : Colors.grey.withOpacity(0.10),
                                         blurRadius: 16,
                                         offset: const Offset(0, 4),
                                       ),
@@ -438,7 +446,7 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                       Center(
                                         child: Column(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                              MainAxisAlignment.center,
                                           children: [
                                             Container(
                                               decoration: BoxDecoration(
@@ -452,9 +460,10 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                                   ),
                                                 ],
                                                 border: Border.all(
-                                                  color: isSelected
-                                                      ? Colors.green
-                                                      : Colors.black38,
+                                                  color:
+                                                      isSelected
+                                                          ? Colors.green
+                                                          : Colors.black38,
                                                   width: isSelected ? 3 : 2,
                                                 ),
                                               ),
@@ -474,9 +483,10 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
-                                                color: isSelected
-                                                    ? Colors.green[800]
-                                                    : Colors.black87,
+                                                color:
+                                                    isSelected
+                                                        ? Colors.green[800]
+                                                        : Colors.black87,
                                               ),
                                               textAlign: TextAlign.center,
                                               maxLines: 1,
@@ -654,15 +664,16 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                                     selectedDateTime == null
                                         ? 'Chọn ngày và giờ'
                                         : DateFormat(
-                                      'EEEE, dd/MM/yyyy HH:mm',
-                                      'vi_VN',
-                                    ).format(selectedDateTime!),
+                                          'EEEE, dd/MM/yyyy HH:mm',
+                                          'vi_VN',
+                                        ).format(selectedDateTime!),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: selectedDateTime == null
-                                          ? Colors.grey[600]
-                                          : Colors.black87,
+                                      color:
+                                          selectedDateTime == null
+                                              ? Colors.grey[600]
+                                              : Colors.black87,
                                     ),
                                   ),
                                 ],
@@ -685,11 +696,12 @@ class _BookServiceScreenState extends State<BookServiceScreen>
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: selectedPet != null && selectedDateTime != null
-                        ? () async {
-                      await _bookAppointment();
-                    }
-                        : null,
+                    onPressed:
+                        selectedPet != null && selectedDateTime != null
+                            ? () async {
+                              await _bookAppointment();
+                            }
+                            : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,

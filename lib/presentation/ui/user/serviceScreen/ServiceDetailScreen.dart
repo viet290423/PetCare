@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../data/model/ServiceModel.dart';
 import 'BookServiceScreen.dart';
@@ -111,7 +112,8 @@ class ServiceDetailScreen extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              '${service.price!.toStringAsFixed(0)} VNĐ',
+                              // '${service.price!.toStringAsFixed(0)} VNĐ',
+                              "${NumberFormat('#,###', 'vi_VN').format(service.price).replaceAll(',', '.')} VNĐ",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -309,7 +311,10 @@ class ServiceDetailScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        icon: const Icon(Icons.calendar_today, color: Colors.white),
+                        icon: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                        ),
                         label: const Text(
                           'Đặt lịch ngay',
                           style: TextStyle(

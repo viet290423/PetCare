@@ -6,16 +6,25 @@ class ProfileScreen extends StatelessWidget {
 
   // Giả lập dữ liệu user, bạn thay bằng lấy từ Supabase
   final String avatarUrl = 'https://i.pravatar.cc/150?img=3';
-  final String userName = 'Nguyễn Văn A';
-  final String userEmail = 'nguyenvana@gmail.com';
+  final String userName = 'Viet Nguyen';
+  final String userEmail = 'viet2k3nguyen@gmail.com';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Hồ sơ cá nhân'),
-        backgroundColor: Colors.green.shade400,
+        title: const Text(
+          'Hồ sơ cá nhân',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        centerTitle: true,
+        forceMaterialTransparency: true,
+        backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
