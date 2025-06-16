@@ -11,7 +11,9 @@ import 'package:uuid/uuid.dart';
 import '../../../data/model/PetModel.dart';
 
 class AddPetScreen extends StatefulWidget {
-  const AddPetScreen({super.key});
+  final PetModel? pet;
+
+  const AddPetScreen({super.key, this.pet});
 
   @override
   State<AddPetScreen> createState() => _AddPetScreenState();
@@ -30,6 +32,40 @@ class _AddPetScreenState extends State<AddPetScreen> {
   File? localImageFile;
   String imageUrl = '';
   String _selectedWeightUnit = 'kg';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.pet != null) {
+      // Initialize form with existing pet data
+      _nameController.text = widget.pet!.name;
+      _breedController.text = widget.pet!.breed;
+      selectedType = widget.pet!.type;
+      selectedGender = widget.pet!.gender;
+      imageUrl = widget.pet!.imageUrl;
+
+      // Parse weight
+      final weightParts = widget.pet!.weight.split(' ');
+      if (weightParts.length == 2) {
+        _weightController.text = weightParts[0];
+        _selectedWeightUnit = weightParts[1];
+      }
+
+      _colorController.text = widget.pet!.color;
+
+      // Parse birth date
+      if (widget.pet!.birthDate.isNotEmpty) {
+        final parts = widget.pet!.birthDate.split('/');
+        if (parts.length == 3) {
+          selectedDate = DateTime(
+            int.parse(parts[2]),
+            int.parse(parts[1]),
+            int.parse(parts[0]),
+          );
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -140,11 +176,13 @@ class _AddPetScreenState extends State<AddPetScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          'Thêm thú cưng mới',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        title: Text(
+          widget.pet != null ? 'Chỉnh sửa thú cưng' : 'Thêm thú cưng mới',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        // backgroundColor: Colors.green.shade500,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -161,7 +199,9 @@ class _AddPetScreenState extends State<AddPetScreen> {
               // Ảnh
               GestureDetector(
                 onTap: () async {
-                  final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  final picked = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                  );
                   if (picked != null) {
                     setState(() {
                       localImageFile = File(picked.path); // chỉ lưu file local
@@ -171,12 +211,20 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.green.shade100,
-                  backgroundImage: localImageFile != null
-                      ? FileImage(localImageFile!) // dùng ảnh local
-                      : (imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null),
-                  child: localImageFile == null
-                      ? const Icon(Icons.add_a_photo, size: 30, color: Colors.green)
-                      : null,
+                  backgroundImage:
+                      localImageFile != null
+                          ? FileImage(localImageFile!) // dùng ảnh local
+                          : (imageUrl.isNotEmpty
+                              ? NetworkImage(imageUrl)
+                              : null),
+                  child:
+                      localImageFile == null
+                          ? const Icon(
+                            Icons.add_a_photo,
+                            size: 30,
+                            color: Colors.green,
+                          )
+                          : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -352,21 +400,22 @@ class _AddPetScreenState extends State<AddPetScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                child: const Text(
-                  'Lưu thú cưng',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  widget.pet != null ? 'Cập nhật thông tin' : 'Lưu thú cưng',
+                  style: const TextStyle(color: Colors.white),
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     if (localImageFile != null) {
-                      final uploadedUrl =
-                      await context.read<PetViewModel>().uploadPetImage(localImageFile!);
+                      final uploadedUrl = await context
+                          .read<PetViewModel>()
+                          .uploadPetImage(localImageFile!);
                       if (uploadedUrl != null) {
                         imageUrl = uploadedUrl;
                       }
                     }
                     final pet = PetModel(
-                      id: const Uuid().v4(),
+                      id: widget.pet?.id ?? const Uuid().v4(),
                       name: _nameController.text,
                       type: selectedType,
                       imageUrl: imageUrl,
