@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../data/model/ReminderModel.dart';
-import '../../../../data/model/AppointmentModel.dart'; // Thêm import
+import '../../../../data/model/AppointmentModel.dart';
 import '../../pet/AddPetScreen.dart';
 import '../../pet/AddReminderScreen.dart';
 import '../homeScreen/UserHomeViewModel.dart';
@@ -16,23 +16,42 @@ class PetScreen extends StatefulWidget {
 }
 
 class _PetScreenState extends State<PetScreen> {
-  String? selectedPetId;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
-      await viewModel.fetchPets();
-
+      viewModel.clearCache();
+      await viewModel.fetchPets(forceRefresh: true);
       if (viewModel.pets.isNotEmpty && mounted) {
+        final petId = viewModel.pets.first.id;
+        viewModel.selectedPetId = petId;
+        await viewModel.fetchReminders(petId, forceRefresh: true);
+        await viewModel.fetchAppointments(petId, forceRefresh: true);
         setState(() {
-          selectedPetId = viewModel.pets.first.id;
+          _isInitialized = true;
         });
-        await viewModel.fetchReminders(selectedPetId!);
-        await viewModel.fetchAppointments(selectedPetId!);
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInitialized) {
+      final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
+      if (viewModel.selectedPetId != null) {
+        viewModel.clearCache(); // Xóa cache
+        viewModel.fetchPets(forceRefresh: true);
+        viewModel.fetchReminders(viewModel.selectedPetId!, forceRefresh: true);
+        viewModel.fetchAppointments(
+          viewModel.selectedPetId!,
+          forceRefresh: true,
+        );
+      }
+    }
   }
 
   @override
@@ -60,10 +79,10 @@ class _PetScreenState extends State<PetScreen> {
             elevation: 0,
             backgroundColor: Colors.white,
             title: Text(
-              selectedPetId != null
-                  ? 'Hôm nay ${pets.firstWhere((p) => p.id == selectedPetId).name} thế nào?'
+              viewModel.selectedPetId != null
+                  ? 'Hôm nay ${pets.firstWhere((p) => p.id == viewModel.selectedPetId).name} thế nào?'
                   : 'Hãy chọn thú cưng để xem nhắc nhở',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           body: SafeArea(
@@ -76,7 +95,7 @@ class _PetScreenState extends State<PetScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    height: 95,
+                    height: 96,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: pets.length + 1,
@@ -99,7 +118,9 @@ class _PetScreenState extends State<PetScreen> {
                                           context,
                                           listen: false,
                                         );
-                                    await viewModel.fetchPets();
+                                    await viewModel.fetchPets(
+                                      forceRefresh: true,
+                                    );
                                   },
                                   child: CircleAvatar(
                                     radius: 25,
@@ -117,14 +138,13 @@ class _PetScreenState extends State<PetScreen> {
                           );
                         }
                         final pet = pets[index];
-                        final isSelected = pet.id == selectedPetId;
+                        final isSelected = pet.id == viewModel.selectedPetId;
                         return GestureDetector(
                           onTap: () async {
-                            setState(() {
-                              selectedPetId = pet.id;
-                            });
+                            viewModel.selectedPetId = pet.id;
                             await viewModel.fetchReminders(pet.id);
                             await viewModel.fetchAppointments(pet.id);
+                            setState(() {});
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 10),
@@ -166,29 +186,26 @@ class _PetScreenState extends State<PetScreen> {
                   const SizedBox(height: 10),
                   Expanded(
                     child:
-                        selectedPetId == null
+                        viewModel.selectedPetId == null
                             ? const Center(
                               child: Text('Hãy chọn thú cưng để xem nhắc nhở'),
                             )
                             : Consumer<UserHomeViewModel>(
                               builder: (context, viewModel, _) {
                                 final reminders = viewModel.reminders;
-                                final appointments =
-                                    viewModel
-                                        .appointments; // Lấy danh sách lịch hẹn
+                                final appointments = viewModel.appointments;
 
                                 return SingleChildScrollView(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Phần Nhắc nhở
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Row(
-                                            children: const [
+                                          const Row(
+                                            children: [
                                               Icon(
                                                 Icons.calendar_month_outlined,
                                                 color: Colors.green,
@@ -219,14 +236,17 @@ class _PetScreenState extends State<PetScreen> {
                                                     ),
                                                   );
                                               if (result == true &&
-                                                  selectedPetId != null) {
+                                                  viewModel.selectedPetId !=
+                                                      null) {
                                                 await viewModel.fetchReminders(
-                                                  selectedPetId!,
+                                                  viewModel.selectedPetId!,
+                                                  forceRefresh: true,
                                                 );
                                                 await viewModel
                                                     .fetchAppointments(
-                                                      selectedPetId!,
-                                                    ); // Cập nhật lại lịch hẹn
+                                                      viewModel.selectedPetId!,
+                                                      forceRefresh: true,
+                                                    );
                                               }
                                             },
                                             icon: const Icon(
@@ -248,13 +268,13 @@ class _PetScreenState extends State<PetScreen> {
                                               (r) => Card(
                                                 color: Colors.white,
                                                 child: ListTile(
-                                                  leading: Icon(
+                                                  leading: const Icon(
                                                     CupertinoIcons.bell,
                                                     color: Colors.green,
                                                   ),
                                                   title: Text(
                                                     r.title,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -264,14 +284,14 @@ class _PetScreenState extends State<PetScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Icon(
+                                                      const Icon(
                                                         CupertinoIcons
                                                             .tag_solid,
                                                         color: Colors.green,
                                                         size: 12,
                                                       ),
                                                       Text(r.type),
-                                                      Icon(
+                                                      const Icon(
                                                         CupertinoIcons.calendar,
                                                         color: Colors.green,
                                                         size: 12,
@@ -279,7 +299,7 @@ class _PetScreenState extends State<PetScreen> {
                                                       Text(
                                                         "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
                                                       ),
-                                                      Icon(
+                                                      const Icon(
                                                         CupertinoIcons.repeat,
                                                         color: Colors.green,
                                                         size: 12,
@@ -321,14 +341,12 @@ class _PetScreenState extends State<PetScreen> {
                                           ),
                                       ],
                                       const SizedBox(height: 20),
-
-                                      // Phần Lịch hẹn
-                                      Row(
+                                      const Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
-                                            children: const [
+                                            children: [
                                               Icon(
                                                 Icons.event_available,
                                                 color: Colors.green,
@@ -357,7 +375,7 @@ class _PetScreenState extends State<PetScreen> {
                                               (a) => Card(
                                                 color: Colors.white,
                                                 child: ListTile(
-                                                  leading: Icon(
+                                                  leading: const Icon(
                                                     CupertinoIcons.calendar,
                                                     color: Colors.green,
                                                   ),
@@ -365,8 +383,7 @@ class _PetScreenState extends State<PetScreen> {
                                                     a.serviceTitle != null
                                                         ? a.serviceTitle!
                                                         : 'Lịch hẹn #${a.id}',
-                                                    // Hiển thị tên dịch vụ
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -394,16 +411,14 @@ class _PetScreenState extends State<PetScreen> {
                                                 showModalBottomSheet(
                                                   context: context,
                                                   isScrollControlled: true,
-                                                  shape:
-                                                      const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.vertical(
-                                                              top:
-                                                                  Radius.circular(
-                                                                    16,
-                                                                  ),
-                                                            ),
-                                                      ),
+                                                  shape: const RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.vertical(
+                                                          top: Radius.circular(
+                                                            16,
+                                                          ),
+                                                        ),
+                                                  ),
                                                   builder:
                                                       (_) =>
                                                           _AllAppointmentsSheet(
@@ -440,7 +455,7 @@ class _PetScreenState extends State<PetScreen> {
 class _AllRemindersSheet extends StatelessWidget {
   final List<ReminderModel> reminders;
 
-  const _AllRemindersSheet({super.key, required this.reminders});
+  const _AllRemindersSheet({required this.reminders});
 
   @override
   Widget build(BuildContext context) {
@@ -475,13 +490,13 @@ class _AllRemindersSheet extends StatelessWidget {
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
+                            const Icon(
                               CupertinoIcons.tag_solid,
                               color: Colors.green,
                               size: 12,
                             ),
                             Text(r.type),
-                            Icon(
+                            const Icon(
                               CupertinoIcons.calendar,
                               color: Colors.green,
                               size: 12,
@@ -489,7 +504,7 @@ class _AllRemindersSheet extends StatelessWidget {
                             Text(
                               "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
                             ),
-                            Icon(
+                            const Icon(
                               CupertinoIcons.repeat,
                               color: Colors.green,
                               size: 12,
@@ -513,7 +528,7 @@ class _AllRemindersSheet extends StatelessWidget {
 class _AllAppointmentsSheet extends StatelessWidget {
   final List<AppointmentModel> appointments;
 
-  const _AllAppointmentsSheet({super.key, required this.appointments});
+  const _AllAppointmentsSheet({required this.appointments});
 
   @override
   Widget build(BuildContext context) {
@@ -540,15 +555,15 @@ class _AllAppointmentsSheet extends StatelessWidget {
                     final a = appointments[index];
                     return Card(
                       child: ListTile(
-                        leading: Icon(
+                        leading: const Icon(
                           CupertinoIcons.calendar,
                           color: Colors.green,
                         ),
                         title: Text(
                           a.serviceTitle != null
                               ? a.serviceTitle!
-                              : 'Lịch hẹn #${a.id}', // Hiển thị tên dịch vụ
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                              : 'Lịch hẹn #${a.id}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

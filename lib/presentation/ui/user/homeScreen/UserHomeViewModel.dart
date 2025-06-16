@@ -15,24 +15,27 @@ class UserHomeViewModel with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
+  // Cache cho reminders và appointments
+  final Map<String, List<ReminderModel>> _remindersCache = {};
+  final Map<String, List<AppointmentModel>> _appointmentsCache = {};
+
   UserHomeViewModel({
     required this.getPetData,
     required this.getRemindersByPetUseCase,
   });
 
   List<PetModel> get pets => _pets;
-
-  List<ReminderModel> _reminders = [];
-  List<ReminderModel> get reminders => _reminders;
-  List<AppointmentModel> _appointments = [];
-  List<AppointmentModel> get appointments => _appointments;
-
+  List<ReminderModel> get reminders => _remindersCache[selectedPetId] ?? [];
+  List<AppointmentModel> get appointments => _appointmentsCache[selectedPetId] ?? [];
 
   bool get isLoading => _isLoading;
-
   String? get error => _error;
+  String? selectedPetId;
 
-  Future<void> fetchPets() async {
+  Future<void> fetchPets({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      _pets.clear();
+    }
     _isLoading = true;
     notifyListeners();
 
@@ -45,8 +48,7 @@ class UserHomeViewModel with ChangeNotifier {
         return;
       }
 
-      final result = await getPetData(); // Gọi UseCase
-
+      final result = await getPetData();
       _pets = result;
       _error = null;
     } catch (e) {
@@ -57,12 +59,20 @@ class UserHomeViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> fetchReminders(String petId) async {
+  Future<void> fetchReminders(String petId, {bool forceRefresh = false}) async {
+    selectedPetId = petId;
+
+    if (!forceRefresh && _remindersCache.containsKey(petId)) {
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     notifyListeners();
 
     try {
-      _reminders = await getRemindersByPetUseCase(petId);
+      final reminders = await getRemindersByPetUseCase(petId);
+      _remindersCache[petId] = reminders;
       _error = null;
     } catch (e) {
       _error = 'Lỗi khi tải nhắc nhở: $e';
@@ -72,11 +82,18 @@ class UserHomeViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAppointments(String petId) async {
-    try {
-      _isLoading = true;
-      notifyListeners();
+  Future<void> fetchAppointments(String petId, {bool forceRefresh = false}) async {
+    selectedPetId = petId;
 
+    if (!forceRefresh && _appointmentsCache.containsKey(petId)) {
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) {
         throw Exception('Người dùng chưa đăng nhập');
@@ -88,10 +105,11 @@ class UserHomeViewModel with ChangeNotifier {
           .eq('user_id', userId)
           .eq('pet_id', petId);
 
-      _appointments = (response as List)
+      final appointments = (response as List)
           .map((json) => AppointmentModel.fromJson(json))
           .toList();
 
+      _appointmentsCache[petId] = appointments;
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -101,4 +119,9 @@ class UserHomeViewModel with ChangeNotifier {
     }
   }
 
+  void clearCache() {
+    _remindersCache.clear();
+    _appointmentsCache.clear();
+    notifyListeners();
+  }
 }
