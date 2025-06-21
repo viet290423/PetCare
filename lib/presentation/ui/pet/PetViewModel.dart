@@ -4,21 +4,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
+import 'package:flutter/foundation.dart';
 
 import '../../../data/model/PetModel.dart';
 import '../../../data/model/ReminderModel.dart';
 import '../../../domain/usecase/pet/AddPetUseCase.dart';
 import '../../../domain/usecase/pet/PetUseCase.dart';
+import '../../../domain/usecase/pet/DeleteReminderUseCase.dart';
 
 class PetViewModel extends ChangeNotifier {
   final PetUseCase petUseCase;
   final AddPetUseCase addPetUseCase;
   final AddReminderUseCase addReminderUseCase;
+  final DeleteReminderUseCase deleteReminderUseCase;
 
   PetViewModel({
     required this.petUseCase,
     required this.addPetUseCase,
     required this.addReminderUseCase,
+    required this.deleteReminderUseCase,
   });
 
   List<PetModel> pets = [];

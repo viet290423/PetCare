@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:petcare/presentation/ui/auth/LoginScreen.dart';
 import 'package:petcare/presentation/ui/doctor/DoctorHomeScreen.dart';
+import 'package:petcare/presentation/ui/doctor/DoctorViewModel.dart';
 import 'package:petcare/presentation/ui/main/MainScreen.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
@@ -18,9 +19,11 @@ void main() async {
   await Firebase.initializeApp();
   await Supabase.initialize(
     url: 'https://rreovfkkdgqsoxfqphrg.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyZW92ZmtrZGdxc294ZnFwaHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzY0MzUsImV4cCI6MjA2MjM1MjQzNX0.WyKpgn6XHC1PuZTju-LqDr_D7T1BWVt0r5KRkWDqnjs',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyZW92ZmtrZGdxc294ZnFwaHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzY0MzUsImV4cCI6MjA2MjM1MjQzNX0.WyKpgn6XHC1PuZTju-LqDr_D7T1BWVt0r5KRkWDqnjs',
   );
   await di.init();
+
   runApp(const MyApp());
 }
 
@@ -36,6 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => di.sl<PetViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<ServicesViewModel>()),
         ChangeNotifierProvider(create: (_) => DiseaseViewModel()),
+        ChangeNotifierProvider(create: (_) => DoctorViewModel()),
       ],
       child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
     );

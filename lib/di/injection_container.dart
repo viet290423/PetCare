@@ -14,6 +14,7 @@ import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddAppointmentUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
+import 'package:petcare/domain/usecase/pet/DeleteReminderUseCase.dart';
 import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:petcare/domain/usecase/service/AddServiceUseCase.dart';
@@ -67,6 +68,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PetUseCase(sl()));
   sl.registerLazySingleton(() => AddPetUseCase(sl()));
   sl.registerLazySingleton(() => AddReminderUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteReminderUseCase(sl()));
   sl.registerLazySingleton(() => GetRemindersByPetUseCase(sl()));
   sl.registerLazySingleton(() => AddServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetServicesUseCase(sl()));
@@ -95,7 +97,7 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => UserHomeViewModel(getPetData: sl(), getRemindersByPetUseCase: sl()),
+    () => UserHomeViewModel(getPetData: sl(), getRemindersByPetUseCase: sl(), deleteReminderUseCase: sl()),
   );
 
   sl.registerFactory(
@@ -103,6 +105,7 @@ Future<void> init() async {
       addPetUseCase: sl(),
       petUseCase: sl(),
       addReminderUseCase: sl(),
+      deleteReminderUseCase: sl(),
     ),
   );
 

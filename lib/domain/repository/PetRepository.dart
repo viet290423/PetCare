@@ -18,4 +18,6 @@ abstract class PetRepository {
   Future<List<ReminderModel>> getRemindersByPet(String petId);
 
   Future<void> addAppointment(AppointmentModel appointment);
+
+  Future<void> deleteReminder(String reminderId);
 }

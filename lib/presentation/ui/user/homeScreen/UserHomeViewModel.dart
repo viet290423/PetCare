@@ -6,10 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../data/model/AppointmentModel.dart';
 import '../../../../data/model/ReminderModel.dart';
+import '../../../../domain/usecase/pet/DeleteReminderUseCase.dart';
 
 class UserHomeViewModel with ChangeNotifier {
   final PetUseCase getPetData;
   final GetRemindersByPetUseCase getRemindersByPetUseCase;
+  final DeleteReminderUseCase deleteReminderUseCase;
 
   List<PetModel> _pets = [];
   bool _isLoading = false;
@@ -22,11 +24,13 @@ class UserHomeViewModel with ChangeNotifier {
   UserHomeViewModel({
     required this.getPetData,
     required this.getRemindersByPetUseCase,
+    required this.deleteReminderUseCase,
   });
 
   List<PetModel> get pets => _pets;
   List<ReminderModel> get reminders => _remindersCache[selectedPetId] ?? [];
-  List<AppointmentModel> get appointments => _appointmentsCache[selectedPetId] ?? [];
+  List<AppointmentModel> get appointments =>
+      _appointmentsCache[selectedPetId] ?? [];
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -82,7 +86,19 @@ class UserHomeViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAppointments(String petId, {bool forceRefresh = false}) async {
+  Future<void> deleteReminder(String reminderId) async {
+    try {
+      await deleteReminderUseCase(reminderId);
+      await fetchReminders(selectedPetId!, forceRefresh: true);
+    } catch (e) {
+      print('Error deleting reminder: $e');
+    }
+  }
+
+  Future<void> fetchAppointments(
+    String petId, {
+    bool forceRefresh = false,
+  }) async {
     selectedPetId = petId;
 
     if (!forceRefresh && _appointmentsCache.containsKey(petId)) {
@@ -105,9 +121,10 @@ class UserHomeViewModel with ChangeNotifier {
           .eq('user_id', userId)
           .eq('pet_id', petId);
 
-      final appointments = (response as List)
-          .map((json) => AppointmentModel.fromJson(json))
-          .toList();
+      final appointments =
+          (response as List)
+              .map((json) => AppointmentModel.fromJson(json))
+              .toList();
 
       _appointmentsCache[petId] = appointments;
       _error = null;

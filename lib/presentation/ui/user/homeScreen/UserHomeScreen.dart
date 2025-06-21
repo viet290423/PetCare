@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/model/DiseaseModel.dart';
+import '../../../../data/model/DoctorModel.dart';
 import '../../../mapper/Icon_Mapper.dart';
 import '../../auth/AuthViewModel.dart';
 import '../../auth/LoginScreen.dart';
 import '../../disease/DiseaseDetailScreen.dart';
 import '../../disease/DiseaseViewModel.dart';
+import '../../doctor/DoctorDetailScreen.dart';
+import '../../doctor/DoctorViewModel.dart';
 import '../serviceScreen/ServiceDetailScreen.dart';
 import '../serviceScreen/ServiceViewModel.dart';
 
@@ -30,9 +33,14 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         context,
         listen: false,
       );
+      final doctorViewModel = Provider.of<DoctorViewModel>(
+        context,
+        listen: false,
+      );
       await Future.wait([
         serviceViewModel.fetchServices(),
         diseaseViewModel.fetchDiseases(),
+        doctorViewModel.fetchDoctors(),
       ]);
     });
   }
@@ -74,10 +82,18 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: Consumer2<ServicesViewModel, DiseaseViewModel>(
-          builder: (context, serviceViewModel, diseaseViewModel, child) {
-            // Kiểm tra trạng thái loading của cả hai view model
-            if (serviceViewModel.isLoading || diseaseViewModel.isLoading) {
+        child: Consumer3<ServicesViewModel, DiseaseViewModel, DoctorViewModel>(
+          builder: (
+            context,
+            serviceViewModel,
+            diseaseViewModel,
+            doctorViewModel,
+            child,
+          ) {
+            // Kiểm tra trạng thái loading của cả ba view model
+            if (serviceViewModel.isLoading ||
+                diseaseViewModel.isLoading ||
+                doctorViewModel.isLoading) {
               return const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
@@ -91,6 +107,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             }
             if (diseaseViewModel.error != null) {
               return Center(child: Text('Lỗi: ${diseaseViewModel.error}'));
+            }
+            if (doctorViewModel.error != null) {
+              return Center(child: Text('Lỗi: ${doctorViewModel.error}'));
             }
 
             return SingleChildScrollView(
@@ -205,6 +224,61 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           ),
                         );
                       },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Đội ngũ bác sĩ
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Đội Ngũ Bác Sĩ',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: Navigate to all doctors screen
+                          },
+                          child: Text(
+                            "Xem tất cả",
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 280,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: doctorViewModel.doctors.length,
+                        itemBuilder: (context, index) {
+                          final doctor = doctorViewModel.doctors[index];
+                          return Container(
+                            width: 200,
+                            margin: const EdgeInsets.only(right: 16),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) =>
+                                            DoctorDetailScreen(doctor: doctor),
+                                  ),
+                                );
+                              },
+                              child: _buildDoctorCard(doctor),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 24),
 
@@ -480,6 +554,116 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDoctorCard(DoctorModel doctor) {
+    return Card(
+      elevation: 3,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Doctor image placeholder
+            Container(
+              height: 80,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.person, size: 40, color: Colors.grey),
+            ),
+            const SizedBox(height: 12),
+
+            // Doctor name
+            Text(
+              doctor.name,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+
+            // Specialization
+            Text(
+              doctor.specialization,
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+
+            // Experience
+            Row(
+              children: [
+                Icon(Icons.work, size: 14, color: Colors.green),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    doctor.experience,
+                    style: const TextStyle(fontSize: 11),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+
+            // Rating
+            Row(
+              children: [
+                Icon(Icons.star, size: 14, color: Colors.amber),
+                const SizedBox(width: 4),
+                Text(
+                  '${doctor.rating} (${doctor.reviewCount})',
+                  style: const TextStyle(fontSize: 11),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Book appointment button
+            SizedBox(
+              width: double.infinity,
+              child: GestureDetector(
+                onTap: () {
+                  // TODO: Navigate to book appointment screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Tính năng đặt lịch sẽ được cập nhật sớm!'),
+                    ),
+                  );
+                },
+                child: ElevatedButton(
+                  onPressed: () {
+                    // TODO: Navigate to book appointment screen
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Tính năng đặt lịch sẽ được cập nhật sớm!',
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: const Text('Đặt lịch', style: TextStyle(fontSize: 12)),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

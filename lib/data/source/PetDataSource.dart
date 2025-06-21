@@ -19,6 +19,8 @@ abstract class PetDataSource {
   Future<List<ReminderModel>> getRemindersByPet(String petId);
 
   Future<void> addAppointment(AppointmentModel appointment);
+
+  Future<void> deleteReminder(String reminderId);
 }
 
 class PetDataSourceImpl implements PetDataSource {
@@ -90,14 +92,17 @@ class PetDataSourceImpl implements PetDataSource {
 
   @override
   Future<List<ReminderModel>> getRemindersByPet(String petId) async {
+    print('PetDataSource: Getting reminders for petId: $petId');
     try {
       final response = await client
           .from('reminders')
           .select()
           .eq('pet_id', petId)
           .order('date_time');
+      print('PetDataSource: Got ${response.length} reminders from database');
       return (response as List).map((e) => ReminderModel.fromJson(e)).toList();
     } catch (e) {
+      print('PetDataSource: Error getting reminders: $e');
       throw Exception("Lỗi khi lấy danh sách nhắc nhở: $e");
     }
   }
@@ -107,6 +112,15 @@ class PetDataSourceImpl implements PetDataSource {
       await client.from('appointments').insert(appointment.toJson());
     } catch (e) {
       throw Exception('Lỗi khi thêm lịch hẹn: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteReminder(String reminderId) async {
+    try {
+      await client.from('reminders').delete().eq('id', reminderId);
+    } catch (e) {
+      throw Exception('Lỗi khi xóa nhắc nhở: $e');
     }
   }
 }

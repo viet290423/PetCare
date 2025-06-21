@@ -36,11 +36,18 @@ class PetRepositoryImpl implements PetRepository {
   }
 
   @override
-  Future<List<ReminderModel>> getRemindersByPet(String petId) =>
-      petDataSource.getRemindersByPet(petId);
+  Future<List<ReminderModel>> getRemindersByPet(String petId) {
+    print('PetRepositoryImpl: Getting reminders for petId: $petId');
+    return petDataSource.getRemindersByPet(petId);
+  }
 
   @override
   Future<void> addAppointment(AppointmentModel appointment) {
     return petDataSource.addAppointment(appointment);
+  }
+
+  @override
+  Future<void> deleteReminder(String reminderId) {
+    return petDataSource.deleteReminder(reminderId);
   }
 }

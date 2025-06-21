@@ -92,6 +92,12 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       await viewModel.addReminder(reminder);
 
       if (viewModel.error == null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã tạo nhắc nhở thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -49,6 +49,7 @@ dependencies:
   google_nav_bar: ^5.0.7
   iconsax_flutter: ^1.0.0
   image_picker: ^1.1.2
+  flutter_slidable: ^3.1.1
 
 dev_dependencies:
   flutter_test:
