@@ -326,9 +326,38 @@ class _PetScreenState extends State<PetScreen>
                                                         if (confirm == true) {
                                                           try {
                                                             await viewModel.deleteReminder(r.id);
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(
+                                                                content: Row(
+                                                                  children: [
+                                                                    Icon(Icons.check_circle, color: Colors.white),
+                                                                    const SizedBox(width: 8),
+                                                                    const Text('Xóa nhắc nhở thành công!'),
+                                                                  ],
+                                                                ),
+                                                                backgroundColor: Colors.green,
+                                                                behavior: SnackBarBehavior.floating,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(10),
+                                                                ),
+                                                              ),
+                                                            );
                                                           } catch (e) {
                                                             ScaffoldMessenger.of(context).showSnackBar(
-                                                              SnackBar(content: Text('Lỗi khi xóa nhắc nhở: $e')),
+                                                              SnackBar(
+                                                                content: Row(
+                                                                  children: [
+                                                                    Icon(Icons.error_outline, color: Colors.white),
+                                                                    const SizedBox(width: 8),
+                                                                    Text('Lỗi khi xóa nhắc nhở: $e'),
+                                                                  ],
+                                                                ),
+                                                                backgroundColor: Colors.red,
+                                                                behavior: SnackBarBehavior.floating,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(10),
+                                                                ),
+                                                              ),
                                                             );
                                                           }
                                                         }

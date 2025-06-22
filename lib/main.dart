@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => di.sl<PetViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<ServicesViewModel>()),
         ChangeNotifierProvider(create: (_) => DiseaseViewModel()),
-        ChangeNotifierProvider(create: (_) => DoctorViewModel()),
+        ChangeNotifierProvider(create: (_) =>  di.sl<DoctorViewModel>()),
       ],
       child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
     );

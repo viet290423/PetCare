@@ -4,11 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petcare/data/repository/PetRepositoryImpl.dart';
 import 'package:petcare/data/repository/ServiceRepositoryImpl.dart';
+import 'package:petcare/data/repository/DoctorRepositoryImpl.dart';
 import 'package:petcare/data/source/AuthUserDataSource.dart';
 import 'package:petcare/data/source/PetDataSource.dart';
 import 'package:petcare/data/source/ServiceDataSource.dart';
+import 'package:petcare/data/source/DoctorDataSource.dart';
 import 'package:petcare/domain/repository/PetRepository.dart';
 import 'package:petcare/domain/repository/ServiceRepository.dart';
+import 'package:petcare/domain/repository/DoctorRepository.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddAppointmentUseCase.dart';
@@ -19,9 +22,12 @@ import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:petcare/domain/usecase/service/AddServiceUseCase.dart';
 import 'package:petcare/domain/usecase/service/GetServiceUseCase.dart';
+import 'package:petcare/domain/usecase/doctor/GetDoctorsByServiceUseCase.dart';
+import 'package:petcare/domain/usecase/doctor/GetAvailableTimeSlotsUseCase.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceViewModel.dart';
+import 'package:petcare/presentation/ui/doctor/DoctorViewModel.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../data/repository/AuthUserRepositoryImpl.dart';
@@ -50,6 +56,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ServiceDataSource>(
     () => ServiceDataSourceImpl(Supabase.instance.client),
   );
+  sl.registerLazySingleton<DoctorDataSource>(() => DoctorDataSourceImpl());
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -57,6 +64,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ServiceRepository>(
     () => ServiceRepositoryImpl(sl()),
   );
+  sl.registerLazySingleton<DoctorRepository>(() => DoctorRepositoryImpl(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
@@ -73,6 +81,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetServicesUseCase(sl()));
   sl.registerLazySingleton(() => AddAppointmentUseCase(sl()));
+  sl.registerLazySingleton(() => GetDoctorsByServiceUseCase(sl()));
+  sl.registerLazySingleton(() => GetAvailableTimeSlotsUseCase(sl()));
 
   // Provider
   sl.registerLazySingleton(
@@ -97,7 +107,11 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => UserHomeViewModel(getPetData: sl(), getRemindersByPetUseCase: sl(), deleteReminderUseCase: sl()),
+    () => UserHomeViewModel(
+      getPetData: sl(),
+      getRemindersByPetUseCase: sl(),
+      deleteReminderUseCase: sl(),
+    ),
   );
 
   sl.registerFactory(
@@ -113,6 +127,13 @@ Future<void> init() async {
     () => ServicesViewModel(
       getServicesUseCase: sl(),
       addAppointmentUseCase: sl(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => DoctorViewModel(
+      getDoctorsByServiceUseCase: sl(),
+      getAvailableTimeSlotsUseCase: sl(),
     ),
   );
 }

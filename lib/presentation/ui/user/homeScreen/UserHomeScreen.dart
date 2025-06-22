@@ -9,6 +9,7 @@ import '../../disease/DiseaseDetailScreen.dart';
 import '../../disease/DiseaseViewModel.dart';
 import '../../doctor/DoctorDetailScreen.dart';
 import '../../doctor/DoctorViewModel.dart';
+import '../../doctor/AllDoctorsScreen.dart';
 import '../serviceScreen/ServiceDetailScreen.dart';
 import '../serviceScreen/ServiceViewModel.dart';
 
@@ -240,7 +241,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // TODO: Navigate to all doctors screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AllDoctorsScreen(),
+                              ),
+                            );
                           },
                           child: Text(
                             "Xem tất cả",

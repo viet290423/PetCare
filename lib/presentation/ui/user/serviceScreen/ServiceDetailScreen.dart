@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:petcare/presentation/ui/user/serviceScreen/BookServiceScreenV2.dart';
 
 import '../../../../data/model/ServiceModel.dart';
 import 'BookServiceScreen.dart';
@@ -299,7 +300,7 @@ class ServiceDetailScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (_) => BookServiceScreen(service: service),
+                                  (_) => BookServiceScreenV2(service: service),
                             ),
                           );
                         },
