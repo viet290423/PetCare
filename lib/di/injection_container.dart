@@ -36,6 +36,7 @@ import '../domain/usecase/auth/GetCurrentUserUseCase.dart';
 import '../domain/usecase/auth/SignInUseCase.dart';
 import '../domain/usecase/auth/SignOutUseCase.dart';
 import '../domain/usecase/auth/SignUpUseCase.dart';
+import '../domain/usecase/doctor/GetAllDoctorUseCase.dart';
 import '../presentation/provider/AuthProvider.dart';
 import '../presentation/ui/auth/AuthViewModel.dart';
 
@@ -56,7 +57,9 @@ Future<void> init() async {
   sl.registerLazySingleton<ServiceDataSource>(
     () => ServiceDataSourceImpl(Supabase.instance.client),
   );
-  sl.registerLazySingleton<DoctorDataSource>(() => DoctorDataSourceImpl());
+  sl.registerLazySingleton<DoctorDataSource>(
+        () => DoctorDataSourceImpl(Supabase.instance.client),
+  );
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -81,6 +84,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetServicesUseCase(sl()));
   sl.registerLazySingleton(() => AddAppointmentUseCase(sl()));
+  sl.registerLazySingleton(() => GetAllDoctorUseCase(sl()));
   sl.registerLazySingleton(() => GetDoctorsByServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetAvailableTimeSlotsUseCase(sl()));
 
@@ -132,6 +136,7 @@ Future<void> init() async {
 
   sl.registerFactory(
     () => DoctorViewModel(
+      getAllDoctorUseCase: sl(),
       getDoctorsByServiceUseCase: sl(),
       getAvailableTimeSlotsUseCase: sl(),
     ),

@@ -582,10 +582,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.person, size: 40, color: Colors.grey),
+              // child: const Icon(Icons.person, size: 40, color: Colors.grey),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  doctor.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Colors.grey,
+                    );
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 12),
-
             // Doctor name
             Text(
               doctor.name,

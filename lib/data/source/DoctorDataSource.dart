@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../model/DoctorModel.dart';
 import '../model/TimeSlotModel.dart';
 
@@ -10,75 +12,22 @@ abstract class DoctorDataSource {
 }
 
 class DoctorDataSourceImpl implements DoctorDataSource {
+  final SupabaseClient client;
+  DoctorDataSourceImpl(this.client);
   @override
   Future<List<DoctorModel>> getAllDoctors() async {
-    // TODO: Implement actual data fetching from Firebase/API
-    // For now, return mock data
-    await Future.delayed(
-      const Duration(milliseconds: 500),
-    ); // Simulate network delay
+    try {
+      final response = await client
+          .from('doctors')
+          .select()
+          .order('created_at', ascending: false);
 
-    return [
-      DoctorModel(
-        id: '1',
-        name: 'Dr. Nguyễn Văn A',
-        specialization: 'Thú y tổng hợp',
-        specializations: ['Thú y tổng hợp', 'Phẫu thuật', 'Tiêm chủng'],
-        experience: '10 năm',
-        education: 'Đại học Thú y Hà Nội',
-        imageUrl: 'https://example.com/doctor1.jpg',
-        description:
-            'Bác sĩ thú y có kinh nghiệm 10 năm trong lĩnh vực chăm sóc thú cưng',
-        certifications: ['Chứng chỉ hành nghề thú y', 'Chứng chỉ phẫu thuật'],
-        rating: 4.8,
-        reviewCount: 156,
-        workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        workingHours: '08:00-17:00',
-        isAvailable: true,
-        serviceIds: ['1', '2', '3', '4'],
-      ),
-      DoctorModel(
-        id: '2',
-        name: 'Dr. Trần Thị B',
-        specialization: 'Da liễu thú y',
-        specializations: ['Da liễu thú y', 'Dị ứng', 'Ký sinh trùng'],
-        experience: '8 năm',
-        education: 'Đại học Nông Lâm TP.HCM',
-        imageUrl: 'https://example.com/doctor2.jpg',
-        description: 'Chuyên gia về các bệnh da liễu và dị ứng ở thú cưng',
-        certifications: ['Chứng chỉ da liễu thú y', 'Chứng chỉ dị ứng học'],
-        rating: 4.9,
-        reviewCount: 203,
-        workingDays: [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-        ],
-        workingHours: '09:00-18:00',
-        isAvailable: true,
-        serviceIds: ['2', '5', '6'],
-      ),
-      DoctorModel(
-        id: '3',
-        name: 'Dr. Lê Văn C',
-        specialization: 'Phẫu thuật thú y',
-        specializations: ['Phẫu thuật', 'Chấn thương', 'Chỉnh hình'],
-        experience: '15 năm',
-        education: 'Đại học Thú y Hà Nội',
-        imageUrl: 'https://example.com/doctor3.jpg',
-        description: 'Bác sĩ phẫu thuật thú y có kinh nghiệm lâu năm',
-        certifications: ['Chứng chỉ phẫu thuật thú y', 'Chứng chỉ chỉnh hình'],
-        rating: 4.7,
-        reviewCount: 89,
-        workingDays: ['Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        workingHours: '10:00-19:00',
-        isAvailable: true,
-        serviceIds: ['3', '7', '8'],
-      ),
-    ];
+      return (response as List)
+          .map((json) => DoctorModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Lỗi khi lấy tất cả bác sĩ: $e');
+    }
   }
 
   @override
