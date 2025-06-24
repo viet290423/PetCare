@@ -260,7 +260,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
-                      height: 280,
+                      height: 390,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: doctorViewModel.doctors.length,
@@ -576,7 +576,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           children: [
             // Doctor image placeholder
             Container(
-              height: 80,
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.grey[200],

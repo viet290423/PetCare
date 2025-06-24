@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
+import 'package:petcare/presentation/ui/user/petScreen/PetDetailScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -51,7 +52,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, authViewModel, petViewModel, child) {
           // Kiểm tra trạng thái loading của cả hai view model
           if (authViewModel.isLoading || petViewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: Colors.green,));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.green),
+            );
           }
 
           // Kiểm tra user
@@ -192,7 +195,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: Colors.orange,
                 title: 'Quản lý thú cưng',
                 subtitle: 'Xem & chỉnh sửa hồ sơ thú cưng',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => PetDetailScreen()),
+                  );
+                },
               ),
               _buildProfileCard(
                 context,
