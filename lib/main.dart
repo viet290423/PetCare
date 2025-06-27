@@ -10,6 +10,8 @@ import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceViewModel.dart';
 import 'package:petcare/presentation/ui/disease/DiseaseViewModel.dart';
+import 'package:petcare/services/noti_service.dart';
+import 'package:petcare/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:petcare/di/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,6 +25,13 @@ void main() async {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyZW92ZmtrZGdxc294ZnFwaHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzY0MzUsImV4cCI6MjA2MjM1MjQzNX0.WyKpgn6XHC1PuZTju-LqDr_D7T1BWVt0r5KRkWDqnjs',
   );
   await di.init();
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+  NotiService().initNotification();
+
+  print('Main: Requesting notification permissions...');
+  final permissionGranted = await notificationService.requestPermissions();
+  print('Main: Notification permission granted: $permissionGranted');
 
   runApp(const MyApp());
 }
@@ -39,7 +48,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => di.sl<PetViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<ServicesViewModel>()),
         ChangeNotifierProvider(create: (_) => DiseaseViewModel()),
-        ChangeNotifierProvider(create: (_) =>  di.sl<DoctorViewModel>()),
+        ChangeNotifierProvider(create: (_) => di.sl<DoctorViewModel>()),
       ],
       child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
     );

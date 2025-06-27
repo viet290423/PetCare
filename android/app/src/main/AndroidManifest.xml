@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"
+        tools:ignore="ExactAlarm" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name="${applicationName}"
@@ -81,24 +84,27 @@
         </activity>
 
         <!-- Thêm receiver cho thông báo -->
-<!--        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED"/>-->
-<!--                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>-->
-<!--                <action android:name="android.intent.action.PACKAGE_REPLACED" android:dataScheme="package"/>-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
 
-<!--        &lt;!&ndash; Thêm service cho thông báo &ndash;&gt;-->
-<!--        <service-->
-<!--            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        -->
-<!--            android:exported="false"-->
-<!--            android:stopWithTask="false"/>-->
-<!--        <service-->
-<!--            android:name="com.dexterous.flutterlocalnotifications.BackgroundService"        -->
-<!--            android:exported="false"-->
-<!--            android:stopWithTask="false"/>-->
+        <!-- Thêm service cho thông báo -->
+        <service
+            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
+            android:exported="false"
+            android:stopWithTask="false"/>
+        <service
+            android:name="com.dexterous.flutterlocalnotifications.BackgroundService"        
+            android:exported="false"
+            android:stopWithTask="false"/>
 
     </application>
     <!-- Required to query activities that can process text, see:

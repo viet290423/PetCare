@@ -9,6 +9,7 @@ import '../../pet/AddPetScreen.dart';
 import '../../pet/AddReminderScreen.dart';
 import '../homeScreen/UserHomeViewModel.dart';
 import '../../pet/PetViewModel.dart';
+import '../../../../services/notification_service.dart';
 
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
@@ -17,8 +18,7 @@ class PetScreen extends StatefulWidget {
   State<PetScreen> createState() => _PetScreenState();
 }
 
-class _PetScreenState extends State<PetScreen>
-    with SingleTickerProviderStateMixin {
+class _PetScreenState extends State<PetScreen> with SingleTickerProviderStateMixin {
   bool _isInitialized = false;
   late TabController _tabController;
 
@@ -57,10 +57,7 @@ class _PetScreenState extends State<PetScreen>
         viewModel.clearCache(); // Xóa cache
         viewModel.fetchPets(forceRefresh: true);
         viewModel.fetchReminders(viewModel.selectedPetId!, forceRefresh: true);
-        viewModel.fetchAppointments(
-          viewModel.selectedPetId!,
-          forceRefresh: true,
-        );
+        viewModel.fetchAppointments(viewModel.selectedPetId!, forceRefresh: true);
       }
     }
   }
@@ -84,10 +81,7 @@ class _PetScreenState extends State<PetScreen>
         final pets = viewModel.pets;
         final selectedPet =
             pets.isNotEmpty
-                ? pets.firstWhere(
-                  (p) => p.id == viewModel.selectedPetId,
-                  orElse: () => pets.first,
-                )
+                ? pets.firstWhere((p) => p.id == viewModel.selectedPetId, orElse: () => pets.first)
                 : null;
 
         return Scaffold(
@@ -99,10 +93,7 @@ class _PetScreenState extends State<PetScreen>
             title: Row(
               children: [
                 if (selectedPet != null)
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(selectedPet.imageUrl),
-                  ),
+                  CircleAvatar(radius: 18, backgroundImage: NetworkImage(selectedPet.imageUrl)),
                 if (selectedPet != null) const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -122,31 +113,24 @@ class _PetScreenState extends State<PetScreen>
           ),
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 0.0,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Thanh chọn thú cưng dạng card trượt ngang
                   SizedBox(
-                    height: 150,
+                    height: 160,
                     child:
                         pets.isEmpty
                             ? Center(child: Text('Chưa có thú cưng nào.'))
                             : ListView.separated(
                               scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               itemCount: pets.length,
-                              separatorBuilder:
-                                  (_, __) => const SizedBox(width: 16),
+                              separatorBuilder: (_, __) => const SizedBox(width: 16),
                               itemBuilder: (context, index) {
                                 final pet = pets[index];
-                                final isSelected =
-                                    pet.id == viewModel.selectedPetId;
+                                final isSelected = pet.id == viewModel.selectedPetId;
                                 return AnimatedContainer(
                                   duration: const Duration(milliseconds: 250),
                                   curve: Curves.easeInOut,
@@ -158,12 +142,9 @@ class _PetScreenState extends State<PetScreen>
                                       setState(() {});
                                     },
                                     child: Material(
-                                      elevation: isSelected ? 8 : 2,
+                                      elevation: isSelected ? 4 : 2,
                                       borderRadius: BorderRadius.circular(24),
-                                      color:
-                                          isSelected
-                                              ? Colors.green.shade50
-                                              : Colors.white,
+                                      color: isSelected ? Colors.green.shade50 : Colors.white,
                                       child: Container(
                                         width: 110,
                                         padding: const EdgeInsets.symmetric(
@@ -171,26 +152,18 @@ class _PetScreenState extends State<PetScreen>
                                           horizontal: 8,
                                         ),
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
+                                          borderRadius: BorderRadius.circular(24),
                                           border: Border.all(
-                                            color:
-                                                isSelected
-                                                    ? Colors.green
-                                                    : Colors.grey.shade200,
-                                            width: isSelected ? 2.5 : 1.2,
+                                            color: isSelected ? Colors.green : Colors.grey.shade200,
+                                            width: isSelected ? 2 : 1,
                                           ),
                                         ),
                                         child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             CircleAvatar(
                                               radius: 36,
-                                              backgroundImage: NetworkImage(
-                                                pet.imageUrl,
-                                              ),
+                                              backgroundImage: NetworkImage(pet.imageUrl),
                                               backgroundColor: Colors.grey[200],
                                             ),
                                             const SizedBox(height: 10),
@@ -200,9 +173,7 @@ class _PetScreenState extends State<PetScreen>
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16,
                                                 color:
-                                                    isSelected
-                                                        ? Colors.green[800]
-                                                        : Colors.black87,
+                                                    isSelected ? Colors.green[800] : Colors.black87,
                                               ),
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
@@ -217,16 +188,12 @@ class _PetScreenState extends State<PetScreen>
                             ),
                   ),
                   const SizedBox(height: 18),
-                  // TabBar đơn giản, underline bo tròn
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: TabBar(
                       controller: _tabController,
                       indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                          color: Colors.green[700]!,
-                          width: 4,
-                        ),
+                        borderSide: BorderSide(color: Colors.green[700]!, width: 4),
                         borderRadius: BorderRadius.circular(8),
                         insets: const EdgeInsets.symmetric(horizontal: 24),
                       ),
@@ -237,11 +204,7 @@ class _PetScreenState extends State<PetScreen>
                         fontSize: 16,
                         letterSpacing: 0.5,
                       ),
-                      tabs: const [
-                        Tab(text: 'TO-DOS'),
-                        Tab(text: 'TIPS'),
-                        Tab(text: 'RECORDS'),
-                      ],
+                      tabs: const [Tab(text: 'TO-DOS'), Tab(text: 'TIPS'), Tab(text: 'RECORDS')],
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -250,38 +213,28 @@ class _PetScreenState extends State<PetScreen>
                       controller: _tabController,
                       children: [
                         viewModel.selectedPetId == null
-                            ? const Center(
-                              child: Text('Hãy chọn thú cưng để xem nhắc nhở'),
-                            )
+                            ? const Center(child: Text('Hãy chọn thú cưng để xem nhắc nhở'))
                             : Consumer<UserHomeViewModel>(
                               builder: (context, viewModel, _) {
                                 final reminders = viewModel.reminders;
                                 final appointments = viewModel.appointments;
 
                                 return SingleChildScrollView(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
                                               Container(
                                                 decoration: BoxDecoration(
                                                   color: Colors.green.shade100,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
+                                                  borderRadius: BorderRadius.circular(10),
                                                 ),
-                                                padding: const EdgeInsets.all(
-                                                  6,
-                                                ),
+                                                padding: const EdgeInsets.all(6),
                                                 child: const Icon(
                                                   Icons.calendar_month_outlined,
                                                   color: Colors.green,
@@ -300,31 +253,24 @@ class _PetScreenState extends State<PetScreen>
                                           ),
                                           IconButton(
                                             onPressed: () async {
-                                              final result =
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder:
-                                                          (_) =>
-                                                              AddReminderScreen(
-                                                                pets:
-                                                                    viewModel
-                                                                        .pets,
-                                                              ),
-                                                    ),
-                                                  );
+                                              final result = await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (_) =>
+                                                          AddReminderScreen(pets: viewModel.pets),
+                                                ),
+                                              );
                                               if (result == true &&
-                                                  viewModel.selectedPetId !=
-                                                      null) {
+                                                  viewModel.selectedPetId != null) {
                                                 await viewModel.fetchReminders(
                                                   viewModel.selectedPetId!,
                                                   forceRefresh: true,
                                                 );
-                                                await viewModel
-                                                    .fetchAppointments(
-                                                      viewModel.selectedPetId!,
-                                                      forceRefresh: true,
-                                                    );
+                                                await viewModel.fetchAppointments(
+                                                  viewModel.selectedPetId!,
+                                                  forceRefresh: true,
+                                                );
                                               }
                                             },
                                             icon: const Icon(
@@ -340,9 +286,7 @@ class _PetScreenState extends State<PetScreen>
                                         Center(
                                           child: Text(
                                             'Không có nhắc nhở nào.',
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
-                                            ),
+                                            style: TextStyle(color: Colors.grey[600]),
                                           ),
                                         )
                                       else ...[
@@ -350,67 +294,54 @@ class _PetScreenState extends State<PetScreen>
                                             .take(2)
                                             .map(
                                               (r) => Padding(
-                                                padding: const EdgeInsets.only(
-                                                  bottom: 10,
-                                                ),
+                                                padding: const EdgeInsets.only(bottom: 10),
                                                 child: Slidable(
                                                   endActionPane: ActionPane(
-                                                    motion:
-                                                        const ScrollMotion(),
+                                                    motion: const ScrollMotion(),
                                                     children: [
                                                       SlidableAction(
-                                                        onPressed: (
-                                                          context,
-                                                        ) async {
-                                                          final confirm = await showDialog<
-                                                            bool
-                                                          >(
+                                                        onPressed: (context) async {
+                                                          final confirm = await showDialog<bool>(
                                                             context: context,
                                                             builder:
-                                                                (
-                                                                  context,
-                                                                ) => AlertDialog(
-                                                                  title: const Text(
-                                                                    'Xác nhận xóa',
+                                                                (context) => AlertDialog(
+                                                                  title: const Text('Xác nhận xóa'),
+                                                                  content: const Text(
+                                                                    'Bạn có chắc muốn xóa nhắc nhở này?',
                                                                   ),
-                                                                  content:
-                                                                      const Text(
-                                                                        'Bạn có chắc muốn xóa nhắc nhở này?',
-                                                                      ),
                                                                   actions: [
                                                                     TextButton(
                                                                       onPressed:
                                                                           () => Navigator.of(
                                                                             context,
-                                                                          ).pop(
-                                                                            false,
-                                                                          ),
-                                                                      child:
-                                                                          const Text(
-                                                                            'Hủy',
-                                                                          ),
+                                                                          ).pop(false),
+                                                                      child: const Text('Hủy'),
                                                                     ),
                                                                     TextButton(
                                                                       onPressed:
                                                                           () => Navigator.of(
                                                                             context,
-                                                                          ).pop(
-                                                                            true,
-                                                                          ),
-                                                                      child:
-                                                                          const Text(
-                                                                            'Xóa',
-                                                                          ),
+                                                                          ).pop(true),
+                                                                      child: const Text('Xóa'),
                                                                     ),
                                                                   ],
                                                                 ),
                                                           );
                                                           if (confirm == true) {
                                                             try {
-                                                              await viewModel
-                                                                  .deleteReminder(
-                                                                    r.id,
+                                                              // Xóa thông báo trước
+                                                              final notificationService =
+                                                                  NotificationService();
+                                                              await notificationService
+                                                                  .cancelNotification(
+                                                                    r.id.hashCode,
                                                                   );
+                                                              print(
+                                                                'PetScreen: Cancelled notification for reminder: ${r.id}',
+                                                              );
+
+                                                              // Sau đó xóa reminder từ database
+                                                              await viewModel.deleteReminder(r.id);
                                                               ScaffoldMessenger.of(
                                                                 context,
                                                               ).showSnackBar(
@@ -418,31 +349,21 @@ class _PetScreenState extends State<PetScreen>
                                                                   content: Row(
                                                                     children: [
                                                                       const Icon(
-                                                                        Icons
-                                                                            .check_circle,
-                                                                        color:
-                                                                            Colors.white,
+                                                                        Icons.check_circle,
+                                                                        color: Colors.white,
                                                                       ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            8,
-                                                                      ),
+                                                                      const SizedBox(width: 8),
                                                                       const Text(
                                                                         'Xóa nhắc nhở thành công!',
                                                                       ),
                                                                     ],
                                                                   ),
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .green,
+                                                                  backgroundColor: Colors.green,
                                                                   behavior:
-                                                                      SnackBarBehavior
-                                                                          .floating,
+                                                                      SnackBarBehavior.floating,
                                                                   shape: RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          10,
-                                                                        ),
+                                                                        BorderRadius.circular(10),
                                                                   ),
                                                                 ),
                                                               );
@@ -454,76 +375,49 @@ class _PetScreenState extends State<PetScreen>
                                                                   content: Row(
                                                                     children: [
                                                                       const Icon(
-                                                                        Icons
-                                                                            .error_outline,
-                                                                        color:
-                                                                            Colors.white,
+                                                                        Icons.error_outline,
+                                                                        color: Colors.white,
                                                                       ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            8,
-                                                                      ),
+                                                                      const SizedBox(width: 8),
                                                                       Text(
                                                                         'Lỗi khi xóa nhắc nhở: $e',
                                                                       ),
                                                                     ],
                                                                   ),
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .red,
+                                                                  backgroundColor: Colors.red,
                                                                   behavior:
-                                                                      SnackBarBehavior
-                                                                          .floating,
+                                                                      SnackBarBehavior.floating,
                                                                   shape: RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          10,
-                                                                        ),
+                                                                        BorderRadius.circular(10),
                                                                   ),
                                                                 ),
                                                               );
                                                             }
                                                           }
                                                         },
-                                                        backgroundColor:
-                                                            Colors.red,
-                                                        foregroundColor:
-                                                            Colors.white,
+                                                        backgroundColor: Colors.red,
+                                                        foregroundColor: Colors.white,
                                                         icon: Icons.delete,
                                                         label: 'Delete',
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              20,
-                                                            ),
+                                                        borderRadius: BorderRadius.circular(20),
                                                         flex: 1,
                                                       ),
                                                     ],
                                                   ),
                                                   child: Card(
-                                                    elevation: 4,
+                                                    elevation: 2,
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            18,
-                                                          ),
+                                                      borderRadius: BorderRadius.circular(18),
                                                     ),
                                                     color: Colors.white,
                                                     child: ListTile(
                                                       leading: Container(
                                                         decoration: BoxDecoration(
-                                                          color:
-                                                              Colors
-                                                                  .green
-                                                                  .shade100,
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                12,
-                                                              ),
+                                                          color: Colors.green.shade100,
+                                                          borderRadius: BorderRadius.circular(12),
                                                         ),
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              6,
-                                                            ),
+                                                        padding: const EdgeInsets.all(6),
                                                         child: const Icon(
                                                           CupertinoIcons.bell,
                                                           color: Colors.green,
@@ -533,77 +427,45 @@ class _PetScreenState extends State<PetScreen>
                                                       title: Text(
                                                         r.title,
                                                         style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                          fontWeight: FontWeight.bold,
                                                           fontSize: 16,
                                                         ),
                                                       ),
                                                       subtitle: Padding(
-                                                        padding:
-                                                            const EdgeInsets.only(
-                                                              top: 4.0,
-                                                            ),
+                                                        padding: const EdgeInsets.only(top: 4.0),
                                                         child: Row(
                                                           children: [
                                                             const Icon(
-                                                              CupertinoIcons
-                                                                  .tag_solid,
-                                                              color:
-                                                                  Colors.green,
+                                                              CupertinoIcons.tag_solid,
+                                                              color: Colors.green,
                                                               size: 14,
                                                             ),
-                                                            const SizedBox(
-                                                              width: 1,
-                                                            ),
+                                                            const SizedBox(width: 1),
                                                             Text(
                                                               r.type,
-                                                              style:
-                                                                  const TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                  ),
+                                                              style: const TextStyle(fontSize: 13),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 10,
-                                                            ),
+                                                            const SizedBox(width: 10),
                                                             const Icon(
-                                                              CupertinoIcons
-                                                                  .calendar,
-                                                              color:
-                                                                  Colors.green,
+                                                              CupertinoIcons.calendar,
+                                                              color: Colors.green,
                                                               size: 14,
                                                             ),
-                                                            const SizedBox(
-                                                              width: 2,
-                                                            ),
+                                                            const SizedBox(width: 2),
                                                             Text(
                                                               "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
-                                                              style:
-                                                                  const TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                  ),
+                                                              style: const TextStyle(fontSize: 13),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 10,
-                                                            ),
+                                                            const SizedBox(width: 10),
                                                             const Icon(
-                                                              CupertinoIcons
-                                                                  .repeat,
-                                                              color:
-                                                                  Colors.green,
+                                                              CupertinoIcons.repeat,
+                                                              color: Colors.green,
                                                               size: 14,
                                                             ),
-                                                            const SizedBox(
-                                                              width: 2,
-                                                            ),
+                                                            const SizedBox(width: 2),
                                                             Text(
                                                               r.repeatType,
-                                                              style:
-                                                                  const TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                  ),
+                                                              style: const TextStyle(fontSize: 13),
                                                             ),
                                                           ],
                                                         ),
@@ -621,17 +483,13 @@ class _PetScreenState extends State<PetScreen>
                                                   context: context,
                                                   isScrollControlled: true,
                                                   shape: const RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.vertical(
-                                                          top: Radius.circular(
-                                                            16,
-                                                          ),
-                                                        ),
+                                                    borderRadius: BorderRadius.vertical(
+                                                      top: Radius.circular(16),
+                                                    ),
                                                   ),
                                                   builder:
-                                                      (_) => _AllRemindersSheet(
-                                                        reminders: reminders,
-                                                      ),
+                                                      (_) =>
+                                                          _AllRemindersSheet(reminders: reminders),
                                                 );
                                               },
                                               child: const Text(
@@ -646,20 +504,16 @@ class _PetScreenState extends State<PetScreen>
                                       ],
                                       const SizedBox(height: 24),
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
                                               Container(
                                                 decoration: BoxDecoration(
                                                   color: Colors.green.shade100,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
+                                                  borderRadius: BorderRadius.circular(10),
                                                 ),
-                                                padding: const EdgeInsets.all(
-                                                  6,
-                                                ),
+                                                padding: const EdgeInsets.all(6),
                                                 child: const Icon(
                                                   Icons.event_available,
                                                   color: Colors.green,
@@ -683,9 +537,7 @@ class _PetScreenState extends State<PetScreen>
                                         Center(
                                           child: Text(
                                             'Không có lịch hẹn nào.',
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
-                                            ),
+                                            style: TextStyle(color: Colors.grey[600]),
                                           ),
                                         )
                                       else ...[
@@ -693,34 +545,20 @@ class _PetScreenState extends State<PetScreen>
                                             .take(2)
                                             .map(
                                               (a) => Padding(
-                                                padding: const EdgeInsets.only(
-                                                  bottom: 10,
-                                                ),
+                                                padding: const EdgeInsets.only(bottom: 10),
                                                 child: Card(
-                                                  elevation: 4,
+                                                  elevation: 2,
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          18,
-                                                        ),
+                                                    borderRadius: BorderRadius.circular(18),
                                                   ),
                                                   color: Colors.white,
                                                   child: ListTile(
                                                     leading: Container(
                                                       decoration: BoxDecoration(
-                                                        color:
-                                                            Colors
-                                                                .green
-                                                                .shade100,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              12,
-                                                            ),
+                                                        color: Colors.green.shade100,
+                                                        borderRadius: BorderRadius.circular(12),
                                                       ),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                            8,
-                                                          ),
+                                                      padding: const EdgeInsets.all(8),
                                                       child: const Icon(
                                                         CupertinoIcons.calendar,
                                                         color: Colors.green,
@@ -732,34 +570,28 @@ class _PetScreenState extends State<PetScreen>
                                                           ? a.serviceTitle!
                                                           : 'Lịch hẹn #${a.id}',
                                                       style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                        fontWeight: FontWeight.bold,
                                                         fontSize: 16,
                                                       ),
                                                     ),
                                                     subtitle: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                            top: 4.0,
-                                                          ),
+                                                      padding: const EdgeInsets.only(top: 4.0),
                                                       child: Column(
                                                         crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                            CrossAxisAlignment.start,
                                                         children: [
                                                           Text(
                                                             'Thời gian: ${a.appointmentTime.toString().substring(0, 16)}',
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 13,
-                                                                ),
+                                                            style: const TextStyle(fontSize: 13),
                                                           ),
+                                                          if (a.doctorName != null)
+                                                            Text(
+                                                              'Bác sĩ: ${a.doctorName}',
+                                                              style: const TextStyle(fontSize: 13),
+                                                            ),
                                                           Text(
                                                             'Trạng thái: ${a.status}',
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 13,
-                                                                ),
+                                                            style: const TextStyle(fontSize: 13),
                                                           ),
                                                         ],
                                                       ),
@@ -776,19 +608,14 @@ class _PetScreenState extends State<PetScreen>
                                                   context: context,
                                                   isScrollControlled: true,
                                                   shape: const RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.vertical(
-                                                          top: Radius.circular(
-                                                            16,
-                                                          ),
-                                                        ),
+                                                    borderRadius: BorderRadius.vertical(
+                                                      top: Radius.circular(16),
+                                                    ),
                                                   ),
                                                   builder:
-                                                      (_) =>
-                                                          _AllAppointmentsSheet(
-                                                            appointments:
-                                                                appointments,
-                                                          ),
+                                                      (_) => _AllAppointmentsSheet(
+                                                        appointments: appointments,
+                                                      ),
                                                 );
                                               },
                                               child: const Text(
@@ -811,18 +638,11 @@ class _PetScreenState extends State<PetScreen>
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.lightbulb_outline,
-                                color: Colors.green[400],
-                                size: 60,
-                              ),
+                              Icon(Icons.lightbulb_outline, color: Colors.green[400], size: 60),
                               const SizedBox(height: 16),
                               const Text(
                                 'Tips chăm sóc thú cưng sẽ xuất hiện ở đây!',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -833,18 +653,11 @@ class _PetScreenState extends State<PetScreen>
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.insert_chart_outlined,
-                                color: Colors.green[400],
-                                size: 60,
-                              ),
+                              Icon(Icons.insert_chart_outlined, color: Colors.green[400], size: 60),
                               const SizedBox(height: 16),
                               const Text(
                                 'Lịch sử & hồ sơ thú cưng sẽ xuất hiện ở đây!',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -893,33 +706,16 @@ class _AllRemindersSheet extends StatelessWidget {
                     final r = reminders[index];
                     return Card(
                       child: ListTile(
-                        leading: const Icon(
-                          CupertinoIcons.bell,
-                          color: Colors.green,
-                        ),
+                        leading: const Icon(CupertinoIcons.bell, color: Colors.green),
                         title: Text(r.title),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(
-                              CupertinoIcons.tag_solid,
-                              color: Colors.green,
-                              size: 12,
-                            ),
+                            const Icon(CupertinoIcons.tag_solid, color: Colors.green, size: 12),
                             Text(r.type),
-                            const Icon(
-                              CupertinoIcons.calendar,
-                              color: Colors.green,
-                              size: 12,
-                            ),
-                            Text(
-                              "${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}",
-                            ),
-                            const Icon(
-                              CupertinoIcons.repeat,
-                              color: Colors.green,
-                              size: 12,
-                            ),
+                            const Icon(CupertinoIcons.calendar, color: Colors.green, size: 12),
+                            Text("${r.dateTime.day}/${r.dateTime.month}/${r.dateTime.year}"),
+                            const Icon(CupertinoIcons.repeat, color: Colors.green, size: 12),
                             Text(r.repeatType),
                           ],
                         ),
@@ -966,22 +762,16 @@ class _AllAppointmentsSheet extends StatelessWidget {
                     final a = appointments[index];
                     return Card(
                       child: ListTile(
-                        leading: const Icon(
-                          CupertinoIcons.calendar,
-                          color: Colors.green,
-                        ),
+                        leading: const Icon(CupertinoIcons.calendar, color: Colors.green),
                         title: Text(
-                          a.serviceTitle != null
-                              ? a.serviceTitle!
-                              : 'Lịch hẹn #${a.id}',
+                          a.serviceTitle != null ? a.serviceTitle! : 'Lịch hẹn #${a.id}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Thời gian: ${a.appointmentTime.toString().substring(0, 16)}',
-                            ),
+                            Text('Thời gian: ${a.appointmentTime.toString().substring(0, 16)}'),
+                            if (a.doctorName != null) Text('Bác sĩ: ${a.doctorName}'),
                             Text('Trạng thái: ${a.status}'),
                           ],
                         ),

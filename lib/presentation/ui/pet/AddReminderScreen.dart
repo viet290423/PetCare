@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../data/model/PetModel.dart';
 import '../../../data/model/ReminderModel.dart';
+import '../../../services/notification_service.dart';
 
 class AddReminderScreen extends StatefulWidget {
   final List<PetModel> pets;
@@ -78,6 +79,14 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         _selectedTime!.minute,
       );
 
+      print(
+        'AddReminderScreen: Creating reminder for ${selectedPet!.name} at $dateTime',
+      );
+      print(
+        'AddReminderScreen: DateTime timezone offset: ${dateTime.timeZoneOffset}',
+      );
+      print('AddReminderScreen: DateTime isUtc: ${dateTime.isUtc}');
+
       final reminder = ReminderModel(
         id: const Uuid().v4(),
         petId: selectedPet!.id,
@@ -92,13 +101,48 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       await viewModel.addReminder(reminder);
 
       if (viewModel.error == null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã tạo nhắc nhở thành công!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context, true);
+        print('AddReminderScreen: No error, scheduling notification...');
+
+        try {
+          // Kiểm tra quyền thông báo
+          final notificationService = NotificationService();
+          final hasPermission = await notificationService.requestPermissions();
+
+          if (hasPermission) {
+            await notificationService.scheduleNotification(reminder);
+            print('AddReminderScreen: Notification scheduled successfully');
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Đã tạo nhắc nhở thành công!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else {
+            print('AddReminderScreen: Notification permission denied');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Đã tạo nhắc nhở nhưng cần cấp quyền thông báo để nhận nhắc nhở',
+                ),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+
+          Navigator.pop(context, true);
+        } catch (e) {
+          print('AddReminderScreen: Error scheduling notification: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Đã tạo nhắc nhở nhưng có lỗi khi lên lịch thông báo: $e',
+              ),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          Navigator.pop(context, true);
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(viewModel.error ?? 'Lỗi không xác định')),

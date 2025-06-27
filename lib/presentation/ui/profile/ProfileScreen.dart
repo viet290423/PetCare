@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:petcare/services/noti_service.dart';
 import 'package:provider/provider.dart';
 import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
@@ -43,7 +44,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.black87),
             onPressed: () {
-              // TODO: Chuyển đến màn cài đặt
+              NotiService().scheduleNotification(
+                id: 1,
+                title: 'Thông báo',
+                body: 'Đây là thông báo từ PetCare',
+              );
             },
           ),
         ],
