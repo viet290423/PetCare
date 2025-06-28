@@ -45,9 +45,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: const Icon(Icons.settings, color: Colors.black87),
             onPressed: () {
               NotiService().scheduleNotification(
-                id: 1,
                 title: 'Thông báo',
                 body: 'Đây là thông báo từ PetCare',
+                hour: 16,
+                minute: 40,
               );
             },
           ),

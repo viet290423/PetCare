@@ -1,8 +1,11 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../data/model/ReminderModel.dart';
 import 'dart:io';
+import 'dart:convert';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -10,34 +13,74 @@ class NotificationService {
   NotificationService._internal();
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
     try {
       print('NotificationService: Initializing...');
-
-      // Khởi tạo timezone
       tz.initializeTimeZones();
-      print('NotificationService: Timezone initialized');
+      final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(currentTimeZone));
 
       const AndroidInitializationSettings initializationSettingsAndroid =
-          AndroidInitializationSettings('@mipmap-hdpi/ic_launcher');
+      AndroidInitializationSettings('@drawable/img');
 
       const InitializationSettings initializationSettings =
-          InitializationSettings(android: initializationSettingsAndroid);
+      InitializationSettings(android: initializationSettingsAndroid);
 
       await _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
-        onDidReceiveNotificationResponse: (response) {
+        onDidReceiveNotificationResponse: (response) async {
           print(
             'NotificationService: Notification clicked: ${response.payload}',
           );
+          if (response.payload != null) {
+            try {
+              final data = jsonDecode(response.payload!);
+              final reminderId = data['id'] as String?;
+              final repeatType = data['repeatType'] as String?;
+
+              if (reminderId != null && repeatType == 'Không lặp lại') {
+                // Xóa thông báo
+                await _flutterLocalNotificationsPlugin.cancel(
+                  reminderId.hashCode,
+                );
+                print(
+                  'NotificationService: Cancelled one-time notification with id: $reminderId',
+                );
+
+                // Xóa nhắc nhở khỏi Supabase
+                await deleteReminderFromDb(reminderId);
+              }
+            } catch (e) {
+              print('NotificationService: Error processing notification response: $e');
+            }
+          }
         },
       );
+
+      final androidImplementation = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+      >();
+
+      await androidImplementation?.requestExactAlarmsPermission();
+      print('NotificationService: Exact alarms permission requested');
 
       print('NotificationService: Initialization completed successfully');
     } catch (e) {
       print('NotificationService: Error during initialization: $e');
+    }
+  }
+
+  static Future<void> deleteReminderFromDb(String reminderId) async {
+    try {
+      final client = Supabase.instance.client;
+      await client.from('reminders').delete().eq('id', reminderId);
+      print('NotificationService: Deleted reminder $reminderId from database');
+    } catch (e) {
+      print('NotificationService: Error deleting reminder from db: $e');
+      throw e; // Ném lỗi để xử lý nếu cần
     }
   }
 
@@ -47,13 +90,13 @@ class NotificationService {
 
       if (Platform.isAndroid) {
         final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-            _flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin
-                >();
+        _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+        >();
 
-        final bool? granted =
-            await androidImplementation?.requestNotificationsPermission();
+        final bool? granted = await androidImplementation
+            ?.requestNotificationsPermission();
         print('NotificationService: Permission granted: $granted');
         return granted ?? false;
       }
@@ -64,7 +107,10 @@ class NotificationService {
     }
   }
 
-  Future<void> scheduleNotification(ReminderModel reminder) async {
+  Future<void> scheduleNotification(
+      ReminderModel reminder, {
+        String? petName,
+      }) async {
     try {
       print(
         'NotificationService: Scheduling notification for reminder: ${reminder.id}',
@@ -79,16 +125,16 @@ class NotificationService {
       }
 
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-            'reminder_channel_id',
-            'Reminders',
-            channelDescription: 'Channel for pet care reminders',
-            importance: Importance.max,
-            priority: Priority.high,
-            showWhen: true,
-            enableVibration: true,
-            playSound: true,
-          );
+      AndroidNotificationDetails(
+        'reminder_channel_id',
+        'Reminders',
+        channelDescription: 'Channel for pet care reminders',
+        importance: Importance.max,
+        priority: Priority.high,
+        showWhen: true,
+        enableVibration: true,
+        playSound: true,
+      );
 
       const NotificationDetails platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
@@ -122,26 +168,35 @@ class NotificationService {
 
       print('NotificationService: Vietnam timezone: ${vietnamLocation.name}');
       print('NotificationService: Scheduled date (Vietnam): $scheduledDate');
-      print(
-        'NotificationService: Scheduled date (UTC): ${scheduledDate.toUtc()}',
-      );
+
+      final title = '${reminder.type} - ${petName ?? ''}';
+      final body =
+          '${reminder.title} cho thú cưng ${petName ?? ''} vào lúc '
+          '${reminder.dateTime.hour.toString().padLeft(2, '0')}:${reminder.dateTime.minute.toString().padLeft(2, '0')} '
+          'ngày ${reminder.dateTime.day}/${reminder.dateTime.month}/${reminder.dateTime.year}'
+          '${reminder.description != null && reminder.description!.isNotEmpty ? '\n${reminder.description}' : ''}';
 
       await _flutterLocalNotificationsPlugin.zonedSchedule(
         reminder.id.hashCode,
-        reminder.title,
-        reminder.description ?? 'Bạn có lời nhắc cho ${reminder.type}',
+        title,
+        body,
         scheduledDate,
         platformChannelSpecifics,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        payload: reminder.id,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        payload: jsonEncode({
+          'id': reminder.id,
+          'repeatType': reminder.repeatType,
+        }),
         matchDateTimeComponents: matchDateTimeComponents,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
       );
 
       print('NotificationService: Notification scheduled successfully');
 
       // Kiểm tra xem notification có được lên lịch không
       final pendingNotifications =
-          await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+      await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
       print(
         'NotificationService: Total pending notifications: ${pendingNotifications.length}',
       );
@@ -171,8 +226,8 @@ class NotificationService {
 
   Future<List<PendingNotificationRequest>> getPendingNotifications() async {
     try {
-      final pendingNotifications =
-          await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+      final pendingNotifications = await _flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
       print(
         'NotificationService: Found ${pendingNotifications.length} pending notifications',
       );

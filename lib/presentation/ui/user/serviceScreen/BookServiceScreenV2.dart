@@ -454,7 +454,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
               ],
             ),
             const SizedBox(height: 16),
-            child,
+            Center(child: child),
           ],
         ),
       ),

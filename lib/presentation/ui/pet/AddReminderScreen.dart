@@ -102,16 +102,16 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
       if (viewModel.error == null && context.mounted) {
         print('AddReminderScreen: No error, scheduling notification...');
-
         try {
           // Kiểm tra quyền thông báo
           final notificationService = NotificationService();
           final hasPermission = await notificationService.requestPermissions();
-
           if (hasPermission) {
-            await notificationService.scheduleNotification(reminder);
+            await notificationService.scheduleNotification(
+              reminder,
+              petName: selectedPet!.name,
+            );
             print('AddReminderScreen: Notification scheduled successfully');
-
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Đã tạo nhắc nhở thành công!'),
@@ -129,7 +129,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               ),
             );
           }
-
           Navigator.pop(context, true);
         } catch (e) {
           print('AddReminderScreen: Error scheduling notification: $e');
@@ -198,15 +197,13 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                isSelected
-                                    ? Colors.green.shade100
-                                    : Colors.white,
+                            color: isSelected
+                                ? Colors.green.shade100
+                                : Colors.white,
                             border: Border.all(
-                              color:
-                                  isSelected
-                                      ? Colors.green.shade300
-                                      : Colors.grey.shade300,
+                              color: isSelected
+                                  ? Colors.green.shade300
+                                  : Colors.grey.shade300,
                               width: 1.5,
                             ),
                             borderRadius: BorderRadius.circular(10),
@@ -249,11 +246,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   CustomMyTextField(
                     hintText: "Tiêu đề *",
                     controller: _titleController,
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? 'Vui lòng nhập tiêu đề'
-                                : null,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Vui lòng nhập tiêu đề'
+                        : null,
                   ),
                 ],
               ),
@@ -275,27 +270,24 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               const SizedBox(height: 10),
               Wrap(
                 spacing: 10,
-                children:
-                    types
-                        .map(
-                          (type) => ChoiceChip(
-                            selectedColor: Colors.green.shade300,
-                            checkmarkColor: Colors.white,
-                            label: Text(
-                              type,
-                              style: TextStyle(
-                                color:
-                                    _selectedType == type
-                                        ? Colors.white
-                                        : Colors.black,
-                              ),
-                            ),
-                            selected: _selectedType == type,
-                            onSelected:
-                                (_) => setState(() => _selectedType = type),
+                children: types
+                    .map(
+                      (type) => ChoiceChip(
+                        selectedColor: Colors.green.shade300,
+                        checkmarkColor: Colors.white,
+                        label: Text(
+                          type,
+                          style: TextStyle(
+                            color: _selectedType == type
+                                ? Colors.white
+                                : Colors.black,
                           ),
-                        )
-                        .toList(),
+                        ),
+                        selected: _selectedType == type,
+                        onSelected: (_) => setState(() => _selectedType = type),
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 20),
               Row(
@@ -354,15 +346,12 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                     fontSize: 18,
                   ),
                 ),
-                items:
-                    repeatOptions
-                        .map(
-                          (option) => DropdownMenuItem(
-                            value: option,
-                            child: Text(option),
-                          ),
-                        )
-                        .toList(),
+                items: repeatOptions
+                    .map(
+                      (option) =>
+                          DropdownMenuItem(value: option, child: Text(option)),
+                    )
+                    .toList(),
                 onChanged: (value) => setState(() => _repeatType = value!),
               ),
               const SizedBox(height: 30),
