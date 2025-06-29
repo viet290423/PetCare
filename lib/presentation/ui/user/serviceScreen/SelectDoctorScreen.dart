@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/model/DoctorModel.dart';
 import '../../../../data/model/ServiceModel.dart';
-import '../../doctor/DoctorViewModel.dart';
+import '../../doctor/homeScreen/DoctorViewModel.dart';
 
 class SelectDoctorScreen extends StatefulWidget {
   final ServiceModel service;

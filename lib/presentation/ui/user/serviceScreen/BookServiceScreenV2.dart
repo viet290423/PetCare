@@ -13,7 +13,7 @@ import '../../../../data/model/DoctorModel.dart';
 import '../../pet/AddPetScreen.dart';
 import 'ServiceViewModel.dart';
 import 'SelectDoctorScreen.dart';
-import '../../doctor/DoctorViewModel.dart';
+import '../../doctor/homeScreen/DoctorViewModel.dart';
 
 class BookServiceScreenV2 extends StatefulWidget {
   final ServiceModel service;

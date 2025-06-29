@@ -2,35 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import '../../provider/AuthProvider.dart';
-import '../auth/AuthViewModel.dart';
-import '../auth/LoginScreen.dart';
-import '../../../data/model/AppointmentModel.dart';
-import '../../../data/model/DoctorModel.dart';
+import '../../../provider/AuthProvider.dart';
+import '../../auth/AuthViewModel.dart';
+import '../../auth/LoginScreen.dart';
+import '../../../../data/model/AppointmentModel.dart';
+import '../../../../data/model/DoctorModel.dart';
 import 'DoctorViewModel.dart';
+import '../AppointmentViewModel.dart';
 
 class DoctorHomeScreen extends StatefulWidget {
-  const DoctorHomeScreen({Key? key}) : super(key: key);
+  const DoctorHomeScreen({super.key});
 
   @override
   State<DoctorHomeScreen> createState() => _DoctorHomeScreenState();
 }
 
-class _DoctorHomeScreenState extends State<DoctorHomeScreen>
-    with TickerProviderStateMixin {
+class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   String _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  bool _hasFetchedAppointments = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadAppointments();
-  }
-
-  void _loadAppointments() {
-    // TODO: Load appointments for the current doctor
-    // This will be implemented when we have the appointment data source
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   final doctor = Provider.of<AuthViewModel>(context, listen: false).doctor;
+    //   print('Doctor in initState: $doctor');
+    //   print('Doctor ID in initState: ${doctor?.id}');
+    //   if (doctor != null) {
+    //     Provider.of<AppointmentViewModel>(
+    //       context,
+    //       listen: false,
+    //     ).fetchAppointmentsForDoctor(doctor.id);
+    //   }
+    //   print('Fetching appointments for doctor ID: ${doctor?.id}');
+    // });
   }
 
   @override
@@ -68,48 +75,83 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Header with stats
-          _buildHeaderSection(),
+      body: Consumer2<AuthViewModel, AppointmentViewModel>(
+        builder: (context, authViewModel, appointmentVM, child) {
+          final doctor = authViewModel.doctor;
+          print('Consumer doctor: $doctor');
+          print('Consumer doctor ID: ${doctor?.id}');
 
-          // Date selector
-          _buildDateSelector(),
-
-          // Tab bar
-          Container(
-            color: Colors.white,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Colors.green,
-              unselectedLabelColor: Colors.grey[600],
-              indicatorColor: Colors.green,
-              indicatorWeight: 3,
-              tabs: const [
-                Tab(text: 'Hôm nay'),
-                Tab(text: 'Sắp tới'),
-                Tab(text: 'Đã hoàn thành'),
-              ],
-            ),
-          ),
-
-          // Tab content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildTodayAppointments(),
-                _buildUpcomingAppointments(),
-                _buildCompletedAppointments(),
-              ],
-            ),
-          ),
-        ],
+          // Gọi fetchAppointmentsForDoctor chỉ khi chưa tải và doctor có giá trị
+          if (doctor != null && !_hasFetchedAppointments && appointmentVM.appointments.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!appointmentVM.isLoading) {
+                appointmentVM.fetchAppointmentsForDoctor(doctor.id);
+                setState(() {
+                  _hasFetchedAppointments = true; // Đánh dấu đã gọi
+                });
+              }
+            });
+          }
+          return Column(
+            children: [
+              _buildHeaderSection(doctor, appointmentVM),
+              _buildDateSelector(),
+              Container(
+                color: Colors.white,
+                child: TabBar(
+                  controller: _tabController,
+                  labelColor: Colors.green,
+                  unselectedLabelColor: Colors.grey[600],
+                  indicatorColor: Colors.green,
+                  indicatorWeight: 3,
+                  onTap: (index) {
+                    switch (index) {
+                      case 0:
+                        appointmentVM.setSelectedDate('today');
+                        break;
+                      case 1:
+                        appointmentVM.setSelectedDate('week');
+                        break;
+                      case 2:
+                        appointmentVM.setSelectedDate('all');
+                        break;
+                    }
+                  },
+                  tabs: const [
+                    Tab(text: 'Hôm nay'),
+                    Tab(text: 'Sắp tới'),
+                    Tab(text: 'Đã hoàn thành'),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    if (appointmentVM.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (appointmentVM.error != null) {
+                      return Center(child: Text('Lỗi: ${appointmentVM.error}'));
+                    }
+                    List<AppointmentModel> filtered = appointmentVM.filteredAppointments;
+                    if (_tabController.index == 2) {
+                      filtered = filtered
+                          .where((a) => a.status.toLowerCase() == 'completed')
+                          .toList();
+                    }
+                    return _buildAppointmentsList(filtered);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(DoctorModel? doctor, AppointmentViewModel appointmentVM) {
+    final stats = appointmentVM.appointmentStats;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -122,26 +164,27 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
       ),
       child: Column(
         children: [
-          // Doctor info
           Row(
             children: [
               CircleAvatar(
                 radius: 30,
+                backgroundImage: doctor?.imageUrl.isNotEmpty == true
+                    ? NetworkImage(doctor!.imageUrl)
+                    : null,
                 backgroundColor: Colors.white,
-                child: Icon(Icons.person, size: 35, color: Colors.green[700]),
+                child: doctor?.imageUrl.isEmpty == true
+                    ? Icon(Icons.person, size: 35, color: Colors.green[700])
+                    : null,
               ),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Bác sĩ',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                    const Text(
-                      'Chào mừng trở lại!',
-                      style: TextStyle(
+                    const Text('Bác sĩ', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                    Text(
+                      doctor?.name ?? 'Chưa cập nhật',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -151,38 +194,34 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
                   'Trực tuyến',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-
-          // Stats row
           Row(
             children: [
               Expanded(
-                child: _buildStatCard('Hôm nay', '5', Icons.today, Colors.blue),
+                child: _buildStatCard(
+                  'Tổng',
+                  stats['total'].toString(),
+                  Icons.calendar_today,
+                  Colors.blue,
+                ),
               ),
               const SizedBox(width: 15),
               Expanded(
                 child: _buildStatCard(
                   'Chờ xác nhận',
-                  '3',
+                  stats['pending'].toString(),
                   Icons.pending,
                   Colors.orange,
                 ),
@@ -191,7 +230,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               Expanded(
                 child: _buildStatCard(
                   'Hoàn thành',
-                  '12',
+                  stats['completed'].toString(),
                   Icons.check_circle,
                   Colors.green,
                 ),
@@ -203,12 +242,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     );
   }
 
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -221,11 +255,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
             title,
@@ -247,11 +277,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
           const SizedBox(width: 10),
           Text(
             'Lịch hẹn ngày ${DateFormat('dd/MM/yyyy').format(DateTime.parse(_selectedDate))}',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.green[700],
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.green[700]),
           ),
           const Spacer(),
           IconButton(
@@ -265,89 +291,43 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     );
   }
 
-  Widget _buildTodayAppointments() {
-    return _buildAppointmentsList([
-      _createMockAppointment(
-        id: 1,
-        petName: 'Lucky',
-        ownerName: 'Nguyễn Văn A',
-        serviceTitle: 'Khám tổng quát',
-        appointmentTime: DateTime.now().add(const Duration(hours: 1)),
-        status: 'confirmed',
-        petType: 'Chó',
-      ),
-      _createMockAppointment(
-        id: 2,
-        petName: 'Mimi',
-        ownerName: 'Trần Thị B',
-        serviceTitle: 'Tiêm vaccine',
-        appointmentTime: DateTime.now().add(const Duration(hours: 2)),
-        status: 'pending',
-        petType: 'Mèo',
-      ),
-    ]);
-  }
-
-  Widget _buildUpcomingAppointments() {
-    return _buildAppointmentsList([
-      _createMockAppointment(
-        id: 3,
-        petName: 'Max',
-        ownerName: 'Lê Văn C',
-        serviceTitle: 'Phẫu thuật nhỏ',
-        appointmentTime: DateTime.now().add(const Duration(days: 1)),
-        status: 'confirmed',
-        petType: 'Chó',
-      ),
-    ]);
-  }
-
-  Widget _buildCompletedAppointments() {
-    return _buildAppointmentsList([
-      _createMockAppointment(
-        id: 4,
-        petName: 'Bunny',
-        ownerName: 'Phạm Thị D',
-        serviceTitle: 'Khám định kỳ',
-        appointmentTime: DateTime.now().subtract(const Duration(days: 1)),
-        status: 'completed',
-        petType: 'Thỏ',
-      ),
-    ]);
-  }
-
   Widget _buildAppointmentsList(List<AppointmentModel> appointments) {
-    if (appointments.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.event_busy, size: 80, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              'Không có lịch hẹn nào',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
+    print("Appointments : $appointments");
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: appointments.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.event_busy, size: 80, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Không có lịch hẹn nào',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tất cả lịch hẹn sẽ hiển thị ở đây',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: appointments.length,
+                itemBuilder: (context, index) {
+                  return _buildAppointmentCard(appointments[index]);
+                },
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tất cả lịch hẹn sẽ hiển thị ở đây',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: appointments.length,
-      itemBuilder: (context, index) {
-        return _buildAppointmentCard(appointments[index]);
-      },
+      ),
     );
   }
 
@@ -370,14 +350,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with time and status
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: _getStatusColor(appointment.status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -402,50 +378,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
-            // Pet and owner info
-            // Row(
-            //   children: [
-            //     CircleAvatar(
-            //       radius: 25,
-            //       backgroundColor: Colors.green[100],
-            //       child: Icon(
-            //         _getPetIcon(appointment.petType),
-            //         color: Colors.green[700],
-            //         size: 25,
-            //       ),
-            //     ),
-            //     const SizedBox(width: 12),
-            //     Expanded(
-            //       child: Column(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           Text(
-            //             appointment.petName,
-            //             style: const TextStyle(
-            //               fontSize: 16,
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //           Text(
-            //             'Chủ: ${appointment.ownerName}',
-            //             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            //           ),
-            //           Text(
-            //             appointment.petType,
-            //             style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            // ),
-
-            const SizedBox(height: 12),
-
-            // Service info
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -454,29 +387,18 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               ),
               child: Row(
                 children: [
-                  Icon(
-                    // _getServiceIcon(appointment.serviceTitle),
-                    Icons.medical_services,
-                    color: Colors.green[600],
-                    size: 20,
-                  ),
+                  Icon(Icons.medical_services, color: Colors.green[600], size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       appointment.serviceTitle ?? "Dịch vụ không xác định",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // Action buttons
             Row(
               children: [
                 Expanded(
@@ -489,9 +411,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.green,
                       side: const BorderSide(color: Colors.green),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                 ),
@@ -506,9 +426,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                 ),
@@ -517,28 +435,6 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
           ],
         ),
       ),
-    );
-  }
-
-  AppointmentModel _createMockAppointment({
-    required int id,
-    required String petName,
-    required String ownerName,
-    required String serviceTitle,
-    required DateTime appointmentTime,
-    required String status,
-    required String petType,
-  }) {
-    return AppointmentModel(
-      id: id,
-      petId: '1',
-      doctorId: '1',
-      serviceId: 1,
-      appointmentTime: appointmentTime,
-      status: status,
-      notes: 'Ghi chú cho lịch hẹn',
-      createdAt: DateTime.now(),
-      serviceTitle: serviceTitle, userId: '1', doctorName: 'Bác sĩ A'
     );
   }
 
@@ -570,25 +466,5 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
       default:
         return status;
     }
-  }
-
-  IconData _getPetIcon(String petType) {
-    switch (petType.toLowerCase()) {
-      case 'chó':
-        return Icons.pets;
-      case 'mèo':
-        return Icons.pets;
-      case 'thỏ':
-        return Icons.pets;
-      default:
-        return Icons.pets;
-    }
-  }
-
-  IconData _getServiceIcon(String serviceTitle) {
-    if (serviceTitle.contains('Khám')) return Icons.medical_services;
-    if (serviceTitle.contains('Tiêm')) return Icons.vaccines;
-    if (serviceTitle.contains('Phẫu thuật')) return Icons.local_hospital;
-    return Icons.pets;
   }
 }

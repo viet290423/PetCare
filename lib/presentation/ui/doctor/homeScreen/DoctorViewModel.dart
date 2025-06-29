@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:petcare/domain/usecase/doctor/GetAllDoctorUseCase.dart';
-import '../../../data/model/DoctorModel.dart';
-import '../../../data/model/TimeSlotModel.dart';
-import '../../../domain/usecase/doctor/GetDoctorsByServiceUseCase.dart';
-import '../../../domain/usecase/doctor/GetAvailableTimeSlotsUseCase.dart';
+import '../../../../data/model/DoctorModel.dart';
+import '../../../../data/model/TimeSlotModel.dart';
+import '../../../../domain/usecase/doctor/GetDoctorsByServiceUseCase.dart';
+import '../../../../domain/usecase/doctor/GetAvailableTimeSlotsUseCase.dart';
 
 class DoctorViewModel extends ChangeNotifier {
   final GetAllDoctorUseCase _getAllDoctorUseCase;

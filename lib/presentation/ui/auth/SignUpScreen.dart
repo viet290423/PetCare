@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:provider/provider.dart';
 
-import '../doctor/DoctorHomeScreen.dart';
+import '../doctor/homeScreen/DoctorHomeScreen.dart';
 import '../main/MainScreen.dart';
 import '../user/homeScreen/UserHomeScreen.dart';
 import '../widget/CustomButton.dart';

@@ -8,7 +8,7 @@ import '../../auth/LoginScreen.dart';
 import '../../disease/DiseaseDetailScreen.dart';
 import '../../disease/DiseaseViewModel.dart';
 import '../../doctor/DoctorDetailScreen.dart';
-import '../../doctor/DoctorViewModel.dart';
+import '../../doctor/homeScreen/DoctorViewModel.dart';
 import '../../doctor/AllDoctorsScreen.dart';
 import '../serviceScreen/ServiceDetailScreen.dart';
 import '../serviceScreen/ServiceViewModel.dart';

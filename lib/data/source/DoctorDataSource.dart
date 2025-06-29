@@ -5,6 +5,7 @@ import '../model/TimeSlotModel.dart';
 
 abstract class DoctorDataSource {
   Future<List<DoctorModel>> getAllDoctors();
+  Future<DoctorModel?> getDoctorByUserId(String userId);
   Future<List<TimeSlotModel>> getAvailableTimeSlots(
     String doctorId,
     DateTime date,
@@ -27,6 +28,23 @@ class DoctorDataSourceImpl implements DoctorDataSource {
           .toList();
     } catch (e) {
       throw Exception('Lỗi khi lấy tất cả bác sĩ: $e');
+    }
+  }
+
+  @override
+  Future<DoctorModel?> getDoctorByUserId(String userId) async {
+    try {
+      print('Querying doctor with userId: $userId');
+      final response = await client
+          .from('doctors')
+          .select()
+          .eq('user_id', userId)
+          .single();
+      print('Response from Supabase: $response');
+      return DoctorModel.fromJson(response);
+    } catch (e) {
+      print('Lỗi khi lấy bác sĩ theo user_id: $e');
+      return null; // Trả về null nếu không tìm thấy
     }
   }
 

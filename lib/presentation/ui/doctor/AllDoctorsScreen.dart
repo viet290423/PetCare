@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/model/DoctorModel.dart';
-import 'DoctorViewModel.dart';
+import 'homeScreen/DoctorViewModel.dart';
 import 'DoctorDetailScreen.dart';
 
 class AllDoctorsScreen extends StatefulWidget {

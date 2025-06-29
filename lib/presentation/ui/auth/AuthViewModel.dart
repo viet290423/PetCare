@@ -4,8 +4,10 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
+import 'package:petcare/domain/usecase/doctor/GetDoctorByUserIdUseCase.dart';
 
 import '../../../core/error/failures.dart';
+import '../../../data/model/DoctorModel.dart';
 import '../../../data/source/FirebaseUserHelperDataSource.dart';
 import '../../../domain/entity/AuthUser.dart';
 import '../../../domain/usecase/auth/GetCurrentUserUseCase.dart';
@@ -19,6 +21,7 @@ class AuthViewModel with ChangeNotifier {
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
   final SignInWithFacebookUseCase signInWithFacebookUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
+  final GetDoctorByUserIdUseCase getDoctorByUserIdUseCase;
   final SignOutUseCase signOutUseCase;
 
   AuthViewModel({
@@ -27,14 +30,17 @@ class AuthViewModel with ChangeNotifier {
     required this.signInWithGoogleUseCase,
     required this.signInWithFacebookUseCase,
     required this.getCurrentUserUseCase,
+    required this.getDoctorByUserIdUseCase,
     required this.signOutUseCase,
   });
 
   AuthUser? _user;
+  DoctorModel? _doctor;
   bool _isLoading = false;
   String? _error;
 
   AuthUser? get user => _user;
+  DoctorModel? get doctor => _doctor;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -50,6 +56,11 @@ class AuthViewModel with ChangeNotifier {
 
   void _setUser(AuthUser? user) {
     _user = user;
+    notifyListeners();
+  }
+
+  void _setDoctor(DoctorModel? doctor) {
+    _doctor = doctor;
     notifyListeners();
   }
 
@@ -88,8 +99,8 @@ class AuthViewModel with ChangeNotifier {
     );
 
     result.fold(
-          (failure) => _setError(failure.message),
-          (user) => _setUser(user),
+      (failure) => _setError(failure.message),
+      (user) => _setUser(user),
     );
 
     _setLoading(false);
@@ -121,14 +132,23 @@ class AuthViewModel with ChangeNotifier {
     final result = await signInUseCase(email: email, password: password);
 
     result.fold(
-          (failure) {
+      (failure) {
         _error = 'Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.';
         _setError(_error);
         _user = null;
       },
-          (user) {
+      (user) async {
         _error = null;
         _user = user;
+        // Lấy thông tin bác sĩ nếu email có định dạng doctorPetCare.com
+        if (email.endsWith('@doctorPetCare.com')) {
+          print('AuthViewModel: Lấy thông tin bác sĩ cho userId: ${user.uid}');
+          final doctor = await getDoctorByUserIdUseCase.execute(
+            userId: user.uid,
+          );
+          print('AuthViewModel: Kết quả doctor: $doctor');
+          _setDoctor(doctor);
+        }
       },
     );
 
@@ -136,196 +156,48 @@ class AuthViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   Future<void> signOutUser() async {
     _setLoading(true);
     final result = await signOutUseCase();
-    result.fold(
-          (failure) => _setError(failure.message),
-          (_) => _setUser(null),
-    );
+    result.fold((failure) => _setError(failure.message), (_) {
+      _setUser(null);
+      _setDoctor(null);
+    });
     _setLoading(false);
   }
 
   Future<void> checkCurrentUser() async {
     _setLoading(true);
     final result = await getCurrentUserUseCase();
-    result.fold(
-          (_) => _setUser(null),
-          (user) => _setUser(user),
-    );
+    result.fold((_) => _setUser(null), (user) async {
+      _setUser(user);
+      if (user.email.endsWith('@doctorPetCare.com')) {
+        print(
+          'AuthViewModel: checkCurrentUser - Lấy thông tin bác sĩ cho userId: ${user.uid}',
+        );
+        final doctor = await getDoctorByUserIdUseCase.execute(userId: user.uid);
+        print('AuthViewModel: checkCurrentUser - Kết quả doctor: $doctor');
+        _setDoctor(doctor);
+      }
+    });
     _setLoading(false);
   }
 
   Future<Either<Failure, AuthUser>> signInWithGoogle() async {
     final result = await signInWithGoogleUseCase();
     result.fold(
-          (failure) => _setError(failure.message),
-          (user) => _setUser(user),
+      (failure) => _setError(failure.message),
+      (user) => _setUser(user),
     );
     return result;
   }
+
   Future<Either<Failure, AuthUser>> signInWithFacebook() async {
     final result = await signInWithFacebookUseCase();
     result.fold(
-          (failure) => _setError(failure.message),
-          (user) => _setUser(user),
+      (failure) => _setError(failure.message),
+      (user) => _setUser(user),
     );
     return result;
   }
-  // Future<bool> signInWithGoogle({required String role}) async {
-  //   _setLoading(true);
-  //   _setError(null);
-  //
-  //   try {
-  //     final googleUser = await GoogleSignIn().signIn();
-  //     if (googleUser == null) {
-  //       _setError('Người dùng huỷ đăng nhập Google.');
-  //       return false;
-  //     }
-  //
-  //     final googleAuth = await googleUser.authentication;
-  //     final credential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-  //
-  //     final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-  //     final firebaseUser = userCredential.user;
-  //     if (firebaseUser == null) {
-  //       _setError('Không thể lấy người dùng từ Google.');
-  //       return false;
-  //     }
-  //
-  //     final email = firebaseUser.email ?? 'google_${firebaseUser.uid}@example.com';
-  //     final name = firebaseUser.displayName ?? 'Người dùng Google';
-  //     final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser.uid);
-  //
-  //     if (firestoreUser != null) {
-  //       _setUser(firestoreUser);
-  //     } else {
-  //       final newUser = AuthUser(
-  //         uid: firebaseUser.uid,
-  //         email: email,
-  //         role: role,
-  //         name: name,
-  //       );
-  //       await FirebaseUserHelper.saveUser(newUser);
-  //       _setUser(newUser);
-  //     }
-  //     return true;
-  //   } catch (e) {
-  //     _setError('Lỗi đăng nhập Google: $e');
-  //     return false;
-  //   } finally {
-  //     _setLoading(false);
-  //   }
-  // }
-  //
-  // Future<bool> signInWithFacebook({required String role}) async {
-  //   _setLoading(true);
-  //   _setError(null);
-  //
-  //   try {
-  //     final result = await FacebookAuth.instance.login(permissions: ['email', 'public_profile']);
-  //     if (result.status != LoginStatus.success) {
-  //       _setError('Đăng nhập Facebook thất bại.');
-  //       return false;
-  //     }
-  //
-  //     final token = result.accessToken?.tokenString;
-  //     if (token == null) {
-  //       _setError('Không thể lấy token Facebook.');
-  //       return false;
-  //     }
-  //
-  //     final credential = FacebookAuthProvider.credential(token);
-  //
-  //     try {
-  //       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-  //       final firebaseUser = userCredential.user;
-  //       if (firebaseUser == null) throw Exception('Firebase user null');
-  //
-  //       final fbData = await FacebookAuth.instance.getUserData();
-  //       final email = firebaseUser.email ?? 'fb_${firebaseUser.uid}@example.com';
-  //       final name = fbData['name'] ?? firebaseUser.displayName ?? 'Người dùng Facebook';
-  //
-  //       final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser.uid);
-  //       if (firestoreUser != null) {
-  //         _setUser(firestoreUser);
-  //       } else {
-  //         final newUser = AuthUser(
-  //           uid: firebaseUser.uid,
-  //           email: email,
-  //           role: role,
-  //           name: name,
-  //         );
-  //         await FirebaseUserHelper.saveUser(newUser);
-  //         _setUser(newUser);
-  //       }
-  //
-  //       return true;
-  //     } on FirebaseAuthException catch (e) {
-  //       if (e.code == 'account-exists-with-different-credential') {
-  //         _pendingCredential = e.credential;
-  //         _setError('Email đã dùng với Google. Vui lòng đăng nhập bằng Google để liên kết.');
-  //         return false;
-  //       }
-  //       rethrow;
-  //     }
-  //   } catch (e) {
-  //     _setError('Lỗi Facebook: $e');
-  //     return false;
-  //   } finally {
-  //     _setLoading(false);
-  //   }
-  // }
-  //
-  // Future<bool> linkPendingCredentialWithGoogle() async {
-  //   _setLoading(true);
-  //
-  //   try {
-  //     final googleUser = await GoogleSignIn().signIn();
-  //     if (googleUser == null) {
-  //       _setError('Huỷ đăng nhập Google.');
-  //       return false;
-  //     }
-  //
-  //     final googleAuth = await googleUser.authentication;
-  //     final googleCredential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-  //
-  //     final googleUserCredential = await FirebaseAuth.instance.signInWithCredential(googleCredential);
-  //     final firebaseUser = googleUserCredential.user;
-  //
-  //     if (_pendingCredential != null && firebaseUser != null) {
-  //       await firebaseUser.linkWithCredential(_pendingCredential!);
-  //       _pendingCredential = null;
-  //     }
-  //
-  //     final firestoreUser = await FirebaseUserHelper.getUserByUid(firebaseUser!.uid);
-  //     if (firestoreUser != null) {
-  //       _setUser(firestoreUser);
-  //     } else {
-  //       final newUser = AuthUser(
-  //         uid: firebaseUser.uid,
-  //         email: firebaseUser.email!,
-  //         role: 'user',
-  //         name: firebaseUser.displayName ?? 'Người dùng',
-  //       );
-  //       await FirebaseUserHelper.saveUser(newUser);
-  //       _setUser(newUser);
-  //     }
-  //
-  //     return true;
-  //   } catch (e) {
-  //     _setError('Lỗi khi liên kết tài khoản: $e');
-  //     return false;
-  //   } finally {
-  //     _setLoading(false);
-  //   }
-  // }
 }

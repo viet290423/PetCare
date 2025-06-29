@@ -6,6 +6,7 @@ abstract class DoctorRepository {
   Future<List<DoctorModel>> getDoctorsBySpecialization(String specialization);
   Future<List<DoctorModel>> getDoctorsByService(String serviceId);
   Future<DoctorModel?> getDoctorById(String doctorId);
+  Future<DoctorModel?> getDoctorByUserId(String userId);
   Future<List<TimeSlotModel>> getAvailableTimeSlots(
     String doctorId,
     DateTime date,

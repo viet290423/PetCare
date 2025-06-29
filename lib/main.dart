@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:petcare/presentation/ui/auth/LoginScreen.dart';
-import 'package:petcare/presentation/ui/doctor/DoctorHomeScreen.dart';
-import 'package:petcare/presentation/ui/doctor/DoctorViewModel.dart';
+import 'package:petcare/presentation/ui/doctor/AppointmentViewModel.dart';
+import 'package:petcare/presentation/ui/doctor/homeScreen/DoctorHomeScreen.dart';
+import 'package:petcare/presentation/ui/doctor/homeScreen/DoctorViewModel.dart';
 import 'package:petcare/presentation/ui/main/MainScreen.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => di.sl<ServicesViewModel>()),
         ChangeNotifierProvider(create: (_) => DiseaseViewModel()),
         ChangeNotifierProvider(create: (_) => di.sl<DoctorViewModel>()),
+        ChangeNotifierProvider(create: (_) => di.sl<AppointmentViewModel>()),
       ],
       child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
     );

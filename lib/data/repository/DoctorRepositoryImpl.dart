@@ -54,6 +54,15 @@ class DoctorRepositoryImpl implements DoctorRepository {
   }
 
   @override
+  Future<DoctorModel?> getDoctorByUserId(String userId) async {
+    try {
+      return await _dataSource.getDoctorByUserId(userId);
+    } catch (e) {
+      throw Exception('Failed to fetch doctor by user ID: $e');
+    }
+  }
+
+  @override
   Future<List<TimeSlotModel>> getAvailableTimeSlots(
     String doctorId,
     DateTime date,

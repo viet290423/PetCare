@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../../data/model/AppointmentModel.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppointmentViewModel extends ChangeNotifier {
   List<AppointmentModel> _appointments = [];
@@ -94,15 +95,31 @@ class AppointmentViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchAppointmentsForDoctor(String doctorId) async {
+    if (doctorId == null) {
+      _error = 'Doctor ID is null';
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
-      _appointments = _getMockAppointments(doctorId);
+      print("Attempting to fetch appointments for doctor: $doctorId");
+      final response = await Supabase.instance.client
+          .from('appointments')
+          .select('*, services(title)')
+          .eq('doctor_id', doctorId);
+      print('Supabase response: $response');
+      _appointments = (response as List)
+          .map((json) => AppointmentModel.fromJson(json))
+          .toList();
+      print('Appointments after mapping: $_appointments');
     } catch (e) {
       _error = 'Không thể tải danh sách lịch hẹn: $e';
+      print('Error fetching appointments: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

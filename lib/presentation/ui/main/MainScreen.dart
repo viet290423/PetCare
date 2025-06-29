@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:petcare/presentation/ui/doctor/DoctorHomeScreen.dart';
+import 'package:petcare/presentation/ui/doctor/homeScreen/DoctorHomeScreen.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetScreen.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceScreen.dart';
