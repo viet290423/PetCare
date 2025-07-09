@@ -7,8 +7,8 @@ class AppointmentViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   String _selectedDate = 'today'; // today, tomorrow, week
-  String _selectedStatus =
-      'all'; // all, pending, confirmed, completed, cancelled
+  String _selectedStatus = 'all'; // all, pending, confirmed, completed, cancelled
+  late final RealtimeChannel _channel;
 
   List<AppointmentModel> get appointments => _appointments;
   bool get isLoading => _isLoading;
@@ -55,8 +55,7 @@ class AppointmentViewModel extends ChangeNotifier {
 
     if (_selectedStatus != 'all') {
       filtered = filtered.where((appointment) {
-        return appointment.status.toLowerCase() ==
-            _selectedStatus.toLowerCase();
+        return appointment.status.toLowerCase() == _selectedStatus.toLowerCase();
       }).toList();
     }
 
@@ -117,6 +116,7 @@ class AppointmentViewModel extends ChangeNotifier {
           .map((json) => AppointmentModel.fromJson(json))
           .toList();
       print('Appointments after mapping: $_appointments');
+      _subscribeToAppointments(doctorId); // Subscribe after initial fetch
     } catch (e) {
       _error = 'Không thể tải danh sách lịch hẹn: $e';
       print('Error fetching appointments: $e');
@@ -126,13 +126,60 @@ class AppointmentViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateAppointmentStatus(
-    int appointmentId,
-    String newStatus,
-  ) async {
+  void _subscribeToAppointments(String doctorId) {
+    _channel = Supabase.instance.client
+        .channel('appointments-$doctorId')
+        .onPostgresChanges(
+      event: PostgresChangeEvent.all, // Lắng nghe tất cả sự kiện (INSERT, UPDATE, DELETE)
+      schema: 'public',
+      table: 'appointments',
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'doctor_id=eq.$doctorId',
+        value: 200,
+      ),
+      callback: (payload) {
+        print('Realtime payload: $payload');
+        if (payload.eventType == 'INSERT' ||
+            payload.eventType == 'UPDATE' ||
+            payload.eventType == 'DELETE') {
+          _handleRealtimeUpdate(doctorId, payload);
+        }
+      },
+    )
+        .subscribe(
+          (status, [error]) {
+        if (status == 'SUBSCRIBED') {
+          print('Subscribed to appointments channel for doctor: $doctorId');
+        } else if (error != null) {
+          print('Subscription error: $error');
+        }
+      },
+    );
+  }
+  void _handleRealtimeUpdate(String doctorId, PostgresChangePayload payload) {
+    final newData = payload.newRecord as Map<String, dynamic>?;
+    final oldData = payload.oldRecord as Map<String, dynamic>?;
+    final appointmentId = newData?['id'] ?? oldData?['id'];
+
+    if (newData != null && newData['doctor_id'] == doctorId) {
+      final updatedAppointment = AppointmentModel.fromJson(newData);
+      final index = _appointments.indexWhere((app) => app.id == appointmentId);
+      if (index != -1) {
+        _appointments[index] = updatedAppointment;
+      } else {
+        _appointments.add(updatedAppointment);
+      }
+    } else if (oldData != null && oldData['doctor_id'] == doctorId) {
+      _appointments.removeWhere((app) => app.id == appointmentId);
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> updateAppointmentStatus(int appointmentId, String newStatus) async {
     try {
       await Future.delayed(const Duration(milliseconds: 500));
-
       final index = _appointments.indexWhere((app) => app.id == appointmentId);
       if (index != -1) {
         _appointments[index] = AppointmentModel(
@@ -156,75 +203,9 @@ class AppointmentViewModel extends ChangeNotifier {
     }
   }
 
-  // Mock data for testing
-  List<AppointmentModel> _getMockAppointments(String doctorId) {
-    final now = DateTime.now();
-    return [
-      AppointmentModel(
-        id: 1,
-        serviceId: 1,
-        serviceTitle: 'Khám tổng quát',
-        petId: 'pet1',
-        userId: 'user1',
-        doctorId: doctorId,
-        doctorName: 'Dr. Nguyễn Văn A',
-        appointmentTime: DateTime(now.year, now.month, now.day, 9, 0),
-        status: 'confirmed',
-        createdAt: now.subtract(const Duration(hours: 2)),
-        notes: 'Chó Golden, 2 tuổi, cần khám định kỳ',
-      ),
-      AppointmentModel(
-        id: 2,
-        serviceId: 2,
-        serviceTitle: 'Tiêm vaccine',
-        petId: 'pet2',
-        userId: 'user2',
-        doctorId: doctorId,
-        doctorName: 'Dr. Nguyễn Văn A',
-        appointmentTime: DateTime(now.year, now.month, now.day, 10, 30),
-        status: 'pending',
-        createdAt: now.subtract(const Duration(hours: 1)),
-        notes: 'Mèo Anh lông ngắn, 6 tháng tuổi',
-      ),
-      AppointmentModel(
-        id: 3,
-        serviceId: 3,
-        serviceTitle: 'Phẫu thuật nhỏ',
-        petId: 'pet3',
-        userId: 'user3',
-        doctorId: doctorId,
-        doctorName: 'Dr. Nguyễn Văn A',
-        appointmentTime: DateTime(now.year, now.month, now.day + 1, 14, 0),
-        status: 'confirmed',
-        createdAt: now.subtract(const Duration(days: 1)),
-        notes: 'Chó Poodle, cần cắt móng',
-      ),
-      AppointmentModel(
-        id: 4,
-        serviceId: 1,
-        serviceTitle: 'Khám tổng quát',
-        petId: 'pet4',
-        userId: 'user4',
-        doctorId: doctorId,
-        doctorName: 'Dr. Nguyễn Văn A',
-        appointmentTime: DateTime(now.year, now.month, now.day - 1, 15, 0),
-        status: 'completed',
-        createdAt: now.subtract(const Duration(days: 2)),
-        notes: 'Mèo Ba Tư, khám định kỳ',
-      ),
-      AppointmentModel(
-        id: 5,
-        serviceId: 2,
-        serviceTitle: 'Tiêm vaccine',
-        petId: 'pet5',
-        userId: 'user5',
-        doctorId: doctorId,
-        doctorName: 'Dr. Nguyễn Văn A',
-        appointmentTime: DateTime(now.year, now.month, now.day + 2, 11, 0),
-        status: 'pending',
-        createdAt: now.subtract(const Duration(hours: 3)),
-        notes: 'Chó Husky, 1 tuổi',
-      ),
-    ];
+  @override
+  void dispose() {
+    _channel.unsubscribe();
+    super.dispose();
   }
 }

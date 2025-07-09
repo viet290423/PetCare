@@ -11,6 +11,7 @@ import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceViewModel.dart';
 import 'package:petcare/presentation/ui/disease/DiseaseViewModel.dart';
+import 'package:petcare/presentation/provider/CommunityProvider.dart';
 import 'package:petcare/services/noti_service.dart';
 import 'package:petcare/services/notification_service.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DiseaseViewModel()),
         ChangeNotifierProvider(create: (_) => di.sl<DoctorViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<AppointmentViewModel>()),
+        ChangeNotifierProvider(create: (_) => di.sl<CommunityProvider>()),
       ],
       child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
     );

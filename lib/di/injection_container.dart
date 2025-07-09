@@ -5,13 +5,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petcare/data/repository/PetRepositoryImpl.dart';
 import 'package:petcare/data/repository/ServiceRepositoryImpl.dart';
 import 'package:petcare/data/repository/DoctorRepositoryImpl.dart';
+import 'package:petcare/data/repository/CommunityRepositoryImpl.dart';
 import 'package:petcare/data/source/AuthUserDataSource.dart';
 import 'package:petcare/data/source/PetDataSource.dart';
 import 'package:petcare/data/source/ServiceDataSource.dart';
 import 'package:petcare/data/source/DoctorDataSource.dart';
+import 'package:petcare/data/source/CommunityDataSource.dart';
 import 'package:petcare/domain/repository/PetRepository.dart';
 import 'package:petcare/domain/repository/ServiceRepository.dart';
 import 'package:petcare/domain/repository/DoctorRepository.dart';
+import 'package:petcare/domain/repository/CommunityRepository.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithFacebookUseCase.dart';
 import 'package:petcare/domain/usecase/auth/SignInWithGoogleUseCase.dart';
 import 'package:petcare/domain/usecase/doctor/GetDoctorByUserIdUseCase.dart';
@@ -25,6 +28,13 @@ import 'package:petcare/domain/usecase/service/AddServiceUseCase.dart';
 import 'package:petcare/domain/usecase/service/GetServiceUseCase.dart';
 import 'package:petcare/domain/usecase/doctor/GetDoctorsByServiceUseCase.dart';
 import 'package:petcare/domain/usecase/doctor/GetAvailableTimeSlotsUseCase.dart';
+import 'package:petcare/domain/usecase/community/GetPostsUseCase.dart';
+import 'package:petcare/domain/usecase/community/CreatePostUseCase.dart';
+import 'package:petcare/domain/usecase/community/LikePostUseCase.dart';
+import 'package:petcare/domain/usecase/community/CreateCommentUseCase.dart';
+import 'package:petcare/domain/usecase/community/GetPostCommentsUseCase.dart';
+import 'package:petcare/domain/usecase/community/UploadMediaUseCase.dart';
+import 'package:petcare/presentation/provider/CommunityProvider.dart';
 import 'package:petcare/presentation/ui/doctor/AppointmentViewModel.dart';
 import 'package:petcare/presentation/ui/pet/PetViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
@@ -58,12 +68,16 @@ Future<void> init() async {
     () => ServiceDataSourceImpl(Supabase.instance.client),
   );
   sl.registerLazySingleton<DoctorDataSource>(() => DoctorDataSourceImpl(Supabase.instance.client));
+  sl.registerLazySingleton<CommunityDataSource>(
+    () => CommunityDataSourceImpl(Supabase.instance.client),
+  );
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<PetRepository>(() => PetRepositoryImpl(sl()));
   sl.registerLazySingleton<ServiceRepository>(() => ServiceRepositoryImpl(sl()));
   sl.registerLazySingleton<DoctorRepository>(() => DoctorRepositoryImpl(sl()));
+  sl.registerLazySingleton<CommunityRepository>(() => CommunityRepositoryImpl(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
@@ -85,6 +99,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetDoctorsByServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetAvailableTimeSlotsUseCase(sl()));
 
+  // Community use cases
+  sl.registerLazySingleton(() => GetPostsUseCase(sl()));
+  sl.registerLazySingleton(() => CreatePostUseCase(sl()));
+  sl.registerLazySingleton(() => LikePostUseCase(sl()));
+  sl.registerLazySingleton(() => CreateCommentUseCase(sl()));
+  sl.registerLazySingleton(() => GetPostCommentsUseCase(sl()));
+  sl.registerLazySingleton(() => UploadMediaUseCase(sl()));
+
   // Provider
   sl.registerLazySingleton(
     () => AuthProvider(
@@ -92,6 +114,17 @@ Future<void> init() async {
       signInUseCase: sl(),
       getCurrentUserUseCase: sl(),
       signOutUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => CommunityProvider(
+      getPostsUseCase: sl(),
+      createPostUseCase: sl(),
+      likePostUseCase: sl(),
+      createCommentUseCase: sl(),
+      getPostCommentsUseCase: sl(),
+      uploadMediaUseCase: sl(),
     ),
   );
 
