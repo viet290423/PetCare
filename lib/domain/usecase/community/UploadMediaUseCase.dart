@@ -33,6 +33,7 @@ class UploadMediaUseCase {
     // Validate file type
     final allowedTypes = [
       'image/jpeg',
+      'image/jpg',
       'image/png',
       'image/gif',
       'video/mp4',

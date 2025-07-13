@@ -224,6 +224,13 @@ class CommunityProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Set uploaded media URLs
+  void setUploadedMediaUrls(List<String> urls) {
+    _uploadedMediaUrls.clear();
+    _uploadedMediaUrls.addAll(urls);
+    notifyListeners();
+  }
+
   // Like/Unlike post
   Future<void> toggleLikePost({
     required String postId,

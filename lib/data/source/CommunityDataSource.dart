@@ -571,15 +571,16 @@ class CommunityDataSourceImpl implements CommunityDataSource {
       final storageFileName = '${_currentUserId}/${uuid.v4()}_$fileName';
 
       await client.storage
-          .from('community_media')
+          .from('community-media')
           .uploadBinary(storageFileName, fileBytes);
 
       final publicUrl = client.storage
-          .from('community_media')
+          .from('community-media')
           .getPublicUrl(storageFileName);
 
       return publicUrl;
     } catch (e) {
+      print("Error uploading media: ${e.toString()}");
       throw ServerException(
         message: 'Không thể tải lên media: ${e.toString()}',
       );
