@@ -16,6 +16,7 @@ class PostDetailSheet extends StatefulWidget {
 class _PostDetailSheetState extends State<PostDetailSheet> {
   final TextEditingController _commentController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -25,252 +26,84 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
       final provider = Provider.of<CommunityProvider>(context, listen: false);
       provider.loadPostComments(postId: widget.post.id);
     });
+
+    // Listen to focus changes to scroll to bottom when keyboard appears
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        // Delay to ensure keyboard is fully visible
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _commentController.dispose();
     _focusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          // Handle bar
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                const Text(
-                  'Bài viết',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Post content (simplified version)
-                  _buildPostHeader(),
-                  _buildPostContent(),
-
-                  const Divider(height: 32),
-
-                  // Comments section
-                  _buildCommentsSection(),
-                ],
               ),
-            ),
-          ),
 
-          // Comment input
-          _buildCommentInput(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPostHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: Colors.green,
-            backgroundImage: widget.post.userAvatarUrl != null
-                ? NetworkImage(widget.post.userAvatarUrl!)
-                : null,
-            child: widget.post.userAvatarUrl == null
-                ? const Icon(Icons.person, color: Colors.white, size: 20)
-                : null,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.post.userDisplayName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  _formatTime(widget.post.createdAt),
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPostContent() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.post.content.isNotEmpty)
-            Text(
-              widget.post.content,
-              style: const TextStyle(fontSize: 16, height: 1.4),
-            ),
-
-          if (widget.post.mediaUrls.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: _buildMediaContent(),
-            ),
-
-          if (widget.post.tags.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: widget.post.tags
-                    .map(
-                      (tag) => Chip(
-                        label: Text(
-                          '#$tag',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        backgroundColor: Colors.green.withOpacity(0.1),
-                        side: BorderSide(color: Colors.green.withOpacity(0.3)),
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Text(
+                      'Bình luận',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
-                    .toList(),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-          // Like and comment counts
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Row(
-              children: [
-                _buildLikeButton(),
-                const SizedBox(width: 16),
-                Icon(
-                  Icons.chat_bubble_outline,
-                  color: Colors.grey[600],
-                  size: 20,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${widget.post.commentsCount} bình luận',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+              // Comments section
+              Expanded(child: _buildCommentsSection()),
 
-  Widget _buildMediaContent() {
-    if (widget.post.mediaUrls.isEmpty) return const SizedBox.shrink();
-
-    if (widget.post.type == PostType.image) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          widget.post.mediaUrls.first,
-          width: double.infinity,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            height: 200,
-            color: Colors.grey[200],
-            child: const Center(
-              child: Icon(Icons.broken_image, color: Colors.grey),
-            ),
-          ),
-        ),
-      );
-    } else if (widget.post.type == PostType.video) {
-      return Container(
-        height: 200,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Center(
-          child: Icon(Icons.play_circle_fill, color: Colors.white, size: 60),
-        ),
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildLikeButton() {
-    return Consumer<CommunityProvider>(
-      builder: (context, provider, child) {
-        // Find the current post in provider's list to get updated like status
-        final currentPost = provider.posts.firstWhere(
-          (p) => p.id == widget.post.id,
-          orElse: () => widget.post,
-        );
-
-        return InkWell(
-          onTap: () {
-            provider.toggleLikePost(postId: widget.post.id, context: context);
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  currentPost.isLikedByCurrentUser
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: currentPost.isLikedByCurrentUser
-                      ? Colors.red
-                      : Colors.grey[600],
-                  size: 20,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${currentPost.likesCount} thích',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-              ],
-            ),
+              // Comment input
+              _buildCommentInput(),
+            ],
           ),
         );
       },
@@ -338,7 +171,7 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'Bình luận (${comments.length})',
+                '${comments.length} bình luận',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -346,7 +179,15 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            ...comments.map((comment) => _buildCommentItem(comment)),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  return _buildCommentItem(comments[index]);
+                },
+              ),
+            ),
           ],
         );
       },
@@ -401,9 +242,12 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Text(
-                      _formatTime(comment.createdAt),
-                      style: TextStyle(color: Colors.grey[600], fontSize: 11),
+                    Flexible(
+                      child: Text(
+                        _formatTime(comment.createdAt),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     if (comment.likesCount > 0) ...[
@@ -426,7 +270,12 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
 
   Widget _buildCommentInput() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(color: Colors.grey[200]!)),
@@ -465,6 +314,9 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
                 ),
                 maxLines: null,
                 textCapitalization: TextCapitalization.sentences,
+                onChanged: (value) {
+                  setState(() {}); // Rebuild to update send button state
+                },
               ),
             ),
             const SizedBox(width: 8),
@@ -475,7 +327,9 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
                       ? null
                       : () => _submitComment(provider),
                   icon: const Icon(Icons.send),
-                  color: Colors.green,
+                  color: _commentController.text.trim().isEmpty
+                      ? Colors.grey
+                      : Colors.green,
                 );
               },
             ),
@@ -497,6 +351,17 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
 
     _commentController.clear();
     _focusNode.unfocus();
+
+    // Auto scroll to bottom after submitting comment
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   String _formatTime(DateTime dateTime) {
