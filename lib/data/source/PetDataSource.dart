@@ -21,6 +21,8 @@ abstract class PetDataSource {
   Future<void> addAppointment(AppointmentModel appointment);
 
   Future<void> deleteReminder(String reminderId);
+
+  Future<void> updatePet(PetModel pet); // thêm hàm này
 }
 
 class PetDataSourceImpl implements PetDataSource {
@@ -121,6 +123,18 @@ class PetDataSourceImpl implements PetDataSource {
       await client.from('reminders').delete().eq('id', reminderId);
     } catch (e) {
       throw Exception('Lỗi khi xóa nhắc nhở: $e');
+    }
+  }
+
+  @override
+  Future<void> updatePet(PetModel pet) async {
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) throw Exception('Người dùng chưa đăng nhập');
+    final data = pet.toJson();
+    try {
+      await client.from('pets').update(data).eq('id', pet.id);
+    } catch (e) {
+      throw Exception('Cập nhật thú cưng thất bại: ${e.toString()}');
     }
   }
 }

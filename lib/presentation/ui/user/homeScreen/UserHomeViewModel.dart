@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petcare/data/model/PetModel.dart';
 import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
+import 'package:petcare/domain/usecase/pet/UpdatePetUseCase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../data/model/AppointmentModel.dart';
@@ -12,6 +13,7 @@ class UserHomeViewModel with ChangeNotifier {
   final PetUseCase getPetData;
   final GetRemindersByPetUseCase getRemindersByPetUseCase;
   final DeleteReminderUseCase deleteReminderUseCase;
+  final UpdatePetUseCase updatePetUseCase;
 
   List<PetModel> _pets = [];
   bool _isLoading = false;
@@ -25,6 +27,7 @@ class UserHomeViewModel with ChangeNotifier {
     required this.getPetData,
     required this.getRemindersByPetUseCase,
     required this.deleteReminderUseCase,
+    required this.updatePetUseCase,
   });
 
   List<PetModel> get pets => _pets;
@@ -121,10 +124,9 @@ class UserHomeViewModel with ChangeNotifier {
           .eq('user_id', userId)
           .eq('pet_id', petId);
 
-      final appointments =
-          (response as List)
-              .map((json) => AppointmentModel.fromJson(json))
-              .toList();
+      final appointments = (response as List)
+          .map((json) => AppointmentModel.fromJson(json))
+          .toList();
 
       _appointmentsCache[petId] = appointments;
       _error = null;
@@ -134,6 +136,12 @@ class UserHomeViewModel with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> updatePet(PetModel pet) async {
+    await updatePetUseCase(pet);
+    await fetchPets(forceRefresh: true);
+    notifyListeners();
   }
 
   void clearCache() {

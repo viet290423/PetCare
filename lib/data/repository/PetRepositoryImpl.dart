@@ -50,4 +50,9 @@ class PetRepositoryImpl implements PetRepository {
   Future<void> deleteReminder(String reminderId) {
     return petDataSource.deleteReminder(reminderId);
   }
+
+  @override
+  Future<void> updatePet(PetModel pet) {
+    return petDataSource.updatePet(pet);
+  }
 }

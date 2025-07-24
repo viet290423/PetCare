@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../data/model/DoctorModel.dart';
 
@@ -11,85 +12,125 @@ class DoctorDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text(doctor.name),
         backgroundColor: Colors.white,
+        forceMaterialTransparency: true,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87),
+        leading: IconButton(
+          icon: const Icon(CupertinoIcons.back, color: Colors.black87),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(doctor.name, style: const TextStyle(color: Colors.black87)),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Doctor header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
+            // New Doctor header with image and floating card
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Doctor image full width, higher, rounded only at the bottom
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
                   ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Doctor image
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey[200],
-                    child: const Icon(
-                      Icons.person,
-                      size: 50,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Doctor name
-                  Text(
-                    doctor.name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Specialization
-                  Text(
-                    doctor.specialization,
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Rating and reviews
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${doctor.rating}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                  child: doctor.imageUrl.isNotEmpty
+                      ? Image.network(
+                          doctor.imageUrl,
+                          width: double.infinity,
+                          height: 280,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: 280,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.person, size: 80, color: Colors.grey),
                         ),
+                ),
+                // Gradient overlay at the bottom of the image
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 60,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(24),
+                        bottomRight: Radius.circular(24),
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '(${doctor.reviewCount} đánh giá)',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.white.withOpacity(0.7), Colors.white],
                       ),
-                    ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+                // Floating card
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 210,
+                  child: Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.10),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            doctor.name,
+                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            doctor.specialization,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(Icons.star, color: Colors.amber, size: 20),
+                              const SizedBox(width: 4),
+                              Text(
+                                doctor.rating.toStringAsFixed(1),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '(${doctor.reviewCount} đánh giá)',
+                                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 140),
 
             // Content
             Padding(
@@ -98,11 +139,7 @@ class DoctorDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // About section
-                  _buildSection(
-                    'Giới thiệu',
-                    doctor.description,
-                    Icons.info_outline,
-                  ),
+                  _buildSection('Giới thiệu', doctor.description, Icons.info_outline),
                   const SizedBox(height: 20),
 
                   // Experience
@@ -124,27 +161,18 @@ class DoctorDetailScreen extends StatelessWidget {
                       onPressed: () {
                         // TODO: Navigate to book appointment screen
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Tính năng đặt lịch sẽ được cập nhật sớm!',
-                            ),
-                          ),
+                          const SnackBar(content: Text('Tính năng đặt lịch sẽ được cập nhật sớm!')),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: const Text(
                         'Đặt lịch khám',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -179,13 +207,7 @@ class DoctorDetailScreen extends StatelessWidget {
             children: [
               Icon(icon, color: Colors.green, size: 20),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 12),
@@ -230,9 +252,7 @@ class DoctorDetailScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.check_circle, color: Colors.green, size: 16),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(cert, style: const TextStyle(fontSize: 14)),
-                  ),
+                  Expanded(child: Text(cert, style: const TextStyle(fontSize: 14))),
                 ],
               ),
             ),

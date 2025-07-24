@@ -5,6 +5,8 @@ import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetDetailScreen.dart';
 
+import '../auth/LoginScreen.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -30,11 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text(
           'Hồ sơ cá nhân',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         centerTitle: true,
         forceMaterialTransparency: true,
@@ -58,16 +56,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, authViewModel, petViewModel, child) {
           // Kiểm tra trạng thái loading của cả hai view model
           if (authViewModel.isLoading || petViewModel.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.green),
-            );
+            return const Center(child: CircularProgressIndicator(color: Colors.green));
           }
 
           // Kiểm tra user
           if (authViewModel.user == null) {
-            return const Center(
-              child: Text('Không tìm thấy thông tin người dùng'),
-            );
+            return const Center(child: Text('Không tìm thấy thông tin người dùng'));
           }
 
           // Lấy thông tin từ AuthViewModel
@@ -87,10 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: [
-                            Colors.green.shade300,
-                            Colors.green.shade100,
-                          ],
+                          colors: [Colors.green.shade300, Colors.green.shade100],
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -106,31 +97,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: CircleAvatar(
                           radius: 50,
                           // TODO: Thay bằng avatarUrl từ Supabase nếu có
-                          backgroundImage: const NetworkImage(
-                            'https://i.pravatar.cc/150?img=3',
-                          ),
+                          backgroundImage: const NetworkImage('https://i.pravatar.cc/150?img=3'),
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       userName,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      userEmail,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                    ),
+                    Text(userEmail, style: TextStyle(fontSize: 16, color: Colors.grey[700])),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.green.shade100,
                         borderRadius: BorderRadius.circular(20),
@@ -202,10 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 title: 'Quản lý thú cưng',
                 subtitle: 'Xem & chỉnh sửa hồ sơ thú cưng',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => PetDetailScreen()),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => PetDetailScreen()));
                 },
               ),
               _buildProfileCard(
@@ -254,12 +231,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 title: 'Đăng xuất',
                 subtitle: 'Thoát tài khoản',
                 onTap: () async {
-                  await Provider.of<AuthViewModel>(
+                  await Provider.of<AuthViewModel>(context, listen: false).signOutUser();
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    listen: false,
-                  ).signOutUser();
-                  // TODO: Điều hướng về màn đăng nhập sau khi đăng xuất
-                  Navigator.pushReplacementNamed(context, '/login');
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (Route<dynamic> route) => false,
+                  );
                 },
               ),
             ],
@@ -284,16 +261,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 6),
         Text(
           value,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: color,
-            fontSize: 16,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 16),
         ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 13, color: Colors.black87),
-        ),
+        Text(label, style: const TextStyle(fontSize: 13, color: Colors.black87)),
       ],
     );
   }

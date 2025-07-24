@@ -24,6 +24,7 @@ import 'package:petcare/domain/usecase/pet/AddReminderUseCase.dart';
 import 'package:petcare/domain/usecase/pet/DeleteReminderUseCase.dart';
 import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
+import 'package:petcare/domain/usecase/pet/UpdatePetUseCase.dart';
 import 'package:petcare/domain/usecase/service/AddServiceUseCase.dart';
 import 'package:petcare/domain/usecase/service/GetServiceUseCase.dart';
 import 'package:petcare/domain/usecase/doctor/GetDoctorsByServiceUseCase.dart';
@@ -98,6 +99,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetDoctorByUserIdUseCase(sl()));
   sl.registerLazySingleton(() => GetDoctorsByServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetAvailableTimeSlotsUseCase(sl()));
+  sl.registerLazySingleton(() => UpdatePetUseCase(sl()));
 
   // Community use cases
   sl.registerLazySingleton(() => GetPostsUseCase(sl()));
@@ -146,6 +148,7 @@ Future<void> init() async {
       getPetData: sl(),
       getRemindersByPetUseCase: sl(),
       deleteReminderUseCase: sl(),
+      updatePetUseCase: sl(),
     ),
   );
 

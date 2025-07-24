@@ -55,12 +55,11 @@ class _CommunityScreenState extends State<CommunityScreen> {
         title: const Text(
           'Cộng đồng thú cưng',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
         ),
-        leading: const Icon(Icons.pets, color: Colors.green, size: 28),
         actions: [
           IconButton(
             onPressed: () {
