@@ -25,6 +25,12 @@ import 'package:petcare/domain/usecase/pet/DeleteReminderUseCase.dart';
 import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/UpdatePetUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetMedicalRecordsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetHealthMetricsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetVaccinationRecordsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddMedicalRecordUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddHealthMetricsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddVaccinationRecordUseCase.dart';
 import 'package:petcare/domain/usecase/service/AddServiceUseCase.dart';
 import 'package:petcare/domain/usecase/service/GetServiceUseCase.dart';
 import 'package:petcare/domain/usecase/doctor/GetDoctorsByServiceUseCase.dart';
@@ -64,11 +70,15 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthUserDataSource>(
     () => AuthUserDataSourceImpl(Supabase.instance.client),
   );
-  sl.registerLazySingleton<PetDataSource>(() => PetDataSourceImpl(Supabase.instance.client));
+  sl.registerLazySingleton<PetDataSource>(
+    () => PetDataSourceImpl(Supabase.instance.client),
+  );
   sl.registerLazySingleton<ServiceDataSource>(
     () => ServiceDataSourceImpl(Supabase.instance.client),
   );
-  sl.registerLazySingleton<DoctorDataSource>(() => DoctorDataSourceImpl(Supabase.instance.client));
+  sl.registerLazySingleton<DoctorDataSource>(
+    () => DoctorDataSourceImpl(Supabase.instance.client),
+  );
   sl.registerLazySingleton<CommunityDataSource>(
     () => CommunityDataSourceImpl(Supabase.instance.client),
   );
@@ -76,9 +86,13 @@ Future<void> init() async {
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<PetRepository>(() => PetRepositoryImpl(sl()));
-  sl.registerLazySingleton<ServiceRepository>(() => ServiceRepositoryImpl(sl()));
+  sl.registerLazySingleton<ServiceRepository>(
+    () => ServiceRepositoryImpl(sl()),
+  );
   sl.registerLazySingleton<DoctorRepository>(() => DoctorRepositoryImpl(sl()));
-  sl.registerLazySingleton<CommunityRepository>(() => CommunityRepositoryImpl(sl()));
+  sl.registerLazySingleton<CommunityRepository>(
+    () => CommunityRepositoryImpl(sl()),
+  );
 
   // Use cases
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
@@ -100,6 +114,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetDoctorsByServiceUseCase(sl()));
   sl.registerLazySingleton(() => GetAvailableTimeSlotsUseCase(sl()));
   sl.registerLazySingleton(() => UpdatePetUseCase(sl()));
+
+  // Records use cases
+  sl.registerLazySingleton(() => GetMedicalRecordsUseCase(sl()));
+  sl.registerLazySingleton(() => GetHealthMetricsUseCase(sl()));
+  sl.registerLazySingleton(() => GetVaccinationRecordsUseCase(sl()));
+  sl.registerLazySingleton(() => AddMedicalRecordUseCase(sl()));
+  sl.registerLazySingleton(() => AddHealthMetricsUseCase(sl()));
+  sl.registerLazySingleton(() => AddVaccinationRecordUseCase(sl()));
 
   // Community use cases
   sl.registerLazySingleton(() => GetPostsUseCase(sl()));
@@ -131,7 +153,7 @@ Future<void> init() async {
   );
 
   // ViewModel
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => AuthViewModel(
       signUpUseCase: sl(),
       signInUseCase: sl(),
@@ -149,6 +171,12 @@ Future<void> init() async {
       getRemindersByPetUseCase: sl(),
       deleteReminderUseCase: sl(),
       updatePetUseCase: sl(),
+      getMedicalRecordsUseCase: sl(),
+      getHealthMetricsUseCase: sl(),
+      getVaccinationRecordsUseCase: sl(),
+      addMedicalRecordUseCase: sl(),
+      addHealthMetricsUseCase: sl(),
+      addVaccinationRecordUseCase: sl(),
     ),
   );
 
@@ -162,7 +190,10 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => ServicesViewModel(getServicesUseCase: sl(), addAppointmentUseCase: sl()),
+    () => ServicesViewModel(
+      getServicesUseCase: sl(),
+      addAppointmentUseCase: sl(),
+    ),
   );
 
   sl.registerFactory(

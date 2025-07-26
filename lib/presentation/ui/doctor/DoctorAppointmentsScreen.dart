@@ -421,7 +421,10 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                 // Pet and user info
                 _buildInfoRow('Thú cưng', appointment.notes!.split(',')[0]),
                 const SizedBox(height: 8),
-                _buildInfoRow('Ghi chú', appointment.notes ?? 'Không có ghi chú'),
+                _buildInfoRow(
+                  'Ghi chú',
+                  appointment.notes ?? 'Không có ghi chú',
+                ),
 
                 const SizedBox(height: 16),
 
@@ -470,24 +473,87 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                   ),
 
                 if (appointment.status == 'confirmed')
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        appointmentViewModel.updateAppointmentStatus(
-                          appointment.id!,
-                          'completed',
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            appointmentViewModel.updateAppointmentStatus(
+                              appointment.id!,
+                              'completed',
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('Hoàn thành'),
                         ),
                       ),
-                      child: const Text('Hoàn thành'),
-                    ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                // TODO: Navigate to add medical record screen
+                                // final result = await Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (_) => AddMedicalRecordByDoctorScreen(
+                                //       appointment: appointment,
+                                //       pet: pet, // Need to get pet info
+                                //     ),
+                                //   ),
+                                // );
+                                // if (result == true) {
+                                //   // Refresh appointments
+                                // }
+                              },
+                              icon: const Icon(
+                                Icons.medical_information,
+                                size: 16,
+                              ),
+                              label: const Text('Ghi hồ sơ'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.green,
+                                side: const BorderSide(color: Colors.green),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                // TODO: Navigate to add vaccination record screen
+                                // final result = await Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (_) => AddVaccinationRecordByDoctorScreen(
+                                //       appointment: appointment,
+                                //       pet: pet, // Need to get pet info
+                                //     ),
+                                //   ),
+                                // );
+                                // if (result == true) {
+                                //   // Refresh appointments
+                                // }
+                              },
+                              icon: const Icon(Icons.vaccines, size: 16),
+                              label: const Text('Ghi tiêm chủng'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.orange,
+                                side: const BorderSide(color: Colors.orange),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
               ],
             ),

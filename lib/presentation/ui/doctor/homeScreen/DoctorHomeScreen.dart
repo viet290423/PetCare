@@ -17,7 +17,8 @@ class DoctorHomeScreen extends StatefulWidget {
   State<DoctorHomeScreen> createState() => _DoctorHomeScreenState();
 }
 
-class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProviderStateMixin {
+class _DoctorHomeScreenState extends State<DoctorHomeScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   String _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   bool _hasFetchedAppointments = false;
@@ -82,7 +83,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
           print('Consumer doctor ID: ${doctor?.id}');
 
           // Gọi fetchAppointmentsForDoctor chỉ khi chưa tải và doctor có giá trị
-          if (doctor != null && !_hasFetchedAppointments && appointmentVM.appointments.isEmpty) {
+          if (doctor != null &&
+              !_hasFetchedAppointments &&
+              appointmentVM.appointments.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!appointmentVM.isLoading) {
                 appointmentVM.fetchAppointmentsForDoctor(doctor.id);
@@ -133,7 +136,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
                     if (appointmentVM.error != null) {
                       return Center(child: Text('Lỗi: ${appointmentVM.error}'));
                     }
-                    List<AppointmentModel> filtered = appointmentVM.filteredAppointments;
+                    List<AppointmentModel> filtered =
+                        appointmentVM.filteredAppointments;
                     if (_tabController.index == 2) {
                       filtered = filtered
                           .where((a) => a.status.toLowerCase() == 'completed')
@@ -150,7 +154,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
     );
   }
 
-  Widget _buildHeaderSection(DoctorModel? doctor, AppointmentViewModel appointmentVM) {
+  Widget _buildHeaderSection(
+    DoctorModel? doctor,
+    AppointmentViewModel appointmentVM,
+  ) {
     final stats = appointmentVM.appointmentStats;
     return Container(
       width: double.infinity,
@@ -181,7 +188,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Bác sĩ', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                    const Text(
+                      'Bác sĩ',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
                     Text(
                       doctor?.name ?? 'Chưa cập nhật',
                       style: const TextStyle(
@@ -194,14 +204,21 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
                   'Trực tuyến',
-                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -242,7 +259,12 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -255,7 +277,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           Text(
             title,
@@ -277,7 +303,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
           const SizedBox(width: 10),
           Text(
             'Lịch hẹn ngày ${DateFormat('dd/MM/yyyy').format(DateTime.parse(_selectedDate))}',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.green[700]),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.green[700],
+            ),
           ),
           const Spacer(),
           IconButton(
@@ -353,7 +383,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusColor(appointment.status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -387,12 +420,19 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
               ),
               child: Row(
                 children: [
-                  Icon(Icons.medical_services, color: Colors.green[600], size: 20),
+                  Icon(
+                    Icons.medical_services,
+                    color: Colors.green[600],
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       appointment.serviceTitle ?? "Dịch vụ không xác định",
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -411,7 +451,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.green,
                       side: const BorderSide(color: Colors.green),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),
@@ -426,7 +468,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),

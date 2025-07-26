@@ -3,10 +3,19 @@ import 'package:petcare/data/model/PetModel.dart';
 import 'package:petcare/domain/usecase/pet/GetRemindersByPetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/PetUseCase.dart';
 import 'package:petcare/domain/usecase/pet/UpdatePetUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetMedicalRecordsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetHealthMetricsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/GetVaccinationRecordsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddMedicalRecordUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddHealthMetricsUseCase.dart';
+import 'package:petcare/domain/usecase/pet/AddVaccinationRecordUseCase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../data/model/AppointmentModel.dart';
 import '../../../../data/model/ReminderModel.dart';
+import '../../../../data/model/MedicalRecordModel.dart';
+import '../../../../data/model/HealthMetricsModel.dart';
+import '../../../../data/model/VaccinationRecordModel.dart';
 import '../../../../domain/usecase/pet/DeleteReminderUseCase.dart';
 
 class UserHomeViewModel with ChangeNotifier {
@@ -14,6 +23,12 @@ class UserHomeViewModel with ChangeNotifier {
   final GetRemindersByPetUseCase getRemindersByPetUseCase;
   final DeleteReminderUseCase deleteReminderUseCase;
   final UpdatePetUseCase updatePetUseCase;
+  final GetMedicalRecordsUseCase getMedicalRecordsUseCase;
+  final GetHealthMetricsUseCase getHealthMetricsUseCase;
+  final GetVaccinationRecordsUseCase getVaccinationRecordsUseCase;
+  final AddMedicalRecordUseCase addMedicalRecordUseCase;
+  final AddHealthMetricsUseCase addHealthMetricsUseCase;
+  final AddVaccinationRecordUseCase addVaccinationRecordUseCase;
 
   List<PetModel> _pets = [];
   bool _isLoading = false;
@@ -23,17 +38,36 @@ class UserHomeViewModel with ChangeNotifier {
   final Map<String, List<ReminderModel>> _remindersCache = {};
   final Map<String, List<AppointmentModel>> _appointmentsCache = {};
 
+  // Cache cho records
+  final Map<String, List<MedicalRecordModel>> _medicalRecordsCache = {};
+  final Map<String, List<HealthMetricsModel>> _healthMetricsCache = {};
+  final Map<String, List<VaccinationRecordModel>> _vaccinationRecordsCache = {};
+
   UserHomeViewModel({
     required this.getPetData,
     required this.getRemindersByPetUseCase,
     required this.deleteReminderUseCase,
     required this.updatePetUseCase,
+    required this.getMedicalRecordsUseCase,
+    required this.getHealthMetricsUseCase,
+    required this.getVaccinationRecordsUseCase,
+    required this.addMedicalRecordUseCase,
+    required this.addHealthMetricsUseCase,
+    required this.addVaccinationRecordUseCase,
   });
 
   List<PetModel> get pets => _pets;
   List<ReminderModel> get reminders => _remindersCache[selectedPetId] ?? [];
   List<AppointmentModel> get appointments =>
       _appointmentsCache[selectedPetId] ?? [];
+
+  // Records getters
+  List<MedicalRecordModel> get medicalRecords =>
+      _medicalRecordsCache[selectedPetId] ?? [];
+  List<HealthMetricsModel> get healthMetrics =>
+      _healthMetricsCache[selectedPetId] ?? [];
+  List<VaccinationRecordModel> get vaccinationRecords =>
+      _vaccinationRecordsCache[selectedPetId] ?? [];
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -131,11 +165,110 @@ class UserHomeViewModel with ChangeNotifier {
       _appointmentsCache[petId] = appointments;
       _error = null;
     } catch (e) {
-      _error = e.toString();
+      _error = 'Lỗi khi tải lịch hẹn: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Medical Records methods
+  Future<void> fetchMedicalRecords(
+    String petId, {
+    bool forceRefresh = false,
+  }) async {
+    selectedPetId = petId;
+
+    if (!forceRefresh && _medicalRecordsCache.containsKey(petId)) {
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final result = await getMedicalRecordsUseCase(petId);
+      result.fold((error) => _error = error, (records) {
+        _medicalRecordsCache[petId] = records;
+        _error = null;
+      });
+    } catch (e) {
+      _error = 'Lỗi khi tải hồ sơ y tế: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Health Metrics methods
+  Future<void> fetchHealthMetrics(
+    String petId, {
+    bool forceRefresh = false,
+  }) async {
+    selectedPetId = petId;
+
+    if (!forceRefresh && _healthMetricsCache.containsKey(petId)) {
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final result = await getHealthMetricsUseCase(petId);
+      result.fold((error) => _error = error, (metrics) {
+        _healthMetricsCache[petId] = metrics;
+        _error = null;
+      });
+    } catch (e) {
+      _error = 'Lỗi khi tải chỉ số sức khỏe: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Vaccination Records methods
+  Future<void> fetchVaccinationRecords(
+    String petId, {
+    bool forceRefresh = false,
+  }) async {
+    selectedPetId = petId;
+
+    if (!forceRefresh && _vaccinationRecordsCache.containsKey(petId)) {
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final result = await getVaccinationRecordsUseCase(petId);
+      result.fold((error) => _error = error, (records) {
+        _vaccinationRecordsCache[petId] = records;
+        _error = null;
+      });
+    } catch (e) {
+      _error = 'Lỗi khi tải lịch sử tiêm chủng: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Fetch all records for a pet
+  Future<void> fetchAllRecords(
+    String petId, {
+    bool forceRefresh = false,
+  }) async {
+    await Future.wait([
+      fetchMedicalRecords(petId, forceRefresh: forceRefresh),
+      fetchHealthMetrics(petId, forceRefresh: forceRefresh),
+      fetchVaccinationRecords(petId, forceRefresh: forceRefresh),
+    ]);
   }
 
   Future<void> updatePet(PetModel pet) async {
@@ -147,6 +280,108 @@ class UserHomeViewModel with ChangeNotifier {
   void clearCache() {
     _remindersCache.clear();
     _appointmentsCache.clear();
-    notifyListeners();
+    _medicalRecordsCache.clear();
+    _healthMetricsCache.clear();
+    _vaccinationRecordsCache.clear();
+  }
+
+  // Helper methods for records
+  List<MedicalRecordModel> getRecentMedicalRecords({int limit = 5}) {
+    final records = medicalRecords;
+    records.sort((a, b) => b.recordDate.compareTo(a.recordDate));
+    return records.take(limit).toList();
+  }
+
+  List<HealthMetricsModel> getRecentHealthMetrics({int limit = 10}) {
+    final metrics = healthMetrics;
+    metrics.sort((a, b) => b.date.compareTo(a.date));
+    return metrics.take(limit).toList();
+  }
+
+  List<VaccinationRecordModel> getUpcomingVaccinations() {
+    final now = DateTime.now();
+    return vaccinationRecords.where((record) {
+      if (record.nextDueDate == null) return false;
+      return record.nextDueDate!.isAfter(now) &&
+          record.nextDueDate!.difference(now).inDays <= 90;
+    }).toList();
+  }
+
+  List<VaccinationRecordModel> getOverdueVaccinations() {
+    return vaccinationRecords.where((record) => record.isOverdue).toList();
+  }
+
+  // Health summary calculations
+  double? getLatestWeight() {
+    final metrics = healthMetrics;
+    if (metrics.isEmpty) return null;
+    metrics.sort((a, b) => b.date.compareTo(a.date));
+    return metrics.first.weight;
+  }
+
+  String getHealthStatus() {
+    final overdueVaccinations = getOverdueVaccinations();
+    if (overdueVaccinations.isNotEmpty) {
+      return 'Cần tiêm chủng';
+    }
+
+    final upcomingVaccinations = getUpcomingVaccinations();
+    if (upcomingVaccinations.isNotEmpty) {
+      return 'Sắp đến hạn tiêm chủng';
+    }
+
+    return 'Sức khỏe tốt';
+  }
+
+  // Add methods
+  Future<void> addMedicalRecord(MedicalRecordModel record) async {
+    try {
+      final result = await addMedicalRecordUseCase(record);
+      result.fold((error) => _error = error, (_) {
+        _error = null;
+        // Refresh records after adding
+        if (selectedPetId != null) {
+          fetchMedicalRecords(selectedPetId!, forceRefresh: true);
+        }
+      });
+      notifyListeners();
+    } catch (e) {
+      _error = 'Lỗi khi thêm hồ sơ y tế: $e';
+      notifyListeners();
+    }
+  }
+
+  Future<void> addHealthMetrics(HealthMetricsModel metrics) async {
+    try {
+      final result = await addHealthMetricsUseCase(metrics);
+      result.fold((error) => _error = error, (_) {
+        _error = null;
+        // Refresh records after adding
+        if (selectedPetId != null) {
+          fetchHealthMetrics(selectedPetId!, forceRefresh: true);
+        }
+      });
+      notifyListeners();
+    } catch (e) {
+      _error = 'Lỗi khi thêm chỉ số sức khỏe: $e';
+      notifyListeners();
+    }
+  }
+
+  Future<void> addVaccinationRecord(VaccinationRecordModel record) async {
+    try {
+      final result = await addVaccinationRecordUseCase(record);
+      result.fold((error) => _error = error, (_) {
+        _error = null;
+        // Refresh records after adding
+        if (selectedPetId != null) {
+          fetchVaccinationRecords(selectedPetId!, forceRefresh: true);
+        }
+      });
+      notifyListeners();
+    } catch (e) {
+      _error = 'Lỗi khi thêm lịch sử tiêm chủng: $e';
+      notifyListeners();
+    }
   }
 }

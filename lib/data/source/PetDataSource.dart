@@ -4,6 +4,9 @@ import '../model/AppointmentModel.dart';
 import '../model/HealthStatusModel.dart';
 import '../model/PetModel.dart';
 import '../model/ReminderModel.dart';
+import '../model/MedicalRecordModel.dart';
+import '../model/HealthMetricsModel.dart';
+import '../model/VaccinationRecordModel.dart';
 
 abstract class PetDataSource {
   Future<List<PetModel>> getPets();
@@ -22,7 +25,25 @@ abstract class PetDataSource {
 
   Future<void> deleteReminder(String reminderId);
 
-  Future<void> updatePet(PetModel pet); // thêm hàm này
+  Future<void> updatePet(PetModel pet);
+
+  // Medical Records
+  Future<List<MedicalRecordModel>> getMedicalRecords(String petId);
+  Future<void> addMedicalRecord(MedicalRecordModel record);
+  Future<void> updateMedicalRecord(MedicalRecordModel record);
+  Future<void> deleteMedicalRecord(String recordId);
+
+  // Health Metrics
+  Future<List<HealthMetricsModel>> getHealthMetrics(String petId);
+  Future<void> addHealthMetrics(HealthMetricsModel metrics);
+  Future<void> updateHealthMetrics(HealthMetricsModel metrics);
+  Future<void> deleteHealthMetrics(String metricsId);
+
+  // Vaccination Records
+  Future<List<VaccinationRecordModel>> getVaccinationRecords(String petId);
+  Future<void> addVaccinationRecord(VaccinationRecordModel record);
+  Future<void> updateVaccinationRecord(VaccinationRecordModel record);
+  Future<void> deleteVaccinationRecord(String recordId);
 }
 
 class PetDataSourceImpl implements PetDataSource {
@@ -128,13 +149,163 @@ class PetDataSourceImpl implements PetDataSource {
 
   @override
   Future<void> updatePet(PetModel pet) async {
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) throw Exception('Người dùng chưa đăng nhập');
-    final data = pet.toJson();
     try {
-      await client.from('pets').update(data).eq('id', pet.id);
+      await client.from('pets').update(pet.toJson()).eq('id', pet.id);
     } catch (e) {
-      throw Exception('Cập nhật thú cưng thất bại: ${e.toString()}');
+      throw Exception('Lỗi khi cập nhật thú cưng: $e');
+    }
+  }
+
+  // Medical Records Implementation
+  @override
+  Future<List<MedicalRecordModel>> getMedicalRecords(String petId) async {
+    try {
+      final response = await client
+          .from('medical_records')
+          .select()
+          .eq('pet_id', petId)
+          .order('record_date', ascending: false);
+
+      return (response as List)
+          .map(
+            (item) => MedicalRecordModel.fromJson(item as Map<String, dynamic>),
+          )
+          .toList();
+    } catch (e) {
+      throw Exception('Lỗi khi lấy hồ sơ y tế: $e');
+    }
+  }
+
+  @override
+  Future<void> addMedicalRecord(MedicalRecordModel record) async {
+    try {
+      await client.from('medical_records').insert(record.toJson());
+    } catch (e) {
+      throw Exception('Lỗi khi thêm hồ sơ y tế: $e');
+    }
+  }
+
+  @override
+  Future<void> updateMedicalRecord(MedicalRecordModel record) async {
+    try {
+      await client
+          .from('medical_records')
+          .update(record.toJson())
+          .eq('id', record.id);
+    } catch (e) {
+      throw Exception('Lỗi khi cập nhật hồ sơ y tế: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteMedicalRecord(String recordId) async {
+    try {
+      await client.from('medical_records').delete().eq('id', recordId);
+    } catch (e) {
+      throw Exception('Lỗi khi xóa hồ sơ y tế: $e');
+    }
+  }
+
+  // Health Metrics Implementation
+  @override
+  Future<List<HealthMetricsModel>> getHealthMetrics(String petId) async {
+    try {
+      final response = await client
+          .from('health_metrics')
+          .select()
+          .eq('pet_id', petId)
+          .order('date', ascending: false);
+
+      return (response as List)
+          .map(
+            (item) => HealthMetricsModel.fromJson(item as Map<String, dynamic>),
+          )
+          .toList();
+    } catch (e) {
+      throw Exception('Lỗi khi lấy chỉ số sức khỏe: $e');
+    }
+  }
+
+  @override
+  Future<void> addHealthMetrics(HealthMetricsModel metrics) async {
+    try {
+      await client.from('health_metrics').insert(metrics.toJson());
+    } catch (e) {
+      throw Exception('Lỗi khi thêm chỉ số sức khỏe: $e');
+    }
+  }
+
+  @override
+  Future<void> updateHealthMetrics(HealthMetricsModel metrics) async {
+    try {
+      await client
+          .from('health_metrics')
+          .update(metrics.toJson())
+          .eq('id', metrics.id);
+    } catch (e) {
+      throw Exception('Lỗi khi cập nhật chỉ số sức khỏe: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteHealthMetrics(String metricsId) async {
+    try {
+      await client.from('health_metrics').delete().eq('id', metricsId);
+    } catch (e) {
+      throw Exception('Lỗi khi xóa chỉ số sức khỏe: $e');
+    }
+  }
+
+  // Vaccination Records Implementation
+  @override
+  Future<List<VaccinationRecordModel>> getVaccinationRecords(
+    String petId,
+  ) async {
+    try {
+      final response = await client
+          .from('vaccination_records')
+          .select()
+          .eq('pet_id', petId)
+          .order('vaccination_date', ascending: false);
+
+      return (response as List)
+          .map(
+            (item) =>
+                VaccinationRecordModel.fromJson(item as Map<String, dynamic>),
+          )
+          .toList();
+    } catch (e) {
+      throw Exception('Lỗi khi lấy lịch sử tiêm chủng: $e');
+    }
+  }
+
+  @override
+  Future<void> addVaccinationRecord(VaccinationRecordModel record) async {
+    try {
+      await client.from('vaccination_records').insert(record.toJson());
+    } catch (e) {
+      throw Exception('Lỗi khi thêm lịch sử tiêm chủng: $e');
+    }
+  }
+
+  @override
+  Future<void> updateVaccinationRecord(VaccinationRecordModel record) async {
+    try {
+      await client
+          .from('vaccination_records')
+          .update(record.toJson())
+          .eq('id', record.id);
+    } catch (e) {
+      throw Exception('Lỗi khi cập nhật lịch sử tiêm chủng: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteVaccinationRecord(String recordId) async {
+    try {
+      await client.from('vaccination_records').delete().eq('id', recordId);
+    } catch (e) {
+      throw Exception('Lỗi khi xóa lịch sử tiêm chủng: $e');
     }
   }
 }

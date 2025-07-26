@@ -34,16 +34,23 @@ class DoctorDataSourceImpl implements DoctorDataSource {
   @override
   Future<DoctorModel?> getDoctorByUserId(String userId) async {
     try {
-      print('Querying doctor with userId: $userId');
+      print('DoctorDataSource: Querying doctor with userId: $userId');
       final response = await client
           .from('doctors')
           .select()
           .eq('user_id', userId)
           .single();
-      print('Response from Supabase: $response');
-      return DoctorModel.fromJson(response);
+      print('DoctorDataSource: Response from Supabase: $response');
+      final doctor = DoctorModel.fromJson(response);
+      print(
+        'DoctorDataSource: Parsed doctor: ${doctor.name}, id: ${doctor.id}',
+      );
+      return doctor;
     } catch (e) {
-      print('Lỗi khi lấy bác sĩ theo user_id: $e');
+      print('DoctorDataSource: Lỗi khi lấy bác sĩ theo user_id: $e');
+      if (e.toString().contains('No rows found')) {
+        print('DoctorDataSource: Không tìm thấy bác sĩ với user_id: $userId');
+      }
       return null; // Trả về null nếu không tìm thấy
     }
   }

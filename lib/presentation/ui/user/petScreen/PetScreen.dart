@@ -10,6 +10,9 @@ import '../../pet/AddReminderScreen.dart';
 import '../homeScreen/UserHomeViewModel.dart';
 import '../../pet/PetViewModel.dart';
 import '../../../../services/notification_service.dart';
+import 'AddMedicalRecordScreen.dart';
+import 'AddHealthMetricsScreen.dart';
+import 'AddVaccinationRecordScreen.dart';
 
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
@@ -36,6 +39,7 @@ class _PetScreenState extends State<PetScreen>
         viewModel.selectedPetId = petId;
         await viewModel.fetchReminders(petId, forceRefresh: true);
         await viewModel.fetchAppointments(petId, forceRefresh: true);
+        await viewModel.fetchAllRecords(petId, forceRefresh: true);
         setState(() {
           _isInitialized = true;
         });
@@ -155,6 +159,7 @@ class _PetScreenState extends State<PetScreen>
                                     viewModel.selectedPetId = pet.id;
                                     await viewModel.fetchReminders(pet.id);
                                     await viewModel.fetchAppointments(pet.id);
+                                    await viewModel.fetchAllRecords(pet.id);
                                     setState(() {});
                                   },
                                   child: Material(
@@ -968,28 +973,67 @@ class _PetScreenState extends State<PetScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.shade100,
-                                          borderRadius: BorderRadius.circular(
-                                            10,
+                                      Row(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.green.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: const EdgeInsets.all(6),
+                                            child: const Icon(
+                                              Icons.insert_chart_outlined,
+                                              color: Colors.green,
+                                              size: 22,
+                                            ),
                                           ),
-                                        ),
-                                        padding: const EdgeInsets.all(6),
-                                        child: const Icon(
-                                          Icons.insert_chart_outlined,
-                                          color: Colors.green,
-                                          size: 22,
-                                        ),
+                                          const SizedBox(width: 10),
+                                          const Text(
+                                            "Hồ sơ & Chỉ số sức khỏe",
+                                            style: TextStyle(
+                                              fontSize: 21,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 10),
-                                      const Text(
-                                        "Hồ sơ & Lịch sử",
-                                        style: TextStyle(
-                                          fontSize: 21,
-                                          fontWeight: FontWeight.bold,
+                                      IconButton(
+                                        onPressed: () async {
+                                          final selectedPet = viewModel.pets
+                                              .firstWhere(
+                                                (p) =>
+                                                    p.id ==
+                                                    viewModel.selectedPetId,
+                                                orElse: () =>
+                                                    viewModel.pets.first,
+                                              );
+
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  AddHealthMetricsScreen(
+                                                    pet: selectedPet,
+                                                  ),
+                                            ),
+                                          );
+                                          if (result == true) {
+                                            await viewModel.fetchAllRecords(
+                                              selectedPet.id,
+                                              forceRefresh: true,
+                                            );
+                                          }
+                                        },
+                                        icon: const Icon(
+                                          Icons.add_circle,
+                                          color: Colors.green,
+                                          size: 28,
                                         ),
+                                        tooltip: 'Thêm chỉ số sức khỏe',
                                       ),
                                     ],
                                   ),
@@ -1003,6 +1047,15 @@ class _PetScreenState extends State<PetScreen>
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Hồ sơ y tế và tiêm chủng được cập nhật tự động từ bác sĩ",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
                                   const SizedBox(height: 12),
 
                                   Row(
@@ -1010,9 +1063,19 @@ class _PetScreenState extends State<PetScreen>
                                       Expanded(
                                         child: _buildHealthCard(
                                           title: "Cân nặng",
-                                          value: "5.2 kg",
-                                          trend: "+0.3 kg",
-                                          isPositive: true,
+                                          value:
+                                              viewModel.getLatestWeight() !=
+                                                  null
+                                              ? "${viewModel.getLatestWeight()!.toStringAsFixed(1)} kg"
+                                              : "Chưa có dữ liệu",
+                                          trend:
+                                              viewModel.getLatestWeight() !=
+                                                  null
+                                              ? "Cập nhật gần đây"
+                                              : "Cần cập nhật",
+                                          isPositive:
+                                              viewModel.getLatestWeight() !=
+                                              null,
                                           icon: Icons.monitor_weight,
                                           color: Colors.blue.shade50,
                                         ),
@@ -1020,12 +1083,24 @@ class _PetScreenState extends State<PetScreen>
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: _buildHealthCard(
-                                          title: "Tuổi",
-                                          value: "2 tuổi",
-                                          trend: "Trưởng thành",
-                                          isPositive: true,
-                                          icon: Icons.cake,
-                                          color: Colors.pink.shade50,
+                                          title: "Tình trạng",
+                                          value: viewModel.getHealthStatus(),
+                                          trend:
+                                              viewModel
+                                                  .getOverdueVaccinations()
+                                                  .isNotEmpty
+                                              ? "Cần chú ý"
+                                              : "Bình thường",
+                                          isPositive: viewModel
+                                              .getOverdueVaccinations()
+                                              .isEmpty,
+                                          icon: Icons.health_and_safety,
+                                          color:
+                                              viewModel
+                                                  .getOverdueVaccinations()
+                                                  .isNotEmpty
+                                              ? Colors.red.shade50
+                                              : Colors.green.shade50,
                                         ),
                                       ),
                                     ],
@@ -1038,22 +1113,47 @@ class _PetScreenState extends State<PetScreen>
                                       Expanded(
                                         child: _buildHealthCard(
                                           title: "Tiêm chủng",
-                                          value: "Đầy đủ",
-                                          trend: "Cập nhật",
-                                          isPositive: true,
+                                          value:
+                                              viewModel
+                                                  .getOverdueVaccinations()
+                                                  .isEmpty
+                                              ? "Đầy đủ"
+                                              : "${viewModel.getOverdueVaccinations().length} mũi quá hạn",
+                                          trend:
+                                              viewModel
+                                                  .getUpcomingVaccinations()
+                                                  .isNotEmpty
+                                              ? "${viewModel.getUpcomingVaccinations().length} mũi sắp đến hạn"
+                                              : "Cập nhật",
+                                          isPositive: viewModel
+                                              .getOverdueVaccinations()
+                                              .isEmpty,
                                           icon: Icons.vaccines,
-                                          color: Colors.green.shade50,
+                                          color:
+                                              viewModel
+                                                  .getOverdueVaccinations()
+                                                  .isEmpty
+                                              ? Colors.green.shade50
+                                              : Colors.orange.shade50,
                                         ),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: _buildHealthCard(
-                                          title: "Khám định kỳ",
-                                          value: "3 tháng trước",
-                                          trend: "Sắp đến hạn",
-                                          isPositive: false,
+                                          title: "Hồ sơ y tế",
+                                          value:
+                                              "${viewModel.medicalRecords.length} bản ghi",
+                                          trend:
+                                              viewModel
+                                                  .medicalRecords
+                                                  .isNotEmpty
+                                              ? "Cập nhật gần đây"
+                                              : "Chưa có dữ liệu",
+                                          isPositive: viewModel
+                                              .medicalRecords
+                                              .isNotEmpty,
                                           icon: Icons.medical_services,
-                                          color: Colors.orange.shade50,
+                                          color: Colors.purple.shade50,
                                         ),
                                       ),
                                     ],
@@ -1071,33 +1171,55 @@ class _PetScreenState extends State<PetScreen>
                                   ),
                                   const SizedBox(height: 12),
 
-                                  _buildMedicalRecordCard(
-                                    date: "15/12/2024",
-                                    title: "Khám định kỳ",
-                                    description:
-                                        "Sức khỏe tốt, tiêm vaccine cúm",
-                                    doctor: "BS. Nguyễn Văn A",
-                                    status: "Hoàn thành",
-                                    isCompleted: true,
-                                  ),
-
-                                  _buildMedicalRecordCard(
-                                    date: "20/11/2024",
-                                    title: "Tiêm vaccine",
-                                    description: "Tiêm vaccine 5 trong 1",
-                                    doctor: "BS. Trần Thị B",
-                                    status: "Hoàn thành",
-                                    isCompleted: true,
-                                  ),
-
-                                  _buildMedicalRecordCard(
-                                    date: "05/10/2024",
-                                    title: "Khám bệnh",
-                                    description: "Điều trị viêm tai",
-                                    doctor: "BS. Lê Văn C",
-                                    status: "Đang điều trị",
-                                    isCompleted: false,
-                                  ),
+                                  if (viewModel.medicalRecords.isEmpty)
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Column(
+                                          children: [
+                                            Icon(
+                                              Icons
+                                                  .medical_information_outlined,
+                                              size: 48,
+                                              color: Colors.grey[400],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Chưa có hồ sơ y tế',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              'Hồ sơ y tế sẽ hiển thị ở đây',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[500],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    ...viewModel
+                                        .getRecentMedicalRecords(limit: 5)
+                                        .map(
+                                          (record) => _buildMedicalRecordCard(
+                                            date:
+                                                "${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}",
+                                            title: record.title,
+                                            description: record.description,
+                                            doctor:
+                                                record.doctorName ??
+                                                "Không có thông tin",
+                                            status: record.status,
+                                            isCompleted:
+                                                record.status == 'completed',
+                                          ),
+                                        ),
 
                                   const SizedBox(height: 24),
 

@@ -129,25 +129,35 @@ class AuthViewModel with ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    print('AuthViewModel: Bắt đầu đăng nhập với email: $email');
     final result = await signInUseCase(email: email, password: password);
 
     result.fold(
       (failure) {
+        print('AuthViewModel: Đăng nhập thất bại: ${failure.message}');
         _error = 'Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.';
         _setError(_error);
         _user = null;
       },
       (user) async {
+        print(
+          'AuthViewModel: Đăng nhập thành công với user: ${user.email}, uid: ${user.uid}, role: ${user.role}',
+        );
         _error = null;
         _user = user;
         // Lấy thông tin bác sĩ nếu email có định dạng doctorPetCare.com
         if (email.endsWith('@doctorPetCare.com')) {
           print('AuthViewModel: Lấy thông tin bác sĩ cho userId: ${user.uid}');
-          final doctor = await getDoctorByUserIdUseCase.execute(
-            userId: user.uid,
-          );
-          print('AuthViewModel: Kết quả doctor: $doctor');
-          _setDoctor(doctor);
+          try {
+            final doctor = await getDoctorByUserIdUseCase.execute(
+              userId: user.uid,
+            );
+            print('AuthViewModel: Kết quả doctor: $doctor');
+            _setDoctor(doctor);
+          } catch (e) {
+            print('AuthViewModel: Lỗi khi lấy thông tin doctor: $e');
+            _setDoctor(null);
+          }
         }
       },
     );
@@ -168,18 +178,37 @@ class AuthViewModel with ChangeNotifier {
 
   Future<void> checkCurrentUser() async {
     _setLoading(true);
+    print('AuthViewModel: Bắt đầu checkCurrentUser');
     final result = await getCurrentUserUseCase();
-    result.fold((_) => _setUser(null), (user) async {
-      _setUser(user);
-      if (user.email.endsWith('@doctorPetCare.com')) {
+    result.fold(
+      (_) {
+        print('AuthViewModel: checkCurrentUser - Không có user hiện tại');
+        _setUser(null);
+      },
+      (user) async {
         print(
-          'AuthViewModel: checkCurrentUser - Lấy thông tin bác sĩ cho userId: ${user.uid}',
+          'AuthViewModel: checkCurrentUser - Tìm thấy user: ${user.email}, uid: ${user.uid}, role: ${user.role}',
         );
-        final doctor = await getDoctorByUserIdUseCase.execute(userId: user.uid);
-        print('AuthViewModel: checkCurrentUser - Kết quả doctor: $doctor');
-        _setDoctor(doctor);
-      }
-    });
+        _setUser(user);
+        if (user.email.endsWith('@doctorPetCare.com')) {
+          print(
+            'AuthViewModel: checkCurrentUser - Lấy thông tin bác sĩ cho userId: ${user.uid}',
+          );
+          try {
+            final doctor = await getDoctorByUserIdUseCase.execute(
+              userId: user.uid,
+            );
+            print('AuthViewModel: checkCurrentUser - Kết quả doctor: $doctor');
+            _setDoctor(doctor);
+          } catch (e) {
+            print(
+              'AuthViewModel: checkCurrentUser - Lỗi khi lấy thông tin doctor: $e',
+            );
+            _setDoctor(null);
+          }
+        }
+      },
+    );
     _setLoading(false);
   }
 
