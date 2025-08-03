@@ -7,8 +7,9 @@ class AppointmentViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   String _selectedDate = 'today'; // today, tomorrow, week
-  String _selectedStatus = 'all'; // all, pending, confirmed, completed, cancelled
-  late final RealtimeChannel _channel;
+  String _selectedStatus =
+      'all'; // all, pending, confirmed, completed, cancelled
+  RealtimeChannel? _channel;
 
   List<AppointmentModel> get appointments => _appointments;
   bool get isLoading => _isLoading;
@@ -55,7 +56,8 @@ class AppointmentViewModel extends ChangeNotifier {
 
     if (_selectedStatus != 'all') {
       filtered = filtered.where((appointment) {
-        return appointment.status.toLowerCase() == _selectedStatus.toLowerCase();
+        return appointment.status.toLowerCase() ==
+            _selectedStatus.toLowerCase();
       }).toList();
     }
 
@@ -127,36 +129,39 @@ class AppointmentViewModel extends ChangeNotifier {
   }
 
   void _subscribeToAppointments(String doctorId) {
+    // Unsubscribe from existing channel if any
+    _channel?.unsubscribe();
+
     _channel = Supabase.instance.client
         .channel('appointments-$doctorId')
         .onPostgresChanges(
-      event: PostgresChangeEvent.all, // Lắng nghe tất cả sự kiện (INSERT, UPDATE, DELETE)
-      schema: 'public',
-      table: 'appointments',
-      filter: PostgresChangeFilter(
-        type: PostgresChangeFilterType.eq,
-        column: 'doctor_id=eq.$doctorId',
-        value: 200,
-      ),
-      callback: (payload) {
-        print('Realtime payload: $payload');
-        if (payload.eventType == 'INSERT' ||
-            payload.eventType == 'UPDATE' ||
-            payload.eventType == 'DELETE') {
-          _handleRealtimeUpdate(doctorId, payload);
-        }
-      },
-    )
-        .subscribe(
-          (status, [error]) {
-        if (status == 'SUBSCRIBED') {
-          print('Subscribed to appointments channel for doctor: $doctorId');
-        } else if (error != null) {
-          print('Subscription error: $error');
-        }
-      },
-    );
+          event: PostgresChangeEvent
+              .all, // Lắng nghe tất cả sự kiện (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'appointments',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'doctor_id=eq.$doctorId',
+            value: 200,
+          ),
+          callback: (payload) {
+            print('Realtime payload: $payload');
+            if (payload.eventType == 'INSERT' ||
+                payload.eventType == 'UPDATE' ||
+                payload.eventType == 'DELETE') {
+              _handleRealtimeUpdate(doctorId, payload);
+            }
+          },
+        )
+        .subscribe((status, [error]) {
+          if (status == 'SUBSCRIBED') {
+            print('Subscribed to appointments channel for doctor: $doctorId');
+          } else if (error != null) {
+            print('Subscription error: $error');
+          }
+        });
   }
+
   void _handleRealtimeUpdate(String doctorId, PostgresChangePayload payload) {
     final newData = payload.newRecord as Map<String, dynamic>?;
     final oldData = payload.oldRecord as Map<String, dynamic>?;
@@ -177,7 +182,10 @@ class AppointmentViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateAppointmentStatus(int appointmentId, String newStatus) async {
+  Future<void> updateAppointmentStatus(
+    int appointmentId,
+    String newStatus,
+  ) async {
     try {
       await Future.delayed(const Duration(milliseconds: 500));
       final index = _appointments.indexWhere((app) => app.id == appointmentId);
@@ -205,7 +213,7 @@ class AppointmentViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    _channel.unsubscribe();
+    _channel?.unsubscribe();
     super.dispose();
   }
 }

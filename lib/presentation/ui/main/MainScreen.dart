@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:petcare/presentation/ui/doctor/homeScreen/DoctorHomeScreen.dart';
+import 'package:petcare/presentation/ui/doctor/DoctorScheduleScreen.dart';
+import 'package:petcare/presentation/ui/doctor/DoctorStatsScreen.dart';
+import 'package:petcare/presentation/ui/doctor/MedicalRecordsScreen.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetScreen.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceScreen.dart';
@@ -64,92 +67,91 @@ class _MainScreenState extends State<MainScreen> {
             activeColor: Colors.green,
             tabBackgroundColor: Theme.of(context).colorScheme.onPrimary,
             gap: 5,
-            tabs:
-                isDoctor
-                    ? const [
-                      GButton(
-                        icon: Iconsax.home,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+            tabs: isDoctor
+                ? const [
+                    GButton(
+                      icon: Iconsax.home,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.notification,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.calendar,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.camera,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.chart_2,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.messages,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.direct,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.user,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.user,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                    ]
-                    : const [
-                      GButton(
-                        icon: Iconsax.home,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                  ]
+                : const [
+                    GButton(
+                      icon: Iconsax.home,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.heart_circle,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.heart_circle,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.health,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.health,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.profile_2user,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.profile_2user,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      GButton(
-                        icon: Iconsax.user,
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                    ),
+                    GButton(
+                      icon: Iconsax.user,
+                      iconSize: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                    ],
+                    ),
+                  ],
             onTabChange: (index) {
               setState(() {
                 _currentIndex = index;
@@ -167,19 +169,19 @@ class _MainScreenState extends State<MainScreen> {
         case 0:
           return DoctorHomeScreen();
         case 1:
-          return UserHomeScreen();
+          return DoctorScheduleScreen();
 
         case 2:
-          return UserHomeScreen();
+          return DoctorStatsScreen();
 
         case 3:
-          return UserHomeScreen();
+          return MedicalRecordsScreen();
 
         case 4:
-          return UserHomeScreen();
+          return ProfileScreen();
 
         default:
-          return UserHomeScreen();
+          return DoctorHomeScreen();
       }
     } else {
       switch (index) {

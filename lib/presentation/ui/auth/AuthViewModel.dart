@@ -111,7 +111,6 @@ class AuthViewModel with ChangeNotifier {
     required String password,
     required BuildContext context,
   }) async {
-    // Kiểm tra dữ liệu đầu vào
     if (email.isEmpty || password.isEmpty) {
       _setError('Email hoặc mật khẩu không hợp lệ.');
       notifyListeners();
@@ -129,33 +128,26 @@ class AuthViewModel with ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    print('AuthViewModel: Bắt đầu đăng nhập với email: $email');
     final result = await signInUseCase(email: email, password: password);
 
     result.fold(
       (failure) {
-        print('AuthViewModel: Đăng nhập thất bại: ${failure.message}');
         _error = 'Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.';
         _setError(_error);
         _user = null;
       },
       (user) async {
-        print(
-          'AuthViewModel: Đăng nhập thành công với user: ${user.email}, uid: ${user.uid}, role: ${user.role}',
-        );
         _error = null;
         _user = user;
-        // Lấy thông tin bác sĩ nếu email có định dạng doctorPetCare.com
-        if (email.endsWith('@doctorPetCare.com')) {
-          print('AuthViewModel: Lấy thông tin bác sĩ cho userId: ${user.uid}');
+
+        // Lấy thông tin bác sĩ nếu email có định dạng doctorpetcare.com
+        if (email.toLowerCase().endsWith('@doctorpetcare.com')) {
           try {
             final doctor = await getDoctorByUserIdUseCase.execute(
               userId: user.uid,
             );
-            print('AuthViewModel: Kết quả doctor: $doctor');
             _setDoctor(doctor);
           } catch (e) {
-            print('AuthViewModel: Lỗi khi lấy thông tin doctor: $e');
             _setDoctor(null);
           }
         }
@@ -178,34 +170,48 @@ class AuthViewModel with ChangeNotifier {
 
   Future<void> checkCurrentUser() async {
     _setLoading(true);
-    print('AuthViewModel: Bắt đầu checkCurrentUser');
     final result = await getCurrentUserUseCase();
     result.fold(
       (_) {
-        print('AuthViewModel: checkCurrentUser - Không có user hiện tại');
         _setUser(null);
+        _setDoctor(null);
       },
       (user) async {
-        print(
-          'AuthViewModel: checkCurrentUser - Tìm thấy user: ${user.email}, uid: ${user.uid}, role: ${user.role}',
-        );
         _setUser(user);
-        if (user.email.endsWith('@doctorPetCare.com')) {
-          print(
-            'AuthViewModel: checkCurrentUser - Lấy thông tin bác sĩ cho userId: ${user.uid}',
-          );
-          try {
-            final doctor = await getDoctorByUserIdUseCase.execute(
-              userId: user.uid,
-            );
-            print('AuthViewModel: checkCurrentUser - Kết quả doctor: $doctor');
-            _setDoctor(doctor);
-          } catch (e) {
-            print(
-              'AuthViewModel: checkCurrentUser - Lỗi khi lấy thông tin doctor: $e',
-            );
+
+        // Nếu là doctor, lấy thông tin doctor với retry mechanism
+        if (user.email.toLowerCase().endsWith('@doctorpetcare.com')) {
+          // Retry mechanism - thử tối đa 3 lần
+          int retryCount = 0;
+          const maxRetries = 3;
+          DoctorModel? doctor;
+
+          while (retryCount < maxRetries && doctor == null) {
+            try {
+              doctor = await getDoctorByUserIdUseCase.execute(userId: user.uid);
+
+              if (doctor != null) {
+                _setDoctor(doctor);
+                break; // Thành công, thoát khỏi vòng lặp
+              } else {
+                retryCount++;
+                if (retryCount < maxRetries) {
+                  await Future.delayed(Duration(seconds: 1));
+                }
+              }
+            } catch (e) {
+              retryCount++;
+              if (retryCount < maxRetries) {
+                await Future.delayed(Duration(seconds: 1));
+              }
+            }
+          }
+
+          if (doctor == null) {
             _setDoctor(null);
           }
+        } else {
+          _setDoctor(null);
         }
       },
     );
@@ -228,5 +234,21 @@ class AuthViewModel with ChangeNotifier {
       (user) => _setUser(user),
     );
     return result;
+  }
+
+  // Method để refresh thông tin doctor
+  Future<void> refreshDoctorInfo() async {
+    if (_user == null) return;
+
+    if (_user!.email.toLowerCase().endsWith('@doctorpetcare.com')) {
+      try {
+        final doctor = await getDoctorByUserIdUseCase.execute(
+          userId: _user!.uid,
+        );
+        _setDoctor(doctor);
+      } catch (e) {
+        _setDoctor(null);
+      }
+    }
   }
 }

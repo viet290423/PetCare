@@ -67,6 +67,8 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  bool _hasNavigated = false;
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +87,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
           );
         }
 
-        if (viewModel.user != null) {
+        if (viewModel.user != null && !_hasNavigated) {
+          _hasNavigated = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pushAndRemoveUntil(
               context,
@@ -95,7 +98,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
               (route) => false,
             );
           });
-          return const SizedBox.shrink();
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (viewModel.user == null) {
+          _hasNavigated = false;
         }
 
         return const LoginScreen();
