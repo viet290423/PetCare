@@ -18,9 +18,13 @@ import 'package:provider/provider.dart';
 import 'package:petcare/di/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform
+  );
   await Supabase.initialize(
     url: 'https://rreovfkkdgqsoxfqphrg.supabase.co',
     anonKey:
