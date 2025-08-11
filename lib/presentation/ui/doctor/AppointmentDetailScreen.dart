@@ -10,6 +10,7 @@ import '../../../data/model/ServiceModel.dart';
 import '../../../data/model/DoctorModel.dart';
 import '../auth/AuthViewModel.dart';
 import 'AppointmentViewModel.dart';
+import 'AddMedicalRecordByDoctorScreen.dart';
 
 class AppointmentDetailScreen extends StatefulWidget {
   final AppointmentModel appointment;
@@ -82,17 +83,38 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Future<void> _updateAppointmentStatus(String newStatus) async {
+    final appointmentId = widget.appointment.id;
+    if (appointmentId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Lỗi: ID lịch hẹn không tồn tại'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
     try {
-      await Supabase.instance.client
+      print('Updating appointment ID: $appointmentId to status: $newStatus'); // Thêm log để debug
+      final response = await Supabase.instance.client
           .from('appointments')
           .update({'status': newStatus})
-          .eq('id', widget.appointment.id ?? 0);
+          .eq('id', appointmentId)
+          .select();  // Add select() để lấy updated rows
+
+      print('Update response: $response');  // Log response để check (nên thấy list với 1 row nếu success)
+
+      if (response.isEmpty) {
+        throw Exception('No rows updated. Kiểm tra RLS policy hoặc ID không match.');
+      }
 
       // Refresh appointment data
       final appointmentViewModel = context.read<AppointmentViewModel>();
       final doctor = context.read<AuthViewModel>().doctor;
       if (doctor != null) {
-        appointmentViewModel.fetchAppointmentsForDoctor(doctor.id);
+        await appointmentViewModel.fetchAppointmentsForDoctor(doctor.id); // Await để đảm bảo fetch xong
       }
 
       if (mounted) {
@@ -107,6 +129,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
+      print('Error updating status: $e'); // Thêm log lỗi
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -117,7 +140,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
       }
     }
   }
-
   String _getStatusText(String status) {
     switch (status) {
       case 'pending':
@@ -620,6 +642,48 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: () async {
+                if (petInfo == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Không có thông tin thú cưng để ghi hồ sơ'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddMedicalRecordByDoctorScreen(
+                      appointment: widget.appointment,
+                      pet: petInfo!,
+                    ),
+                  ),
+                );
+                if (result == true) {
+                  final doctor = context.read<AuthViewModel>().doctor;
+                  if (doctor != null) {
+                    await context
+                        .read<AppointmentViewModel>()
+                        .fetchAppointmentsForDoctor(doctor.id);
+                  }
+                }
+              },
+              icon: const Icon(Icons.medical_information),
+              label: const Text('Ghi hồ sơ bệnh án'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.green,
+                side: const BorderSide(color: Colors.green),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

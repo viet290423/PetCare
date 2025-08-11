@@ -135,31 +135,30 @@ class AppointmentViewModel extends ChangeNotifier {
     _channel = Supabase.instance.client
         .channel('appointments-$doctorId')
         .onPostgresChanges(
-          event: PostgresChangeEvent
-              .all, // Lắng nghe tất cả sự kiện (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'appointments',
-          filter: PostgresChangeFilter(
-            type: PostgresChangeFilterType.eq,
-            column: 'doctor_id=eq.$doctorId',
-            value: 200,
-          ),
-          callback: (payload) {
-            print('Realtime payload: $payload');
-            if (payload.eventType == 'INSERT' ||
-                payload.eventType == 'UPDATE' ||
-                payload.eventType == 'DELETE') {
-              _handleRealtimeUpdate(doctorId, payload);
-            }
-          },
-        )
+      event: PostgresChangeEvent.all, // Lắng nghe tất cả sự kiện (INSERT, UPDATE, DELETE)
+      schema: 'public',
+      table: 'appointments',
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'doctor_id',
+        value: doctorId, // Sửa value thành doctorId thay vì hardcode 200
+      ),
+      callback: (payload) {
+        print('Realtime payload: $payload');
+        if (payload.eventType == 'INSERT' ||
+            payload.eventType == 'UPDATE' ||
+            payload.eventType == 'DELETE') {
+          _handleRealtimeUpdate(doctorId, payload);
+        }
+      },
+    )
         .subscribe((status, [error]) {
-          if (status == 'SUBSCRIBED') {
-            print('Subscribed to appointments channel for doctor: $doctorId');
-          } else if (error != null) {
-            print('Subscription error: $error');
-          }
-        });
+      if (status == 'SUBSCRIBED') {
+        print('Subscribed to appointments channel for doctor: $doctorId');
+      } else if (error != null) {
+        print('Subscription error: $error');
+      }
+    });
   }
 
   void _handleRealtimeUpdate(String doctorId, PostgresChangePayload payload) {

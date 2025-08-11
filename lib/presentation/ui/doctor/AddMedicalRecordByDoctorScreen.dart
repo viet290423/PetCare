@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../data/model/MedicalRecordModel.dart';
 import '../../../data/model/AppointmentModel.dart';
 import '../../../data/model/PetModel.dart';
 import 'AppointmentViewModel.dart';
+import '../../../domain/usecase/pet/AddMedicalRecordUseCase.dart';
 
 class AddMedicalRecordByDoctorScreen extends StatefulWidget {
   final AppointmentModel appointment;
@@ -104,10 +106,7 @@ class _AddMedicalRecordByDoctorScreenState
     if (!_formKey.currentState!.validate()) return;
 
     try {
-      final appointmentViewModel = Provider.of<AppointmentViewModel>(
-        context,
-        listen: false,
-      );
+      final appointmentViewModel = Provider.of<AppointmentViewModel>(context, listen: false);
 
       final record = MedicalRecordModel(
         id: const Uuid().v4(),
@@ -130,8 +129,13 @@ class _AddMedicalRecordByDoctorScreenState
         updatedAt: DateTime.now(),
       );
 
-      // TODO: Implement add medical record use case for doctor
-      // await appointmentViewModel.addMedicalRecord(record);
+      // Lưu hồ sơ y tế thông qua use case đã đăng ký trong DI
+      final addMedicalRecordUseCase = GetIt.I<AddMedicalRecordUseCase>();
+      final result = await addMedicalRecordUseCase(record);
+      result.fold(
+        (error) => throw Exception(error),
+        (_) => null,
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
