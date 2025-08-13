@@ -13,6 +13,8 @@ import '../../../../services/notification_service.dart';
 import 'AddMedicalRecordScreen.dart';
 import 'AddHealthMetricsScreen.dart';
 import 'AddVaccinationRecordScreen.dart';
+import 'MedicalRecordDetailScreen.dart';
+import 'MedicalRecordsListScreen.dart';
 
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
@@ -1040,12 +1042,33 @@ class _PetScreenState extends State<PetScreen>
                                   const SizedBox(height: 16),
 
                                   // Health summary cards
-                                  const Text(
-                                    "Tóm tắt sức khỏe",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Tóm tắt sức khỏe",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      if (viewModel.selectedPetId != null && viewModel.pets.isNotEmpty)
+                                        TextButton(
+                                          onPressed: () {
+                                            final selectedPet = viewModel.pets.firstWhere(
+                                              (p) => p.id == viewModel.selectedPetId,
+                                              orElse: () => viewModel.pets.first,
+                                            );
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => MedicalRecordsListScreen(pet: selectedPet),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('Xem tất cả', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                                        ),
+                                    ],
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -1207,17 +1230,27 @@ class _PetScreenState extends State<PetScreen>
                                     ...viewModel
                                         .getRecentMedicalRecords(limit: 5)
                                         .map(
-                                          (record) => _buildMedicalRecordCard(
-                                            date:
-                                                "${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}",
-                                            title: record.title,
-                                            description: record.description,
-                                            doctor:
-                                                record.doctorName ??
-                                                "Không có thông tin",
-                                            status: record.status,
-                                            isCompleted:
-                                                record.status == 'completed',
+                                          (record) => GestureDetector(
+                                            onTap: () {
+                                              final selectedPet = viewModel.pets.firstWhere(
+                                                (p) => p.id == viewModel.selectedPetId,
+                                                orElse: () => viewModel.pets.first,
+                                              );
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) => MedicalRecordDetailScreen(record: record, pet: selectedPet),
+                                                ),
+                                              );
+                                            },
+                                            child: _buildMedicalRecordCard(
+                                              date: "${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}",
+                                              title: record.title,
+                                              description: record.description,
+                                              doctor: record.doctorName ?? "Không có thông tin",
+                                              status: record.status,
+                                              isCompleted: record.status == 'completed',
+                                            ),
                                           ),
                                         ),
 

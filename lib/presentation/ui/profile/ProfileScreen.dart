@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetDetailScreen.dart';
+import 'package:petcare/presentation/ui/user/petScreen/AllMedicalRecordsScreen.dart';
 
 import '../auth/LoginScreen.dart';
 
@@ -201,7 +202,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: Colors.green,
                 title: 'Hồ sơ y tế',
                 subtitle: 'Lưu trữ kết quả khám, xét nghiệm',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AllMedicalRecordsScreen(),
+                    ),
+                  );
+                },
               ),
               _buildProfileCard(
                 context,
