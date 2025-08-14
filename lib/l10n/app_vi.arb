@@ -1,0 +1,18 @@
+{
+  "settings_title": "Cài đặt",
+  "section_theme": "Giao diện",
+  "theme_system": "Theo hệ thống",
+  "theme_light": "Sáng",
+  "theme_dark": "Tối",
+  "section_language": "Ngôn ngữ",
+  "language_system": "Theo hệ thống",
+  "language_vi": "Tiếng Việt",
+  "language_en": "Tiếng Anh",
+  "section_other": "Khác",
+  "notifications_toggle": "Nhận thông báo",
+  "about": "Giới thiệu",
+  "about_description": "PetCare giúp bạn quản lý sức khỏe và dịch vụ cho thú cưng",
+  "clear_cache": "Xóa bộ nhớ đệm",
+  "coming_soon": "Tính năng sẽ sớm có"
+}
+

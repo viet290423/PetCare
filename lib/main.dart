@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:petcare/presentation/ui/auth/LoginScreen.dart';
 import 'package:petcare/presentation/ui/doctor/AppointmentViewModel.dart';
@@ -15,10 +16,12 @@ import 'package:petcare/presentation/provider/CommunityProvider.dart';
 import 'package:petcare/services/noti_service.dart';
 import 'package:petcare/services/notification_service.dart';
 import 'package:provider/provider.dart';
+import 'package:petcare/presentation/provider/SettingsProvider.dart';
 import 'package:petcare/di/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'firebase_options.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,8 +60,38 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => di.sl<DoctorViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<AppointmentViewModel>()),
         ChangeNotifierProvider(create: (_) => di.sl<CommunityProvider>()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()..load()),
       ],
-      child: MaterialApp(title: 'PetCare', home: const AuthWrapper()),
+      child: Consumer<SettingsProvider>(
+        builder: (context, settings, _) {
+          return MaterialApp(
+            title: 'PetCare',
+            themeMode: settings.themeMode,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+              useMaterial3: true,
+              brightness: Brightness.light,
+            ),
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
+              useMaterial3: true,
+              brightness: Brightness.dark,
+            ),
+            locale: settings.locale,
+            supportedLocales: const [
+              Locale('en'),
+              Locale('vi'),
+            ],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: const AuthWrapper(),
+          );
+        },
+      ),
     );
   }
 }

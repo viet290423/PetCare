@@ -1,0 +1,18 @@
+{
+  "settings_title": "Settings",
+  "section_theme": "Appearance",
+  "theme_system": "Follow system",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "section_language": "Language",
+  "language_system": "Follow system",
+  "language_vi": "Vietnamese",
+  "language_en": "English",
+  "section_other": "Other",
+  "notifications_toggle": "Receive notifications",
+  "about": "About",
+  "about_description": "PetCare helps you manage your pets' health and services",
+  "clear_cache": "Clear cache",
+  "coming_soon": "Coming soon"
+}
+

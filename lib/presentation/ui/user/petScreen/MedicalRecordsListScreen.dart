@@ -59,11 +59,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         }
 
         return Scaffold(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: Theme.of(context).colorScheme.background,
           appBar: AppBar(
-            title: Text('Hồ sơ của ${widget.pet.name}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.white,
+            title: Text('Hồ sơ của ${widget.pet.name}'),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             elevation: 0,
           ),
           body: Column(
@@ -103,9 +102,9 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05), blurRadius: 8, offset: const Offset(0, 2))],
       ),
     child: Row(
         children: [
@@ -150,9 +149,9 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.04), blurRadius: 6, offset: const Offset(0, 2))],
           ),
           child: Row(
             children: [
@@ -252,9 +251,9 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
           isDense: true,
           isExpanded: true,
           decoration: _dropdownDecoration(Icons.category_outlined),
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 22),
-          style: const TextStyle(fontSize: 14, color: Colors.black),
-          dropdownColor: Colors.white,
+          icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurface, size: 22),
+          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+          dropdownColor: Theme.of(context).colorScheme.surface,
           menuMaxHeight: 320,
           borderRadius: BorderRadius.circular(12),
           items: _types.map((e) {
@@ -307,9 +306,9 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
           isDense: true,
           isExpanded: true,
           decoration: _dropdownDecoration(Icons.flag_outlined),
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 22),
-          style: const TextStyle(fontSize: 14, color: Colors.black),
-          dropdownColor: Colors.white,
+          icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurface, size: 22),
+          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+          dropdownColor: Theme.of(context).colorScheme.surface,
           menuMaxHeight: 320,
           borderRadius: BorderRadius.circular(12),
           items: statusesOptions.map((e) {
@@ -364,7 +363,7 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
 
         return Container(
           padding: const EdgeInsets.all(12),
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           child: isCompact
               ? Column(
                   children: [
@@ -420,10 +419,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05), blurRadius: 8, offset: const Offset(0, 2)),
           ],
         ),
         child: Padding(

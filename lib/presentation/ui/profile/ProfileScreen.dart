@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:petcare/services/noti_service.dart';
+import 'package:petcare/presentation/ui/settings/SettingsScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetDetailScreen.dart';
 import 'package:petcare/presentation/ui/user/petScreen/AllMedicalRecordsScreen.dart';
+import 'package:petcare/presentation/ui/user/serviceScreen/AllServiceHistoryScreen.dart';
 
 import '../auth/LoginScreen.dart';
 
@@ -29,25 +31,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Hồ sơ cá nhân',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         forceMaterialTransparency: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.black87),
+            icon: const Icon(Icons.settings),
             onPressed: () {
-              NotiService().scheduleNotification(
-                title: 'Thông báo',
-                body: 'Đây là thông báo từ PetCare',
-                hour: 16,
-                minute: 40,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SettingsScreen(),
+                ),
               );
             },
           ),
@@ -92,9 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
-                      child: CircleAvatar(
+                       child: CircleAvatar(
                         radius: 54,
-                        backgroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.surface,
                         child: CircleAvatar(
                           radius: 50,
                           // TODO: Thay bằng avatarUrl từ Supabase nếu có
@@ -108,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
-                    Text(userEmail, style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+                    Text(userEmail, style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -193,7 +195,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: Colors.blue,
                 title: 'Lịch sử dịch vụ',
                 subtitle: 'Xem lịch sử đặt dịch vụ',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AllServiceHistoryScreen(),
+                    ),
+                  );
+                },
               ),
               _buildProfileCard(
                 context,
@@ -271,7 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           value,
           style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 16),
         ),
-        Text(label, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+        Text(label, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
       ],
     );
   }
@@ -288,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 2,
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ListTile(
         leading: CircleAvatar(

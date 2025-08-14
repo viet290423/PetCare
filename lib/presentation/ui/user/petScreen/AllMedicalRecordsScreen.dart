@@ -96,11 +96,10 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
     final filtered = _applyFilters(_records);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: const Text('Hồ sơ y tế', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        title: const Text('Hồ sơ y tế'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
       ),
       body: Column(
@@ -155,7 +154,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -186,9 +185,9 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? Colors.green.shade50 : Colors.white,
+          color: selected ? Theme.of(context).colorScheme.primary.withOpacity(0.08) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: selected ? Colors.green : Colors.grey.shade300),
+          border: Border.all(color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
@@ -199,7 +198,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
             Text(
               label,
               style: TextStyle(
-                color: selected ? Colors.green[800] : Colors.black87,
+                color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -212,7 +211,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
   Widget _buildFilters() {
     return Container(
       padding: const EdgeInsets.all(12),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final bool isCompact = constraints.maxWidth < 380;
@@ -235,12 +234,12 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               prefixIcon: const Icon(Icons.category_outlined, size: 18),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.green, width: 1.4)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.4)),
             ),
-            icon: const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 22),
-            dropdownColor: Colors.white,
+            icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurface, size: 22),
+            dropdownColor: Theme.of(context).colorScheme.surface,
             menuMaxHeight: 320,
             borderRadius: BorderRadius.circular(12),
             items: _types.map((e) {
@@ -285,12 +284,12 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               prefixIcon: const Icon(Icons.flag_outlined, size: 18),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.green, width: 1.4)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.4)),
             ),
-            icon: const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 22),
-            dropdownColor: Colors.white,
+            icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurface, size: 22),
+            dropdownColor: Theme.of(context).colorScheme.surface,
             menuMaxHeight: 320,
             borderRadius: BorderRadius.circular(12),
             items: _statusOptions.map((e) {
@@ -375,8 +374,8 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05), blurRadius: 8, offset: const Offset(0, 2)),
         ]),
         child: Padding(
           padding: const EdgeInsets.all(12),
