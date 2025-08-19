@@ -59,10 +59,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         }
 
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             title: Text('Hồ sơ của ${widget.pet.name}'),
-            backgroundColor: Theme.of(context).colorScheme.surface,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             elevation: 0,
           ),
           body: Column(

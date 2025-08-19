@@ -49,17 +49,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         forceMaterialTransparency: true,
         elevation: 0,
         backgroundColor: Colors.white,
-        title: const Text(
+        title: Text(
           'Pet Care',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           ),
         ),
         actions: [
@@ -84,311 +84,317 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       ),
       body: SafeArea(
         child: Consumer3<ServicesViewModel, DiseaseViewModel, DoctorViewModel>(
-          builder: (
-            context,
-            serviceViewModel,
-            diseaseViewModel,
-            doctorViewModel,
-            child,
-          ) {
-            // Kiểm tra trạng thái loading của cả ba view model
-            if (serviceViewModel.isLoading ||
-                diseaseViewModel.isLoading ||
-                doctorViewModel.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                ),
-              );
-            }
+          builder:
+              (
+                context,
+                serviceViewModel,
+                diseaseViewModel,
+                doctorViewModel,
+                child,
+              ) {
+                // Kiểm tra trạng thái loading của cả ba view model
+                if (serviceViewModel.isLoading ||
+                    diseaseViewModel.isLoading ||
+                    doctorViewModel.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                    ),
+                  );
+                }
 
-            // Kiểm tra lỗi
-            if (serviceViewModel.error != null) {
-              return Center(child: Text('Lỗi: ${serviceViewModel.error}'));
-            }
-            if (diseaseViewModel.error != null) {
-              return Center(child: Text('Lỗi: ${diseaseViewModel.error}'));
-            }
-            if (doctorViewModel.error != null) {
-              return Center(child: Text('Lỗi: ${doctorViewModel.error}'));
-            }
+                // Kiểm tra lỗi
+                if (serviceViewModel.error != null) {
+                  return Center(child: Text('Lỗi: ${serviceViewModel.error}'));
+                }
+                if (diseaseViewModel.error != null) {
+                  return Center(child: Text('Lỗi: ${diseaseViewModel.error}'));
+                }
+                if (doctorViewModel.error != null) {
+                  return Center(child: Text('Lỗi: ${doctorViewModel.error}'));
+                }
 
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Banner giới thiệu
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/images/banner.jpg'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.7),
-                            ],
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Banner giới thiệu
+                        Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/banner.jpg'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.7),
+                                ],
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Chăm Sóc Thú Cưng Chuyên Nghiệp',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Dịch vụ chăm sóc toàn diện cho thú cưng của bạn',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        padding: const EdgeInsets.all(16),
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 24),
+
+                        // Dịch vụ chăm sóc
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Chăm Sóc Thú Cưng Chuyên Nghiệp',
+                            const Text(
+                              'Dịch Vụ Chăm Sóc',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Dịch vụ chăm sóc toàn diện cho thú cưng của bạn',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
+                            GestureDetector(
+                              onTap: () {
+                                widget.onTabNavigate?.call(2);
+                              },
+                              child: Text(
+                                "Xem tất cả",
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Dịch vụ chăm sóc
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Dịch Vụ Chăm Sóc',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                        const SizedBox(height: 16),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: serviceViewModel.services.length.clamp(
+                            0,
+                            4,
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            widget.onTabNavigate?.call(2);
-                          },
-                          child: Text(
-                            "Xem tất cả",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: serviceViewModel.services.length.clamp(0, 4),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                            childAspectRatio: 1,
-                          ),
-                      itemBuilder: (context, index) {
-                        final service = serviceViewModel.services[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) =>
-                                        ServiceDetailScreen(service: service),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: 1,
                               ),
-                            );
-                          },
-                          child: _buildServiceCard(
-                            icon: getIconFromName(service.icon),
-                            title: service.title,
-                            description: service.description,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Đội ngũ bác sĩ
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Đội Ngũ Bác Sĩ',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AllDoctorsScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            "Xem tất cả",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 390,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: doctorViewModel.doctors.length,
-                        itemBuilder: (context, index) {
-                          final doctor = doctorViewModel.doctors[index];
-                          return Container(
-                            width: 200,
-                            margin: const EdgeInsets.only(right: 16),
-                            child: GestureDetector(
+                          itemBuilder: (context, index) {
+                            final service = serviceViewModel.services[index];
+                            return GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder:
-                                        (_) =>
-                                            DoctorDetailScreen(doctor: doctor),
+                                    builder: (_) =>
+                                        ServiceDetailScreen(service: service),
                                   ),
                                 );
                               },
-                              child: _buildDoctorCard(doctor),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Bệnh thường gặp
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Bệnh Thường Gặp',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: Navigate to all diseases screen
+                              child: _buildServiceCard(
+                                icon: getIconFromName(service.icon),
+                                title: service.title,
+                                description: service.description,
+                              ),
+                            );
                           },
-                          child: Text(
-                            "Xem tất cả",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: [
-                        // Search bar
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 1,
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Tìm kiếm bệnh...',
-                              prefixIcon: const Icon(Icons.search),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
+                        const SizedBox(height: 24),
+
+                        // Đội ngũ bác sĩ
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Đội Ngũ Bác Sĩ',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            onChanged: (value) {
-                              // TODO: Implement search functionality
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => AllDoctorsScreen(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Xem tất cả",
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 390,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: doctorViewModel.doctors.length,
+                            itemBuilder: (context, index) {
+                              final doctor = doctorViewModel.doctors[index];
+                              return Container(
+                                width: 200,
+                                margin: const EdgeInsets.only(right: 16),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            DoctorDetailScreen(doctor: doctor),
+                                      ),
+                                    );
+                                  },
+                                  child: _buildDoctorCard(doctor),
+                                ),
+                              );
                             },
                           ),
                         ),
-                        // Disease cards
-                        ...diseaseViewModel.diseases
-                            .take(3)
-                            .map((disease) => _buildDiseaseCard(disease)),
+                        const SizedBox(height: 24),
+
+                        // Bệnh thường gặp
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Bệnh Thường Gặp',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // TODO: Navigate to all diseases screen
+                              },
+                              child: Text(
+                                "Xem tất cả",
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Column(
+                          children: [
+                            // Search bar
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    spreadRadius: 1,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  hintText: 'Tìm kiếm bệnh...',
+                                  prefixIcon: const Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  // TODO: Implement search functionality
+                                },
+                              ),
+                            ),
+                            // Disease cards
+                            ...diseaseViewModel.diseases
+                                .take(3)
+                                .map((disease) => _buildDiseaseCard(disease)),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Liên hệ
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Liên Hệ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              _buildContactItem(
+                                Icons.location_on,
+                                '123 Đường Phan Đình Giót, Hà Đông, Hà Nội',
+                              ),
+                              _buildContactItem(Icons.phone, '0123 456 789'),
+                              _buildContactItem(
+                                Icons.email,
+                                'contact@petcare.com',
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-
-                    // Liên hệ
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Liên Hệ',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          _buildContactItem(
-                            Icons.location_on,
-                            '123 Đường Phan Đình Giót, Hà Đông, Hà Nội',
-                          ),
-                          _buildContactItem(Icons.phone, '0123 456 789'),
-                          _buildContactItem(Icons.email, 'contact@petcare.com'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+                );
+              },
         ),
       ),
     );
@@ -401,7 +407,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   }) {
     return Card(
       elevation: 2,
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -433,7 +439,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         children: [
           Icon(icon, color: Colors.green, size: 20),
           const SizedBox(width: 12),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 16))),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 16, color: Colors.black),
+            ),
+          ),
         ],
       ),
     );
@@ -456,7 +467,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     }
 
     return Card(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () {
@@ -568,7 +579,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   Widget _buildDoctorCard(DoctorModel doctor) {
     return Card(
       elevation: 3,
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(

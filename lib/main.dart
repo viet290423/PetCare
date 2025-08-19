@@ -64,16 +64,34 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
+          final lightScheme = ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.light).copyWith(
+            background: Colors.white,
+            surface: Colors.white,
+            onSurface: Colors.black,
+          );
+          final darkScheme = ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark);
           return MaterialApp(
             title: 'PetCare',
             themeMode: settings.themeMode,
             theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+              colorScheme: lightScheme,
+              scaffoldBackgroundColor: Colors.white,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                elevation: 0,
+              ),
               useMaterial3: true,
               brightness: Brightness.light,
             ),
             darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
+              colorScheme: darkScheme,
+              scaffoldBackgroundColor: Color.fromRGBO(12, 12, 12, 0.5),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
               useMaterial3: true,
               brightness: Brightness.dark,
             ),

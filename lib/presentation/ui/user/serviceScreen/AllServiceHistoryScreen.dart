@@ -83,10 +83,10 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
     final filtered = _applyFilters(_appointments);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Lịch sử dịch vụ'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: Column(

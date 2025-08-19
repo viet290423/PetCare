@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Hồ sơ cá nhân',
@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         centerTitle: true,
         forceMaterialTransparency: true,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         actions: [
           IconButton(

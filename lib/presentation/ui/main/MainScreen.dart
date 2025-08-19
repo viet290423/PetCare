@@ -42,14 +42,14 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final isDoctor = widget.user.role == 'doctor';
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: _buildPage(_currentIndex, isDoctor),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.5 : 0.2),
               spreadRadius: 2,
               blurRadius: 10,
               offset: const Offset(0, -2),
@@ -60,12 +60,12 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: GNav(
             selectedIndex: _currentIndex,
-            backgroundColor: Theme.of(context).colorScheme.onPrimary,
-            // backgroundColor: Colors.green,
-            // color: Colors.grey[400],
-            color: Colors.black,
-            activeColor: Colors.green,
-            tabBackgroundColor: Theme.of(context).colorScheme.onPrimary,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            activeColor: Theme.of(context).colorScheme.primary,
+            tabBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+            rippleColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.10),
             gap: 5,
             tabs: isDoctor
                 ? const [

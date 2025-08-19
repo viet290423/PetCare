@@ -97,11 +97,11 @@ class _PetScreenState extends State<PetScreen>
             : null;
 
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             forceMaterialTransparency: true,
             elevation: 0,
-            backgroundColor: Theme.of(context).colorScheme.surface,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             title: Row(
               children: [
                 if (selectedPet != null)
@@ -167,9 +167,9 @@ class _PetScreenState extends State<PetScreen>
                                   child: Material(
                                     elevation: isSelected ? 4 : 2,
                                     borderRadius: BorderRadius.circular(24),
-                                    color: isSelected
-                                        ? Theme.of(context).colorScheme.primary.withOpacity(0.08)
-                                        : Theme.of(context).colorScheme.surface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
                                     child: Container(
                                       width: 110,
                                       padding: const EdgeInsets.symmetric(
@@ -180,9 +180,13 @@ class _PetScreenState extends State<PetScreen>
                                         borderRadius: BorderRadius.circular(24),
                                         border: Border.all(
                                           color: isSelected
-                                              ? Theme.of(context).colorScheme.primary
-                                              : Theme.of(context).colorScheme.surfaceVariant,
-                                          width: isSelected ? 2 : 1,
+                                              ? Theme.of(
+                                                  context,
+                                                ).colorScheme.primary
+                                              : Theme.of(
+                                                  context,
+                                                ).colorScheme.surfaceVariant,
+                                          width: isSelected ? 3 : 1,
                                         ),
                                       ),
                                       child: Column(
@@ -194,7 +198,9 @@ class _PetScreenState extends State<PetScreen>
                                             backgroundImage: NetworkImage(
                                               pet.imageUrl,
                                             ),
-                                             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                                            backgroundColor: Theme.of(
+                                              context,
+                                            ).colorScheme.surfaceVariant,
                                           ),
                                           const SizedBox(height: 10),
                                           Text(
@@ -203,8 +209,12 @@ class _PetScreenState extends State<PetScreen>
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
                                               color: isSelected
-                                                  ? Theme.of(context).colorScheme.primary
-                                                  : Theme.of(context).colorScheme.onSurface,
+                                                  ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                  : Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSurface,
                                             ),
                                             textAlign: TextAlign.center,
                                             overflow: TextOverflow.ellipsis,
@@ -232,7 +242,9 @@ class _PetScreenState extends State<PetScreen>
                         insets: const EdgeInsets.symmetric(horizontal: 24),
                       ),
                       labelColor: Theme.of(context).colorScheme.primary,
-                      unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                      unselectedLabelColor: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant,
                       labelStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -349,7 +361,9 @@ class _PetScreenState extends State<PetScreen>
                                             child: Text(
                                               'Không có nhắc nhở nào.',
                                               style: TextStyle(
-                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
                                               ),
                                             ),
                                           )
@@ -521,11 +535,21 @@ class _PetScreenState extends State<PetScreen>
                                                               18,
                                                             ),
                                                       ),
-                                                      color: Theme.of(context).colorScheme.surface,
+                                                      color: Theme.of(
+                                                        context,
+                                                      ).colorScheme.surface,
                                                       child: ListTile(
                                                         leading: Container(
                                                           decoration: BoxDecoration(
-                                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .primary
+                                                                    .withOpacity(
+                                                                      0.15,
+                                                                    ),
                                                             borderRadius:
                                                                 BorderRadius.circular(
                                                                   12,
@@ -651,7 +675,9 @@ class _PetScreenState extends State<PetScreen>
                                                 child: Text(
                                                   'Xem tất cả',
                                                   style: TextStyle(
-                                                    color: Theme.of(context).colorScheme.primary,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -701,7 +727,9 @@ class _PetScreenState extends State<PetScreen>
                                             child: Text(
                                               'Không có lịch hẹn nào.',
                                               style: TextStyle(
-                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
                                               ),
                                             ),
                                           )
@@ -722,11 +750,19 @@ class _PetScreenState extends State<PetScreen>
                                                             18,
                                                           ),
                                                     ),
-                                                    color: Theme.of(context).colorScheme.surface,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.surface,
                                                     child: ListTile(
                                                       leading: Container(
                                                         decoration: BoxDecoration(
-                                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary
+                                                                  .withOpacity(
+                                                                    0.15,
+                                                                  ),
                                                           borderRadius:
                                                               BorderRadius.circular(
                                                                 12,
@@ -1039,7 +1075,8 @@ class _PetScreenState extends State<PetScreen>
 
                                   // Health summary cards
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         "Tóm tắt sức khỏe",
@@ -1048,21 +1085,35 @@ class _PetScreenState extends State<PetScreen>
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      if (viewModel.selectedPetId != null && viewModel.pets.isNotEmpty)
+                                      if (viewModel.selectedPetId != null &&
+                                          viewModel.pets.isNotEmpty)
                                         TextButton(
                                           onPressed: () {
-                                            final selectedPet = viewModel.pets.firstWhere(
-                                              (p) => p.id == viewModel.selectedPetId,
-                                              orElse: () => viewModel.pets.first,
-                                            );
+                                            final selectedPet = viewModel.pets
+                                                .firstWhere(
+                                                  (p) =>
+                                                      p.id ==
+                                                      viewModel.selectedPetId,
+                                                  orElse: () =>
+                                                      viewModel.pets.first,
+                                                );
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (_) => MedicalRecordsListScreen(pet: selectedPet),
+                                                builder: (_) =>
+                                                    MedicalRecordsListScreen(
+                                                      pet: selectedPet,
+                                                    ),
                                               ),
                                             );
                                           },
-                                          child: const Text('Xem tất cả', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                                          child: const Text(
+                                            'Xem tất cả',
+                                            style: TextStyle(
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                     ],
                                   ),
@@ -1228,24 +1279,36 @@ class _PetScreenState extends State<PetScreen>
                                         .map(
                                           (record) => GestureDetector(
                                             onTap: () {
-                                              final selectedPet = viewModel.pets.firstWhere(
-                                                (p) => p.id == viewModel.selectedPetId,
-                                                orElse: () => viewModel.pets.first,
-                                              );
+                                              final selectedPet = viewModel.pets
+                                                  .firstWhere(
+                                                    (p) =>
+                                                        p.id ==
+                                                        viewModel.selectedPetId,
+                                                    orElse: () =>
+                                                        viewModel.pets.first,
+                                                  );
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (_) => MedicalRecordDetailScreen(record: record, pet: selectedPet),
+                                                  builder: (_) =>
+                                                      MedicalRecordDetailScreen(
+                                                        record: record,
+                                                        pet: selectedPet,
+                                                      ),
                                                 ),
                                               );
                                             },
                                             child: _buildMedicalRecordCard(
-                                              date: "${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}",
+                                              date:
+                                                  "${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}",
                                               title: record.title,
                                               description: record.description,
-                                              doctor: record.doctorName ?? "Không có thông tin",
+                                              doctor:
+                                                  record.doctorName ??
+                                                  "Không có thông tin",
                                               status: record.status,
-                                              isCompleted: record.status == 'completed',
+                                              isCompleted:
+                                                  record.status == 'completed',
                                             ),
                                           ),
                                         ),
@@ -1253,15 +1316,22 @@ class _PetScreenState extends State<PetScreen>
                                   const SizedBox(height: 24),
 
                                   // Growth chart placeholder
-                                   Container(
+                                  Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                       color: Theme.of(context).colorScheme.surface,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
-                                         BoxShadow(
-                                           color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.1),
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? 0.2
+                                                : 0.1,
+                                          ),
                                           spreadRadius: 1,
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
@@ -1274,10 +1344,12 @@ class _PetScreenState extends State<PetScreen>
                                       children: [
                                         Row(
                                           children: [
-                                             Icon(
-                                               Icons.show_chart,
-                                               color: Theme.of(context).colorScheme.primary,
-                                             ),
+                                            Icon(
+                                              Icons.show_chart,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.primary,
+                                            ),
                                             const SizedBox(width: 8),
                                             const Text(
                                               "Biểu đồ tăng trưởng",
@@ -1290,22 +1362,26 @@ class _PetScreenState extends State<PetScreen>
                                         ),
                                         const SizedBox(height: 16),
                                         Container(
-                                           height: 120,
-                                           decoration: BoxDecoration(
-                                             color: Theme.of(context).colorScheme.surfaceVariant,
+                                          height: 120,
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.surfaceVariant,
                                             borderRadius: BorderRadius.circular(
                                               8,
                                             ),
                                           ),
-                                           child: Center(
-                                             child: Text(
-                                               "Biểu đồ sẽ hiển thị ở đây",
-                                               style: TextStyle(
-                                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                                 fontStyle: FontStyle.italic,
-                                               ),
-                                             ),
-                                           ),
+                                          child: Center(
+                                            child: Text(
+                                              "Biểu đồ sẽ hiển thị ở đây",
+                                              style: TextStyle(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1357,6 +1433,7 @@ class _AllRemindersSheet extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final r = reminders[index];
                     return Card(
+                      color: Theme.of(context).colorScheme.surface,
                       child: ListTile(
                         leading: const Icon(
                           CupertinoIcons.bell,
@@ -1430,6 +1507,7 @@ class _AllAppointmentsSheet extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final a = appointments[index];
                     return Card(
+                      color: Theme.of(context).colorScheme.surface,
                       child: ListTile(
                         leading: const Icon(
                           CupertinoIcons.calendar,

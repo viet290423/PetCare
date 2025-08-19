@@ -96,10 +96,10 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
     final filtered = _applyFilters(_records);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Hồ sơ y tế'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: Column(

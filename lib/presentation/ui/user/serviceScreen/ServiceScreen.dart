@@ -26,16 +26,16 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ServicesViewModel>(context);
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Text(
           'Dịch vụ',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
@@ -90,7 +90,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
                             child: Row(
                               children: [
@@ -117,7 +117,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
+                                          // color: Colors.black87,
                                         ),
                                       ),
                                       SizedBox(height: 4),
@@ -125,7 +125,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                         service.description,
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: Colors.black54,
+                                          // color: Colors.black54,
                                         ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
