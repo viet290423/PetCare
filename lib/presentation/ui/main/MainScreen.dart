@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:petcare/presentation/ui/doctor/homeScreen/DoctorHomeScreen.dart';
 import 'package:petcare/presentation/ui/doctor/DoctorScheduleScreen.dart';
 import 'package:petcare/presentation/ui/doctor/DoctorStatsScreen.dart';
+import 'package:petcare/presentation/ui/doctor/DoctorProfileScreen.dart';
 import 'package:petcare/presentation/ui/doctor/MedicalRecordsScreen.dart';
 import 'package:petcare/presentation/ui/user/homeScreen/UserHomeScreen.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetScreen.dart';
@@ -86,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     GButton(
-                      icon: Iconsax.chart_2,
+                      icon: Iconsax.direct,
                       iconSize: 30,
                       padding: EdgeInsets.symmetric(
                         horizontal: 10,
@@ -94,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     GButton(
-                      icon: Iconsax.direct,
+                      icon: Iconsax.profile_2user,
                       iconSize: 30,
                       padding: EdgeInsets.symmetric(
                         horizontal: 10,
@@ -172,13 +173,13 @@ class _MainScreenState extends State<MainScreen> {
           return DoctorScheduleScreen();
 
         case 2:
-          return DoctorStatsScreen();
-
-        case 3:
           return MedicalRecordsScreen();
 
+        case 3:
+          return CommunityScreen();
+
         case 4:
-          return ProfileScreen();
+          return DoctorProfileScreen();
 
         default:
           return DoctorHomeScreen();

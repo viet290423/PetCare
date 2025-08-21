@@ -184,6 +184,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coming soon'**
   String get coming_soon;
+
+  /// No description provided for @section_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get section_account;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

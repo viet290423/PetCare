@@ -52,4 +52,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get coming_soon => 'Tính năng sẽ sớm có';
+
+  @override
+  String get section_account => 'Tài khoản';
+
+  @override
+  String get logout => 'Đăng xuất';
 }

@@ -13,6 +13,8 @@
   "about": "Giới thiệu",
   "about_description": "PetCare giúp bạn quản lý sức khỏe và dịch vụ cho thú cưng",
   "clear_cache": "Xóa bộ nhớ đệm",
-  "coming_soon": "Tính năng sẽ sớm có"
+  "coming_soon": "Tính năng sẽ sớm có",
+  "section_account": "Tài khoản",
+  "logout": "Đăng xuất"
 }
 

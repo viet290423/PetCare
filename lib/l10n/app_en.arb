@@ -13,6 +13,8 @@
   "about": "About",
   "about_description": "PetCare helps you manage your pets' health and services",
   "clear_cache": "Clear cache",
-  "coming_soon": "Coming soon"
+  "coming_soon": "Coming soon",
+  "section_account": "Account",
+  "logout": "Logout"
 }
 

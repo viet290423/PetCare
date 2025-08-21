@@ -52,4 +52,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coming_soon => 'Coming soon';
+
+  @override
+  String get section_account => 'Account';
+
+  @override
+  String get logout => 'Logout';
 }

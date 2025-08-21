@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:petcare/presentation/provider/SettingsProvider.dart';
+import 'package:petcare/presentation/ui/auth/AuthViewModel.dart';
+import 'package:petcare/presentation/ui/auth/LoginScreen.dart';
 
 import '../../../l10n/app_localizations.dart';
 
@@ -75,6 +77,25 @@ class SettingsScreen extends StatelessWidget {
                 leading: const Icon(Icons.info_outline),
                 title: Text(l10n?.about ?? 'Giới thiệu'),
                 subtitle: Text(l10n?.about_description ?? 'Giới thiệu'),
+              ),
+              const Divider(),
+              _SectionHeader(title: l10n?.section_account ?? 'Tài khoản'),
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: Text(
+                  l10n?.logout ?? 'Đăng xuất',
+                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+                onTap: () async {
+                  await context.read<AuthViewModel>().signOutUser();
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (Route<dynamic> route) => false,
+                    );
+                  }
+                },
               ),
             ],
           );
