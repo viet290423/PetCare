@@ -14,7 +14,7 @@ class PostCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -51,7 +51,6 @@ class PostCard extends StatelessWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
-                          color: Colors.black87,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -89,7 +88,6 @@ class PostCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 15,
                   height: 1.4,
-                  color: Colors.black87,
                 ),
               ),
             ),

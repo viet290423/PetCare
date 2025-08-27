@@ -12,7 +12,8 @@ class MedicalRecordsListScreen extends StatefulWidget {
   const MedicalRecordsListScreen({super.key, required this.pet});
 
   @override
-  State<MedicalRecordsListScreen> createState() => _MedicalRecordsListScreenState();
+  State<MedicalRecordsListScreen> createState() =>
+      _MedicalRecordsListScreenState();
 }
 
 class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
@@ -61,7 +62,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            title: Text('Hồ sơ của ${widget.pet.name}'),
+            title: Text(
+              'Hồ sơ của ${widget.pet.name}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             elevation: 0,
           ),
@@ -74,19 +78,20 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
               _buildFilters(statusesOptions),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () => vm.fetchMedicalRecords(widget.pet.id, forceRefresh: true),
+                  onRefresh: () =>
+                      vm.fetchMedicalRecords(widget.pet.id, forceRefresh: true),
                   child: vm.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : filtered.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.builder(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: filtered.length,
-                              itemBuilder: (context, index) {
-                                final record = filtered[index];
-                                return _buildRecordTile(record);
-                              },
-                            ),
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: filtered.length,
+                          itemBuilder: (context, index) {
+                            final record = filtered[index];
+                            return _buildRecordTile(record);
+                          },
+                        ),
                 ),
               ),
             ],
@@ -104,9 +109,17 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05,
+            ),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-    child: Row(
+      child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
@@ -114,7 +127,11 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.all(8),
-            child: const Icon(Icons.insert_chart_outlined, color: Colors.green, size: 20),
+            child: const Icon(
+              Icons.insert_chart_outlined,
+              color: Colors.green,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 10),
           const Expanded(
@@ -151,21 +168,45 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.04), blurRadius: 6, offset: const Offset(0, 2))],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(
+                  Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.04,
+                ),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Icon(icon, color: color, size: 18),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('$value', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                ]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$value',
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      label,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -198,14 +239,22 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
     }
     if (_searchQuery.trim().isNotEmpty) {
       final q = _searchQuery.trim().toLowerCase();
-      result = result.where((r) => r.title.toLowerCase().contains(q) || r.description.toLowerCase().contains(q)).toList();
+      result = result
+          .where(
+            (r) =>
+                r.title.toLowerCase().contains(q) ||
+                r.description.toLowerCase().contains(q),
+          )
+          .toList();
     }
 
     result.sort((a, b) => b.recordDate.compareTo(a.recordDate));
     return result;
   }
 
-  List<Map<String, String>> _buildStatusesOptions(List<MedicalRecordModel> records) {
+  List<Map<String, String>> _buildStatusesOptions(
+    List<MedicalRecordModel> records,
+  ) {
     final hasOngoing = records.any((r) => r.status == 'ongoing');
     final hasScheduled = records.any((r) => r.status == 'scheduled');
     final hasCancelled = records.any((r) => r.status == 'cancelled');
@@ -229,30 +278,55 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
       builder: (context, constraints) {
         final bool isCompact = constraints.maxWidth < 380;
 
-        InputDecoration _inputDecoration({required String hint, required IconData icon}) => InputDecoration(
-              hintText: hint,
-              prefixIcon: Icon(icon, size: 20),
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            );
+        InputDecoration _inputDecoration({
+          required String hint,
+          required IconData icon,
+        }) => InputDecoration(
+          hintText: hint,
+          prefixIcon: Icon(icon, size: 20),
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        );
 
         InputDecoration _dropdownDecoration(IconData icon) => InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              prefixIcon: Icon(icon, size: 18),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.green, width: 1.4)),
-            );
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          prefixIcon: Icon(icon, size: 18),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.green, width: 1.4),
+          ),
+        );
 
         final typeDropdown = DropdownButtonFormField<String>(
           value: _selectedType,
           isDense: true,
           isExpanded: true,
           decoration: _dropdownDecoration(Icons.category_outlined),
-          icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurface, size: 22),
-          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: Theme.of(context).colorScheme.onSurface,
+            size: 22,
+          ),
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           dropdownColor: Theme.of(context).colorScheme.surface,
           menuMaxHeight: 320,
           borderRadius: BorderRadius.circular(12),
@@ -266,7 +340,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  SizedBox(width: 18, child: Icon(icon, size: 18, color: color)),
+                  SizedBox(
+                    width: 18,
+                    child: Icon(icon, size: 18, color: color),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -292,7 +369,9 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
                   children: [
                     Icon(icon, size: 18, color: color),
                     const SizedBox(width: 8),
-                    Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
+                    Flexible(
+                      child: Text(label, overflow: TextOverflow.ellipsis),
+                    ),
                   ],
                 ),
               );
@@ -306,8 +385,15 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
           isDense: true,
           isExpanded: true,
           decoration: _dropdownDecoration(Icons.flag_outlined),
-          icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurface, size: 22),
-          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: Theme.of(context).colorScheme.onSurface,
+            size: 22,
+          ),
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           dropdownColor: Theme.of(context).colorScheme.surface,
           menuMaxHeight: 320,
           borderRadius: BorderRadius.circular(12),
@@ -321,7 +407,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  SizedBox(width: 18, child: Icon(icon, size: 18, color: color)),
+                  SizedBox(
+                    width: 18,
+                    child: Icon(icon, size: 18, color: color),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -347,7 +436,9 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
                   children: [
                     Icon(icon, size: 18, color: color),
                     const SizedBox(width: 8),
-                    Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
+                    Flexible(
+                      child: Text(label, overflow: TextOverflow.ellipsis),
+                    ),
                   ],
                 ),
               );
@@ -357,7 +448,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         );
 
         final searchField = TextField(
-          decoration: _inputDecoration(hint: 'Tìm theo tiêu đề, mô tả...', icon: Icons.search),
+          decoration: _inputDecoration(
+            hint: 'Tìm theo tiêu đề, mô tả...',
+            icon: Icons.search,
+          ),
           onChanged: (v) => setState(() => _searchQuery = v),
         );
 
@@ -399,7 +493,10 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         children: [
           Icon(Icons.medical_information, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 8),
-          Text('Chưa có hồ sơ phù hợp', style: TextStyle(color: Colors.grey[600])),
+          Text(
+            'Chưa có hồ sơ phù hợp',
+            style: TextStyle(color: Colors.grey[600]),
+          ),
         ],
       ),
     );
@@ -412,7 +509,8 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => MedicalRecordDetailScreen(record: record, pet: widget.pet),
+            builder: (_) =>
+                MedicalRecordDetailScreen(record: record, pet: widget.pet),
           ),
         );
       },
@@ -422,7 +520,13 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(
+              color: Colors.black.withOpacity(
+                Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05,
+              ),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Padding(
@@ -433,36 +537,95 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Icon(Icons.medical_services, color: color),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(record.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                  const SizedBox(height: 6),
-                  Row(children: [
-                    Icon(Icons.category, size: 14, color: Colors.green[600]),
-                    const SizedBox(width: 4),
-                    Text(_typeText(record.recordType), style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-                    const SizedBox(width: 10),
-                    Icon(Icons.calendar_today, size: 14, color: Colors.green[600]),
-                    const SizedBox(width: 4),
-                    Text('${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-                    if (record.doctorName != null) ...[
-                      const SizedBox(width: 10),
-                      Icon(Icons.person, size: 14, color: Colors.green[600]),
-                      const SizedBox(width: 4),
-                      Flexible(child: Text(record.doctorName!, style: TextStyle(fontSize: 12, color: Colors.grey[700]), overflow: TextOverflow.ellipsis)),
-                    ],
-                  ]),
-                ]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      record.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.category,
+                          size: 14,
+                          color: Colors.green[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _typeText(record.recordType),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 14,
+                          color: Colors.green[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${record.recordDate.day}/${record.recordDate.month}/${record.recordDate.year}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        if (record.doctorName != null) ...[
+                          const SizedBox(width: 10),
+                          Icon(
+                            Icons.person,
+                            size: 14,
+                            color: Colors.green[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              record.doctorName!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[700],
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: _statusColor(record.status).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                child: Text(_statusText(record.status), style: TextStyle(fontSize: 10, color: _statusColor(record.status), fontWeight: FontWeight.w600)),
+                decoration: BoxDecoration(
+                  color: _statusColor(record.status).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _statusText(record.status),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: _statusColor(record.status),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
@@ -567,5 +730,3 @@ class _MedicalRecordsListScreenState extends State<MedicalRecordsListScreen> {
     }
   }
 }
-
-

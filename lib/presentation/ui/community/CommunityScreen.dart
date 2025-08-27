@@ -46,7 +46,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         forceMaterialTransparency: true,
         elevation: 0,
@@ -57,7 +57,6 @@ class _CommunityScreenState extends State<CommunityScreen> {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
           ),
         ),
         actions: [
@@ -65,7 +64,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
             onPressed: () {
               // TODO: Implement search functionality
             },
-            icon: const Icon(Icons.search, color: Colors.black54, size: 28),
+            icon: const Icon(Icons.search, size: 28),
           ),
           IconButton(
             onPressed: () {
@@ -73,7 +72,6 @@ class _CommunityScreenState extends State<CommunityScreen> {
             },
             icon: const Icon(
               Icons.favorite_border,
-              color: Colors.black54,
               size: 26,
             ),
           ),
@@ -81,7 +79,6 @@ class _CommunityScreenState extends State<CommunityScreen> {
             onPressed: () => _showCreatePost(context),
             icon: const Icon(
               Icons.add_box_outlined,
-              color: Colors.black54,
               size: 28,
             ),
           ),
@@ -156,7 +153,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
                 // Divider
                 SliverToBoxAdapter(
-                  child: Container(height: 8, color: Colors.grey[200]),
+                  child: Container(height: 8),
                 ),
 
                 // Posts list

@@ -15,6 +15,16 @@
   "clear_cache": "Xóa bộ nhớ đệm",
   "coming_soon": "Tính năng sẽ sớm có",
   "section_account": "Tài khoản",
-  "logout": "Đăng xuất"
+  "logout": "Đăng xuất",
+  "login": "Đăng nhập",
+  "register": "Đăng ký",
+  "forgot_password": "Quên mật khẩu",
+  "enter_email": "Nhập địa chỉ email",
+  "enter_password": "Nhập mật khẩu",
+  "confirm_password": "Xác nhận mật khẩu",
+  "enter_new_password": "Nhập mật khẩu mới",
+  "enter_confirm_password": "Nhập lại mật khẩu",
+  "personal profile": "Hồ sơ cá nhân",
+
 }
 

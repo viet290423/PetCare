@@ -60,8 +60,8 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
       maxChildSize: 0.95,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
@@ -229,12 +229,13 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         comment.content,
-                        style: const TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 62, 62, 62)),
                       ),
                     ],
                   ),
@@ -277,7 +278,7 @@ class _PostDetailSheetState extends State<PostDetailSheet> {
         bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(top: BorderSide(color: Colors.grey[200]!)),
       ),
       child: SafeArea(

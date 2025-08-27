@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../data/model/ReminderModel.dart';
@@ -1315,77 +1316,8 @@ class _PetScreenState extends State<PetScreen>
 
                                   const SizedBox(height: 24),
 
-                                  // Growth chart placeholder
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.surface,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(
-                                            Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? 0.2
-                                                : 0.1,
-                                          ),
-                                          spreadRadius: 1,
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.show_chart,
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            const Text(
-                                              "Biểu đồ tăng trưởng",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Container(
-                                          height: 120,
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.surfaceVariant,
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              "Biểu đồ sẽ hiển thị ở đây",
-                                              style: TextStyle(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.onSurfaceVariant,
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Growth chart
+                                  _GrowthChartCard(),
                                 ],
                               ),
                             );
@@ -1543,6 +1475,199 @@ class _AllAppointmentsSheet extends StatelessWidget {
   }
 }
 
+class _GrowthChartCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<UserHomeViewModel>(
+      builder: (context, viewModel, _) {
+        final metrics = List.of(viewModel.healthMetrics);
+        metrics.sort((a, b) => a.date.compareTo(b.date));
+        final points = <FlSpot>[];
+        final labels = <int, String>{};
+
+        for (var i = 0; i < metrics.length; i++) {
+          final w = metrics[i].weight;
+          if (w != null) {
+            points.add(FlSpot(i.toDouble(), w));
+            if (i == 0 ||
+                i == metrics.length - 1 ||
+                i == (metrics.length / 2).floor()) {
+              final d = metrics[i].date;
+              labels[i] = "${d.day}/${d.month}";
+            }
+          }
+        }
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(
+                  Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.1,
+                ),
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.show_chart,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Biểu đồ tăng trưởng",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (points.isEmpty)
+                Container(
+                  height: 140,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Chưa có dữ liệu cân nặng",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  height: 220,
+                  child: LineChart(
+                    LineChartData(
+                      minX: points.first.x,
+                      maxX: points.last.x,
+                      minY:
+                          (points
+                                      .map((e) => e.y)
+                                      .reduce((a, b) => a < b ? a : b) -
+                                  1)
+                              .clamp(0, double.infinity),
+                      maxY:
+                          points
+                              .map((e) => e.y)
+                              .reduce((a, b) => a > b ? a : b) +
+                          1,
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withOpacity(0.2),
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      borderData: FlBorderData(
+                        show: true,
+                        border: Border.all(
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withOpacity(0.3),
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 36,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                value.toStringAsFixed(0),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 28,
+                            getTitlesWidget: (value, meta) {
+                              final index = value.round();
+                              final label = labels[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  label ?? '',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                      ),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: points,
+                          isCurved: true,
+                          color: Theme.of(context).colorScheme.primary,
+                          barWidth: 3,
+                          isStrokeCapRound: true,
+                          dotData: FlDotData(show: true),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 8),
+              if (points.isNotEmpty)
+                Text(
+                  "Đơn vị: kg",
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 Widget _buildTipCategory({
   required IconData icon,
   required String title,
@@ -1572,7 +1697,11 @@ Widget _buildTipCategory({
         const SizedBox(height: 8),
         Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+            color: Colors.black,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -1616,6 +1745,7 @@ Widget _buildTipCard({
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -1664,6 +1794,7 @@ Widget _buildHealthCard({
               child: Text(
                 title,
                 style: const TextStyle(
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -1674,7 +1805,11 @@ Widget _buildHealthCard({
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         const SizedBox(height: 4),
         Row(
@@ -1753,6 +1888,7 @@ Widget _buildMedicalRecordCard({
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      color: Colors.black,
                     ),
                   ),
                   Text(

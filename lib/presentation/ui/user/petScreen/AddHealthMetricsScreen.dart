@@ -141,9 +141,10 @@ class _AddHealthMetricsScreenState extends State<AddHealthMetricsScreen> {
           widget.metrics != null
               ? 'Sửa chỉ số sức khỏe'
               : 'Thêm chỉ số sức khỏe',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          )
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0,
       ),
       body: Form(
@@ -379,8 +380,8 @@ class _AddHealthMetricsScreenState extends State<AddHealthMetricsScreen> {
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: [
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w500)),
-          Text(range),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black)),
+          Text(range, style: const TextStyle(color: Colors.black)),
         ],
       ),
     );
