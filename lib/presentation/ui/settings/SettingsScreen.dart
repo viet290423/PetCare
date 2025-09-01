@@ -14,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.settings_title ?? 'Cài đặt'),
+        title: Text(l10n?.settings_title ?? 'Cài đặt', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: Consumer<SettingsProvider>(
         builder: (context, settings, _) {

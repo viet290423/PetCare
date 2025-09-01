@@ -75,8 +75,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Trang chủ - Bác sĩ',
@@ -161,7 +162,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
               _buildHeaderSection(doctor, appointmentVM),
               _buildDateSelector(),
               Container(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 child: TabBar(
                   controller: _tabController,
                   labelColor: Colors.green,
@@ -448,9 +449,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
   }
 
   Widget _buildDateSelector() {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Row(
         children: [
           Icon(Icons.calendar_today, color: Colors.green[600], size: 20),
@@ -511,6 +513,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
   }
 
   Widget _buildAppointmentCard(AppointmentModel appointment) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Dismissible(
       key: Key(appointment.id.toString()),
       background: Container(
@@ -572,11 +575,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: isDark 
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -619,7 +624,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: isDark ? Theme.of(context).colorScheme.onSecondaryFixedVariant : Colors.grey[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(

@@ -2,25 +2,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../data/model/DoctorModel.dart';
 
-class DoctorDetailScreen extends StatelessWidget {
+class DoctorDetailScreen extends StatefulWidget {
   final DoctorModel doctor;
 
   const DoctorDetailScreen({super.key, required this.doctor});
 
   @override
+  State<DoctorDetailScreen> createState() => _DoctorDetailScreenState();
+}
+
+class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         forceMaterialTransparency: true,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        // iconTheme: const IconThemeData(color: Colors.black87),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Colors.black87),
+          icon: const Icon(CupertinoIcons.back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(doctor.name, style: const TextStyle(color: Colors.black87)),
+        title: Text(widget.doctor.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -37,9 +42,9 @@ class DoctorDetailScreen extends StatelessWidget {
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
-                  child: doctor.imageUrl.isNotEmpty
+                  child: widget.doctor.imageUrl.isNotEmpty
                       ? Image.network(
-                          doctor.imageUrl,
+                          widget.doctor.imageUrl,
                           width: double.infinity,
                           height: 280,
                           fit: BoxFit.cover,
@@ -81,7 +86,7 @@ class DoctorDetailScreen extends StatelessWidget {
                       width: MediaQuery.of(context).size.width * 0.9,
                       padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
@@ -95,12 +100,12 @@ class DoctorDetailScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            doctor.name,
+                            widget.doctor.name,
                             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            doctor.specialization,
+                            widget.doctor.specialization,
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[700],
@@ -113,12 +118,12 @@ class DoctorDetailScreen extends StatelessWidget {
                               Icon(Icons.star, color: Colors.amber, size: 20),
                               const SizedBox(width: 4),
                               Text(
-                                doctor.rating.toStringAsFixed(1),
+                                widget.doctor.rating.toStringAsFixed(1),
                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '(${doctor.reviewCount} đánh giá)',
+                                '(${widget.doctor.reviewCount} đánh giá)',
                                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                               ),
                             ],
@@ -139,15 +144,15 @@ class DoctorDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // About section
-                  _buildSection('Giới thiệu', doctor.description, Icons.info_outline),
+                  _buildSection('Giới thiệu', widget.doctor.description, Icons.info_outline),
                   const SizedBox(height: 20),
 
                   // Experience
-                  _buildSection('Kinh nghiệm', doctor.experience, Icons.work),
+                  _buildSection('Kinh nghiệm', widget.doctor.experience, Icons.work),
                   const SizedBox(height: 20),
 
                   // Education
-                  _buildSection('Học vấn', doctor.education, Icons.school),
+                  _buildSection('Học vấn', widget.doctor.education, Icons.school),
                   const SizedBox(height: 20),
 
                   // Certifications
@@ -190,7 +195,7 @@ class DoctorDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -221,7 +226,7 @@ class DoctorDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -245,7 +250,7 @@ class DoctorDetailScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...doctor.certifications.map(
+          ...widget.doctor.certifications.map(
             (cert) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(

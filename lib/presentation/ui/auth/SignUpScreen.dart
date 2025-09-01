@@ -75,6 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: Consumer<AuthViewModel>(
         builder: (context, viewModel, child) {
@@ -98,7 +99,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.green.shade100, Colors.white],
+                  colors: isDark 
+                      ? [Colors.grey.shade900, Colors.black]
+                      : [Colors.green.shade100, Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -115,11 +118,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: isDark 
+                                  ? Colors.black.withOpacity(0.3)
+                                  : Colors.grey.withOpacity(0.2),
                               spreadRadius: 5,
                               blurRadius: 7,
                               offset: const Offset(0, 3),

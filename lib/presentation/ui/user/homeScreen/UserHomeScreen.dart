@@ -57,7 +57,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         title: Text(
           'Pet Care',
           style: TextStyle(
-            fontSize: 20,
             fontWeight: FontWeight.bold,
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           ),

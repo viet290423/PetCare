@@ -107,12 +107,36 @@ class CommunityDataSourceImpl implements CommunityDataSource {
           .maybeSingle();
 
       if (existingProfile == null) {
-        // Tạo profile mới từ user metadata
-        final metadata = currentUser.userMetadata ?? {};
+        // Thử lấy tên từ doctors table trước (nếu là doctor)
+        String displayName = 'Người dùng';
+        String? avatarUrl;
+
+        try {
+          final doctorInfo = await client
+              .from('doctors')
+              .select('name, image_url')
+              .eq('user_id', currentUser.id)
+              .maybeSingle();
+
+          if (doctorInfo != null) {
+            displayName = doctorInfo['name'] as String? ?? 'Người dùng';
+            avatarUrl = doctorInfo['image_url'] as String?;
+          } else {
+            // Nếu không phải doctor, lấy từ user metadata
+            final metadata = currentUser.userMetadata ?? {};
+            displayName = metadata['name'] ?? 'Người dùng';
+          }
+        } catch (e) {
+          // Fallback to user metadata
+          final metadata = currentUser.userMetadata ?? {};
+          displayName = metadata['name'] ?? 'Người dùng';
+        }
+
+        // Tạo profile mới
         await client.from('profiles').insert({
           'id': currentUser.id,
-          'name': metadata['name'] ?? 'Người dùng',
-          'avatar_url': null,
+          'name': displayName,
+          'avatar_url': avatarUrl,
         });
       }
     } catch (e) {
@@ -123,20 +147,35 @@ class CommunityDataSourceImpl implements CommunityDataSource {
 
   Future<Map<String, String?>> _getUserProfile(String userId) async {
     try {
-      final response = await client
+      // Thử lấy từ profiles table trước
+      final profileResponse = await client
           .from('profiles')
           .select('name, avatar_url')
           .eq('id', userId)
           .maybeSingle();
 
-      if (response != null) {
+      if (profileResponse != null && profileResponse['name'] != null && profileResponse['name'] != 'Người dùng') {
         return {
-          'name': response['name'] as String?,
-          'avatar_url': response['avatar_url'] as String?,
+          'name': profileResponse['name'] as String?,
+          'avatar_url': profileResponse['avatar_url'] as String?,
         };
       }
 
-      // Fallback nếu không tìm thấy profile
+      // Nếu không tìm thấy hoặc tên là "Người dùng", thử lấy từ doctors table
+      final doctorResponse = await client
+          .from('doctors')
+          .select('name, image_url')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (doctorResponse != null) {
+        return {
+          'name': doctorResponse['name'] as String?,
+          'avatar_url': doctorResponse['image_url'] as String?,
+        };
+      }
+
+      // Fallback nếu không tìm thấy ở cả hai bảng
       return {'name': 'Người dùng', 'avatar_url': null};
     } catch (e) {
       // Fallback nếu có lỗi

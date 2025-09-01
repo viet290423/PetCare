@@ -13,23 +13,24 @@ class ServiceDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         forceMaterialTransparency: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
           service.title,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            // color: Colors.black87,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Colors.black87),
+          icon: const Icon(CupertinoIcons.back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -74,7 +75,9 @@ class ServiceDetailScreen extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.green.shade50, Colors.white],
+                  colors: isDark
+                      ? [Colors.black.withOpacity(1), Colors.black]
+                      : [Colors.green.shade50, Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -94,7 +97,6 @@ class ServiceDetailScreen extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
                             ),
                           ),
                         ),
@@ -131,7 +133,7 @@ class ServiceDetailScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.green.shade100),
                         boxShadow: [
@@ -175,7 +177,7 @@ class ServiceDetailScreen extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
+                                    // color: Colors.black87,
                                   ),
                                 ),
                               ],
@@ -190,7 +192,7 @@ class ServiceDetailScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.green.shade100),
                         boxShadow: [
@@ -218,7 +220,7 @@ class ServiceDetailScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  // color: Colors.black87,
                                 ),
                               ),
                             ],
@@ -228,7 +230,7 @@ class ServiceDetailScreen extends StatelessWidget {
                             service.description,
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey[800],
+                              // color: Colors.grey[800],
                               height: 1.5,
                             ),
                           ),
@@ -242,7 +244,7 @@ class ServiceDetailScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.green.shade100),
                           boxShadow: [
@@ -270,7 +272,6 @@ class ServiceDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
                                   ),
                                 ),
                               ],
@@ -280,7 +281,7 @@ class ServiceDetailScreen extends StatelessWidget {
                               service.detailedDescription!,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.grey[800],
+                                // color: Colors.grey[800],
                                 height: 1.5,
                               ),
                             ),

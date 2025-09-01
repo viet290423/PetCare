@@ -22,8 +22,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Hồ sơ bác sĩ',
@@ -237,6 +238,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   }
 
   Widget _buildNextAppointmentCard(dynamic appointment) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     if (appointment == null) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -244,10 +246,16 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+              BoxShadow(
+                color: isDark 
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.black.withOpacity(0.05), 
+                blurRadius: 8, 
+                offset: const Offset(0, 2)
+              ),
             ],
           ),
           child: Row(
@@ -278,10 +286,16 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(
+              color: isDark 
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.05), 
+              blurRadius: 8, 
+              offset: const Offset(0, 2)
+            ),
           ],
         ),
         child: Column(
@@ -529,14 +543,17 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     IconData icon,
     Color color,
   ) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: isDark 
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -566,6 +583,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   }
 
   Widget _buildRecentAppointments(List appointments) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final recentAppointments = appointments
         .where(
           (appointment) =>
@@ -579,11 +597,13 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: isDark 
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -682,6 +702,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   }
 
   Widget _buildStatusDistribution(List appointments) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final statusCounts = <String, int>{};
     for (final appointment in appointments) {
       statusCounts[appointment.status] =
@@ -692,11 +713,13 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: isDark 
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

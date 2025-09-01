@@ -69,7 +69,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -127,18 +127,18 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         forceMaterialTransparency: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
           "Thông tin thú cưng",
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+          style: const TextStyle(fontWeight: FontWeight.bold,),
         ),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Colors.black87),
+          icon: const Icon(CupertinoIcons.back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -348,7 +348,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 onChanged: (v) => setState(() => _selectedType = v),
                 decoration: _inputDecoration('Loài', Icons.pets),
                 validator: (v) => v == null ? 'Chọn loài' : null,
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -396,7 +396,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 onChanged: (v) => setState(() => _selectedGender = v),
                 decoration: _inputDecoration('Giới tính', Icons.male),
                 validator: (v) => v == null ? 'Chọn giới tính' : null,
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 12),
               TextFormField(

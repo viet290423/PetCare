@@ -181,7 +181,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         forceMaterialTransparency: true,
         elevation: 0,
@@ -192,11 +192,10 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Colors.black),
+          icon: const Icon(CupertinoIcons.back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -301,7 +300,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.green.shade100),
                           boxShadow: [
@@ -336,7 +335,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              widget.service.description!,
+                              widget.service.description,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[700],
@@ -424,7 +423,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
         margin: const EdgeInsets.only(bottom: 20),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.green.shade100),
           boxShadow: [
@@ -476,7 +475,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.grey.shade50,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade200),
         ),
@@ -598,7 +597,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.green.shade50,
-              // borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.green.shade200),
             ),
             child: Row(
@@ -610,6 +609,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: Colors.black87,
                   ),
                 ),
               ],
@@ -695,6 +695,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                   selectedTime!,
                   style: const TextStyle(
                     fontSize: 16,
+                    color: Colors.black87,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

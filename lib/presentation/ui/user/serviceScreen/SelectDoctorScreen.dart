@@ -38,11 +38,16 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chọn Bác Sĩ'),
-        backgroundColor: Colors.green,
+        title: Text(
+          'Chọn Bác Sĩ',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        // backgroundColor: Colors.green,
         foregroundColor: Colors.white,
+        forceMaterialTransparency: true,
       ),
       body: Consumer<DoctorViewModel>(
         builder: (context, doctorViewModel, child) {
@@ -104,7 +109,9 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: isDark
+                      ? Colors.green.shade900.withOpacity(0.2)
+                      : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.green.shade200),
                 ),
@@ -116,12 +123,16 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        // color: Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Ngày: ${_formatDate(widget.selectedDate)}',
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        // color: Colors.black87,
+                      ),
                     ),
                     Text(
                       'Giờ: ${widget.selectedTime}',
@@ -148,17 +159,20 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       elevation: isSelected ? 4 : 2,
-                      color: isSelected ? Colors.green.shade50 : Colors.white,
+                      color: isSelected
+                          ? (isDark
+                                ? Colors.green.shade900.withOpacity(0.3)
+                                : Colors.green.shade50)
+                          : Theme.of(context).colorScheme.surface,
                       child: InkWell(
-                        onTap:
-                            isAvailable
-                                ? () {
-                                  setState(() {
-                                    selectedDoctorId = doctor.id;
-                                    selectedDoctor = doctor;
-                                  });
-                                }
-                                : null,
+                        onTap: isAvailable
+                            ? () {
+                                setState(() {
+                                  selectedDoctorId = doctor.id;
+                                  selectedDoctor = doctor;
+                                });
+                              }
+                            : null,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -167,32 +181,28 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                               CircleAvatar(
                                 radius: 30,
                                 backgroundColor: Colors.green.shade100,
-                                child:
-                                    doctor.imageUrl.isNotEmpty
-                                        ? ClipOval(
-                                          child: Image.network(
-                                            doctor.imageUrl,
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (
-                                              context,
-                                              error,
-                                              stackTrace,
-                                            ) {
-                                              return Icon(
-                                                Icons.person,
-                                                size: 30,
-                                                color: Colors.green.shade600,
-                                              );
-                                            },
-                                          ),
-                                        )
-                                        : Icon(
-                                          Icons.person,
-                                          size: 30,
-                                          color: Colors.green.shade600,
+                                child: doctor.imageUrl.isNotEmpty
+                                    ? ClipOval(
+                                        child: Image.network(
+                                          doctor.imageUrl,
+                                          width: 60,
+                                          height: 60,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Icon(
+                                                  Icons.person,
+                                                  size: 30,
+                                                  color: Colors.green.shade600,
+                                                );
+                                              },
                                         ),
+                                      )
+                                    : Icon(
+                                        Icons.person,
+                                        size: 30,
+                                        color: Colors.green.shade600,
+                                      ),
                               ),
                               const SizedBox(width: 16),
 

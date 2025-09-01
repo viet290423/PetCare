@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../../domain/entity/Post.dart';
 import '../../../provider/CommunityProvider.dart';
+import '../../auth/AuthViewModel.dart';
 
 class CreatePostSheet extends StatefulWidget {
   const CreatePostSheet({super.key});
@@ -23,11 +24,39 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
   List<String> _selectedMediaPaths = [];
   List<String> _selectedMediaTypes = []; // 'image' or 'video'
 
+  // User profile info - sẽ được lấy từ AuthViewModel
+  String? _userDisplayName;
+  String? _userAvatarUrl;
+
   @override
   void dispose() {
     _contentController.dispose();
     _tagsController.dispose();
     super.dispose();
+  }
+
+  // Lấy thông tin user từ AuthViewModel (đã có sẵn, không cần query database)
+  void _getUserInfoFromAuthViewModel() {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final currentUser = authViewModel.user;
+    final doctor = authViewModel.doctor;
+    
+    if (currentUser != null) {
+      // Ưu tiên lấy thông tin từ doctor nếu có (cho doctor users)
+      if (doctor != null) {
+        _userDisplayName = doctor.name;
+        _userAvatarUrl = doctor.imageUrl.isNotEmpty ? doctor.imageUrl : null;
+      } else {
+        // Fallback về thông tin từ AuthUser
+        _userDisplayName = currentUser.name?.isNotEmpty == true 
+            ? currentUser.name! 
+            : (currentUser.email?.split('@').first ?? 'Người dùng');
+        _userAvatarUrl = null; // AuthUser không có avatar
+      }
+    } else {
+      _userDisplayName = 'Người dùng';
+      _userAvatarUrl = null;
+    }
   }
 
   void _removeMedia(int index) {
@@ -116,8 +145,9 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        // color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -185,34 +215,46 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // User info
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.green,
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  // User info - sử dụng Consumer để lấy thông tin real-time từ AuthViewModel
+                  Consumer<AuthViewModel>(
+                    builder: (context, authViewModel, child) {
+                      // Lấy thông tin user mỗi lần build (real-time)
+                      _getUserInfoFromAuthViewModel();
+                      
+                      return Row(
                         children: [
-                          const Text(
-                            'Người dùng',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.green,
+                            backgroundImage: _userAvatarUrl != null && _userAvatarUrl!.isNotEmpty
+                                ? NetworkImage(_userAvatarUrl!)
+                                : null,
+                            child: _userAvatarUrl == null || _userAvatarUrl!.isEmpty
+                                ? const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                    size: 28,
+                                  )
+                                : null,
                           ),
-                          const SizedBox(height: 4),
-                          _buildPrivacySelector(),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _userDisplayName ?? 'Người dùng',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              _buildPrivacySelector(),
+                            ],
+                          ),
                         ],
-                      ),
-                    ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 20),
@@ -479,9 +521,10 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
 
   Widget _buildPrivacySelector() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        // color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButton<PostPrivacy>(
@@ -570,7 +613,7 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                // color: Colors.black87,
               ),
             ),
           ],

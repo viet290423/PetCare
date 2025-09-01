@@ -106,7 +106,10 @@ class _AddMedicalRecordByDoctorScreenState
     if (!_formKey.currentState!.validate()) return;
 
     try {
-      final appointmentViewModel = Provider.of<AppointmentViewModel>(context, listen: false);
+      final appointmentViewModel = Provider.of<AppointmentViewModel>(
+        context,
+        listen: false,
+      );
 
       final record = MedicalRecordModel(
         id: const Uuid().v4(),
@@ -132,10 +135,7 @@ class _AddMedicalRecordByDoctorScreenState
       // Lưu hồ sơ y tế thông qua use case đã đăng ký trong DI
       final addMedicalRecordUseCase = GetIt.I<AddMedicalRecordUseCase>();
       final result = await addMedicalRecordUseCase(record);
-      result.fold(
-        (error) => throw Exception(error),
-        (_) => null,
-      );
+      result.fold((error) => throw Exception(error), (_) => null);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -157,9 +157,13 @@ class _AddMedicalRecordByDoctorScreenState
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm hồ sơ y tế'),
+        title: const Text(
+          'Thêm hồ sơ y tế',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -173,7 +177,9 @@ class _AddMedicalRecordByDoctorScreenState
             children: [
               // Appointment info card
               Card(
-                color: Colors.green.shade50,
+                color: isDark
+                    ? Colors.green.shade900.withOpacity(0.3)
+                    : Colors.green.shade50,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -298,7 +304,7 @@ class _AddMedicalRecordByDoctorScreenState
                     style: TextStyle(
                       fontSize: 16,
                       color: _nextVisitDate != null
-                          ? Colors.black
+                          ? Theme.of(context).colorScheme.onSurface
                           : Colors.grey,
                     ),
                   ),

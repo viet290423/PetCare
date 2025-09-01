@@ -85,7 +85,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Lịch sử dịch vụ'),
+        title: const Text('Lịch sử dịch vụ', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),

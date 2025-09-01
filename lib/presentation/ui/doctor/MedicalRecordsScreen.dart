@@ -57,11 +57,12 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
-          'Hồ sơ bệnh án',
+          ' Hồ sơ bệnh án',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green,
@@ -70,14 +71,14 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
         //   icon: const Icon(Icons.arrow_back, color: Colors.white),
         //   onPressed: () => Navigator.pop(context),
         // ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              // TODO: Navigate to add medical record screen
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.add, color: Colors.white),
+        //     onPressed: () {
+        //       // TODO: Navigate to add medical record screen
+        //     },
+        //   ),
+        // ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -154,14 +155,17 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   Widget _buildMedicalRecordCard(MedicalRecordModel record) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: isDark 
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

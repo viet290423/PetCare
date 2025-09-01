@@ -38,9 +38,9 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đội Ngũ Bác Sĩ'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        title: const Text('Đội Ngũ Bác Sĩ', style: TextStyle(fontWeight: FontWeight.bold)),
+        // backgroundColor: Colors.green,
+        // foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Consumer<DoctorViewModel>(
@@ -88,7 +88,7 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
               // Search và Filter
               Container(
                 padding: const EdgeInsets.all(16),
-                color: Colors.green.shade50,
+                // color: Colors.green.shade50,
                 child: Column(
                   children: [
                     // Search bar
@@ -97,21 +97,36 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
                       decoration: InputDecoration(
                         hintText: 'Tìm kiếm bác sĩ...',
                         prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surface,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
+                        ),
+
+                        // Border khi chưa focus
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.5,
+                          ),
+                        ),
+
+                        // Border khi focus
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.green, // màu khi focus
+                            width: 2,
+                          ),
                         ),
                       ),
                       onChanged: (value) {
                         setState(() {});
                       },
                     ),
+
                     const SizedBox(height: 12),
 
                     // Filter by specialization

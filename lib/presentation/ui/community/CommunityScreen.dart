@@ -285,7 +285,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const CreatePostSheet(),
+      builder: (context) => CreatePostSheet(),
     );
   }
 }
