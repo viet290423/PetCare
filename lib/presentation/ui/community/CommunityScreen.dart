@@ -4,6 +4,7 @@ import '../../provider/CommunityProvider.dart';
 import '../../../domain/entity/Post.dart';
 import 'widgets/PostCard.dart';
 import 'widgets/CreatePostSheet.dart';
+import '../messaging/ConversationsScreen.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -68,12 +69,12 @@ class _CommunityScreenState extends State<CommunityScreen> {
           ),
           IconButton(
             onPressed: () {
-              // TODO: Implement notifications
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ConversationsScreen()),
+              );
             },
-            icon: const Icon(
-              Icons.favorite_border,
-              size: 26,
-            ),
+            icon: const Icon(Icons.chat_bubble_outline, size: 26),
           ),
           IconButton(
             onPressed: () => _showCreatePost(context),

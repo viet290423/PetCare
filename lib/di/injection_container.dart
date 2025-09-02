@@ -48,6 +48,15 @@ import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/ServiceViewModel.dart';
 import 'package:petcare/presentation/ui/doctor/homeScreen/DoctorViewModel.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:petcare/data/source/MessagingDataSource.dart';
+import 'package:petcare/domain/repository/MessagingRepository.dart';
+import 'package:petcare/data/repository/MessagingRepositoryImpl.dart';
+import 'package:petcare/domain/usecase/messaging/GetConversationsUseCase.dart';
+import 'package:petcare/domain/usecase/messaging/GetOrCreateConversationUseCase.dart';
+import 'package:petcare/domain/usecase/messaging/GetMessagesUseCase.dart';
+import 'package:petcare/domain/usecase/messaging/SendMessageUseCase.dart';
+import 'package:petcare/domain/usecase/messaging/MarkAsReadUseCase.dart';
+import 'package:petcare/presentation/provider/MessagingProvider.dart';
 
 import '../data/repository/AuthUserRepositoryImpl.dart';
 import '../domain/repository/AuthRepository.dart';
@@ -82,6 +91,9 @@ Future<void> init() async {
   sl.registerLazySingleton<CommunityDataSource>(
     () => CommunityDataSourceImpl(Supabase.instance.client),
   );
+  sl.registerLazySingleton<MessagingDataSource>(
+    () => MessagingDataSourceImpl(Supabase.instance.client),
+  );
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -92,6 +104,9 @@ Future<void> init() async {
   sl.registerLazySingleton<DoctorRepository>(() => DoctorRepositoryImpl(sl()));
   sl.registerLazySingleton<CommunityRepository>(
     () => CommunityRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<MessagingRepository>(
+    () => MessagingRepositoryImpl(sl()),
   );
 
   // Use cases
@@ -131,6 +146,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetPostCommentsUseCase(sl()));
   sl.registerLazySingleton(() => UploadMediaUseCase(sl()));
 
+  // Messaging use cases
+  sl.registerLazySingleton(() => GetConversationsUseCase(sl()));
+  sl.registerLazySingleton(() => GetOrCreateConversationUseCase(sl()));
+  sl.registerLazySingleton(() => GetMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+  sl.registerLazySingleton(() => MarkAsReadUseCase(sl()));
+
   // Provider
   sl.registerLazySingleton(
     () => AuthProvider(
@@ -149,6 +171,16 @@ Future<void> init() async {
       createCommentUseCase: sl(),
       getPostCommentsUseCase: sl(),
       uploadMediaUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => MessagingProvider(
+      getConversationsUseCase: sl(),
+      getOrCreateConversationUseCase: sl(),
+      getMessagesUseCase: sl(),
+      sendMessageUseCase: sl(),
+      markAsReadUseCase: sl(),
     ),
   );
 

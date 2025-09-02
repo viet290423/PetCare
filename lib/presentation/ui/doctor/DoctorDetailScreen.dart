@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../provider/MessagingProvider.dart';
+import '../messaging/ChatScreen.dart';
 import '../../../data/model/DoctorModel.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
@@ -27,6 +30,39 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
         ),
         title: Text(widget.doctor.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.chat_bubble_outline),
+            onPressed: () async {
+              final userId = widget.doctor.userId;
+              if (userId == null || userId.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Không tìm thấy tài khoản bác sĩ để nhắn tin')),
+                );
+                return;
+              }
+              final provider = context.read<MessagingProvider>();
+              final conv = await provider.getOrCreateConversation(userId);
+              if (!mounted) return;
+              if (conv == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Không thể khởi tạo cuộc trò chuyện')),
+                );
+                return;
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                    conversationId: conv.id,
+                    otherUserName: widget.doctor.name,
+                    otherUserAvatar: widget.doctor.imageUrl,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
