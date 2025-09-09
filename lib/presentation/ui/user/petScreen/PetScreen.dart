@@ -16,6 +16,7 @@ import 'AddHealthMetricsScreen.dart';
 import 'AddVaccinationRecordScreen.dart';
 import 'MedicalRecordDetailScreen.dart';
 import 'MedicalRecordsListScreen.dart';
+import 'widgets/AiTipsWidget.dart';
 
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
@@ -43,6 +44,7 @@ class _PetScreenState extends State<PetScreen>
         await viewModel.fetchReminders(petId, forceRefresh: true);
         await viewModel.fetchAppointments(petId, forceRefresh: true);
         await viewModel.fetchAllRecords(petId, forceRefresh: true);
+        await viewModel.fetchAiTips(petId, forceRefresh: true);
         setState(() {
           _isInitialized = true;
         });
@@ -69,6 +71,7 @@ class _PetScreenState extends State<PetScreen>
           viewModel.selectedPetId!,
           forceRefresh: true,
         );
+        viewModel.fetchAiTips(viewModel.selectedPetId!, forceRefresh: true);
       }
     }
   }
@@ -163,6 +166,7 @@ class _PetScreenState extends State<PetScreen>
                                     await viewModel.fetchReminders(pet.id);
                                     await viewModel.fetchAppointments(pet.id);
                                     await viewModel.fetchAllRecords(pet.id);
+                                    await viewModel.fetchAiTips(pet.id);
                                     setState(() {});
                                   },
                                   child: Material(
@@ -342,6 +346,12 @@ class _PetScreenState extends State<PetScreen>
                                                       );
                                                   await viewModel
                                                       .fetchAppointments(
+                                                        viewModel
+                                                            .selectedPetId!,
+                                                        forceRefresh: true,
+                                                      );
+                                                  await viewModel
+                                                      .fetchAiTips(
                                                         viewModel
                                                             .selectedPetId!,
                                                         forceRefresh: true,
@@ -872,130 +882,139 @@ class _PetScreenState extends State<PetScreen>
                                 },
                               ),
                         // Nội dung cho Tips
-                        Consumer<UserHomeViewModel>(
-                          builder: (context, viewModel, _) {
-                            return SingleChildScrollView(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.shade100,
-                                          borderRadius: BorderRadius.circular(
-                                            10,
+                        viewModel.selectedPetId == null
+                            ? const Center(
+                                child: Text(
+                                  'Hãy chọn thú cưng để xem tips AI',
+                                ),
+                              )
+                            : Consumer<UserHomeViewModel>(
+                                builder: (context, viewModel, _) {
+                                  return SingleChildScrollView(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // AI Tips Widget
+                                        const AiTipsWidget(),
+                                        
+                                        const SizedBox(height: 24),
+                                        
+                                        // Tips categories
+                                        Row(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.green.shade100,
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              padding: const EdgeInsets.all(6),
+                                              child: const Icon(
+                                                Icons.lightbulb_outline,
+                                                color: Colors.green,
+                                                size: 22,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            const Text(
+                                              "Danh mục tips",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+
+                                        SizedBox(
+                                          height: 120,
+                                          child: ListView(
+                                            scrollDirection: Axis.horizontal,
+                                            children: [
+                                              _buildTipCategory(
+                                                icon: Icons.favorite,
+                                                title: "Sức khỏe",
+                                                color: Colors.red.shade100,
+                                                iconColor: Colors.red,
+                                              ),
+                                              _buildTipCategory(
+                                                icon: Icons.restaurant,
+                                                title: "Dinh dưỡng",
+                                                color: Colors.orange.shade100,
+                                                iconColor: Colors.orange,
+                                              ),
+                                              _buildTipCategory(
+                                                icon: Icons.fitness_center,
+                                                title: "Vận động",
+                                                color: Colors.blue.shade100,
+                                                iconColor: Colors.blue,
+                                              ),
+                                              _buildTipCategory(
+                                                icon: Icons.psychology,
+                                                title: "Tâm lý",
+                                                color: Colors.purple.shade100,
+                                                iconColor: Colors.purple,
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        padding: const EdgeInsets.all(6),
-                                        child: const Icon(
-                                          Icons.lightbulb_outline,
-                                          color: Colors.green,
-                                          size: 22,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      const Text(
-                                        "Tips chăm sóc",
-                                        style: TextStyle(
-                                          fontSize: 21,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
 
-                                  // Tips categories
-                                  SizedBox(
-                                    height: 120,
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: [
-                                        _buildTipCategory(
-                                          icon: Icons.favorite,
-                                          title: "Sức khỏe",
-                                          color: Colors.red.shade100,
-                                          iconColor: Colors.red,
+                                        const SizedBox(height: 24),
+
+                                        // Featured tips
+                                        const Text(
+                                          "Tips chung",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                        _buildTipCategory(
-                                          icon: Icons.restaurant,
-                                          title: "Dinh dưỡng",
-                                          color: Colors.orange.shade100,
-                                          iconColor: Colors.orange,
-                                        ),
-                                        _buildTipCategory(
-                                          icon: Icons.fitness_center,
-                                          title: "Vận động",
-                                          color: Colors.blue.shade100,
+                                        const SizedBox(height: 12),
+
+                                        _buildTipCard(
+                                          title: "Chăm sóc răng miệng cho thú cưng",
+                                          description:
+                                              "Đánh răng thường xuyên giúp ngăn ngừa các bệnh về răng miệng và hơi thở thơm mát.",
+                                          icon: Icons.brush,
+                                          color: Colors.blue.shade50,
                                           iconColor: Colors.blue,
                                         ),
-                                        _buildTipCategory(
-                                          icon: Icons.psychology,
-                                          title: "Tâm lý",
-                                          color: Colors.purple.shade100,
-                                          iconColor: Colors.purple,
+
+                                        _buildTipCard(
+                                          title: "Tắm rửa đúng cách",
+                                          description:
+                                              "Tắm 2-3 lần/tháng với sữa tắm chuyên dụng, tránh để nước vào tai và mắt.",
+                                          icon: Icons.shower,
+                                          color: Colors.cyan.shade50,
+                                          iconColor: Colors.cyan,
+                                        ),
+
+                                        _buildTipCard(
+                                          title: "Chế độ ăn cân bằng",
+                                          description:
+                                              "Cung cấp đầy đủ protein, vitamin và khoáng chất theo độ tuổi và cân nặng.",
+                                          icon: Icons.restaurant_menu,
+                                          color: Colors.green.shade50,
+                                          iconColor: Colors.green,
+                                        ),
+
+                                        _buildTipCard(
+                                          title: "Vận động hàng ngày",
+                                          description:
+                                              "Dành 30-60 phút mỗi ngày để chơi đùa và tập thể dục cùng thú cưng.",
+                                          icon: Icons.directions_run,
+                                          color: Colors.orange.shade50,
+                                          iconColor: Colors.orange,
                                         ),
                                       ],
                                     ),
-                                  ),
-
-                                  const SizedBox(height: 24),
-
-                                  // Featured tips
-                                  const Text(
-                                    "Tips nổi bật",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  _buildTipCard(
-                                    title: "Chăm sóc răng miệng cho thú cưng",
-                                    description:
-                                        "Đánh răng thường xuyên giúp ngăn ngừa các bệnh về răng miệng và hơi thở thơm mát.",
-                                    icon: Icons.brush,
-                                    color: Colors.blue.shade50,
-                                    iconColor: Colors.blue,
-                                  ),
-
-                                  _buildTipCard(
-                                    title: "Tắm rửa đúng cách",
-                                    description:
-                                        "Tắm 2-3 lần/tháng với sữa tắm chuyên dụng, tránh để nước vào tai và mắt.",
-                                    icon: Icons.shower,
-                                    color: Colors.cyan.shade50,
-                                    iconColor: Colors.cyan,
-                                  ),
-
-                                  _buildTipCard(
-                                    title: "Chế độ ăn cân bằng",
-                                    description:
-                                        "Cung cấp đầy đủ protein, vitamin và khoáng chất theo độ tuổi và cân nặng.",
-                                    icon: Icons.restaurant_menu,
-                                    color: Colors.green.shade50,
-                                    iconColor: Colors.green,
-                                  ),
-
-                                  _buildTipCard(
-                                    title: "Vận động hàng ngày",
-                                    description:
-                                        "Dành 30-60 phút mỗi ngày để chơi đùa và tập thể dục cùng thú cưng.",
-                                    icon: Icons.directions_run,
-                                    color: Colors.orange.shade50,
-                                    iconColor: Colors.orange,
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                         // Nội dung cho Records
                         Consumer<UserHomeViewModel>(
                           builder: (context, viewModel, _) {

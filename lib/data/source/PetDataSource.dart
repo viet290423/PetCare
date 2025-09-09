@@ -61,7 +61,7 @@ class PetDataSourceImpl implements PetDataSource {
         .order('created_at', ascending: false);
 
     return (response as List)
-        .map((item) => PetModel.fromJson(item as Map<String, dynamic>))
+        .map((item) => _createPetModelFromJson(item as Map<String, dynamic>))
         .toList();
   }
 
@@ -307,5 +307,54 @@ class PetDataSourceImpl implements PetDataSource {
     } catch (e) {
       throw Exception('Lỗi khi xóa lịch sử tiêm chủng: $e');
     }
+  }
+
+  /// Helper method để tạo PetModel với các trường mới cho AI tips
+  PetModel _createPetModelFromJson(Map<String, dynamic> json) {
+    // Parse birthDate từ string thành DateTime
+    DateTime? birthDateObj;
+    if (json['birthDate'] != null && json['birthDate'].toString().isNotEmpty) {
+      try {
+        birthDateObj = DateTime.parse(json['birthDate']);
+      } catch (e) {
+        print('Error parsing birthDate: $e');
+      }
+    }
+
+    // Parse weight từ string thành double
+    double? weightKg;
+    if (json['weight'] != null && json['weight'].toString().isNotEmpty) {
+      try {
+        weightKg = double.parse(json['weight'].toString());
+      } catch (e) {
+        print('Error parsing weight: $e');
+      }
+    }
+
+    // Parse healthConditions từ JSON array
+    List<String>? healthConditions;
+    if (json['healthConditions'] != null) {
+      try {
+        healthConditions = List<String>.from(json['healthConditions']);
+      } catch (e) {
+        print('Error parsing healthConditions: $e');
+      }
+    }
+
+    return PetModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      type: json['type'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      breed: json['breed'] ?? '',
+      birthDate: json['birthDate'] ?? '',
+      gender: json['gender'] ?? '',
+      weight: json['weight'] ?? '',
+      color: json['color'] ?? '',
+      species: json['species'],
+      weightKg: weightKg,
+      birthDateObj: birthDateObj,
+      healthConditions: healthConditions,
+    );
   }
 }

@@ -59,6 +59,7 @@ dependencies:
     sdk: flutter
   intl: any
   dart_openai: ^5.1.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

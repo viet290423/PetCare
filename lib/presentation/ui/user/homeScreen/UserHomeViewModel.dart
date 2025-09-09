@@ -16,7 +16,9 @@ import '../../../../data/model/ReminderModel.dart';
 import '../../../../data/model/MedicalRecordModel.dart';
 import '../../../../data/model/HealthMetricsModel.dart';
 import '../../../../data/model/VaccinationRecordModel.dart';
+import '../../../../data/model/PetTipsModel.dart';
 import '../../../../domain/usecase/pet/DeleteReminderUseCase.dart';
+import '../../../../services/pet_tips_service.dart';
 
 class UserHomeViewModel with ChangeNotifier {
   final PetUseCase getPetData;
@@ -42,6 +44,10 @@ class UserHomeViewModel with ChangeNotifier {
   final Map<String, List<MedicalRecordModel>> _medicalRecordsCache = {};
   final Map<String, List<HealthMetricsModel>> _healthMetricsCache = {};
   final Map<String, List<VaccinationRecordModel>> _vaccinationRecordsCache = {};
+  
+  // Cache cho AI tips
+  final Map<String, PetTipsResponse> _aiTipsCache = {};
+  bool _isLoadingTips = false;
 
   UserHomeViewModel({
     required this.getPetData,
@@ -70,8 +76,12 @@ class UserHomeViewModel with ChangeNotifier {
       _vaccinationRecordsCache[selectedPetId] ?? [];
 
   bool get isLoading => _isLoading;
+  bool get isLoadingTips => _isLoadingTips;
   String? get error => _error;
   String? selectedPetId;
+  
+  // AI Tips getter
+  PetTipsResponse? get currentAiTips => _aiTipsCache[selectedPetId];
 
   Future<void> fetchPets({bool forceRefresh = false}) async {
     if (forceRefresh) {
@@ -283,6 +293,7 @@ class UserHomeViewModel with ChangeNotifier {
     _medicalRecordsCache.clear();
     _healthMetricsCache.clear();
     _vaccinationRecordsCache.clear();
+    _aiTipsCache.clear();
   }
 
   // Helper methods for records
@@ -382,6 +393,37 @@ class UserHomeViewModel with ChangeNotifier {
     } catch (e) {
       _error = 'Lỗi khi thêm lịch sử tiêm chủng: $e';
       notifyListeners();
+    }
+  }
+
+  // AI Tips methods
+  Future<void> fetchAiTips(String petId, {bool forceRefresh = false}) async {
+    selectedPetId = petId;
+
+    if (!forceRefresh && _aiTipsCache.containsKey(petId)) {
+      notifyListeners();
+      return;
+    }
+
+    _isLoadingTips = true;
+    notifyListeners();
+
+    try {
+      final pet = _pets.firstWhere((p) => p.id == petId);
+      final tipsResponse = await PetTipsService.getTipsForPet(pet);
+      _aiTipsCache[petId] = tipsResponse;
+      _error = null;
+    } catch (e) {
+      _error = 'Lỗi khi tải tips AI: $e';
+    } finally {
+      _isLoadingTips = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshAiTips() async {
+    if (selectedPetId != null) {
+      await fetchAiTips(selectedPetId!, forceRefresh: true);
     }
   }
 }
