@@ -58,6 +58,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  dart_openai: ^5.1.0
 
 dev_dependencies:
   flutter_test:

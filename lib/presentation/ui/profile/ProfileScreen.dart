@@ -7,6 +7,8 @@ import 'package:petcare/presentation/ui/user/homeScreen/UserHomeViewModel.dart';
 import 'package:petcare/presentation/ui/user/petScreen/PetDetailScreen.dart';
 import 'package:petcare/presentation/ui/user/petScreen/AllMedicalRecordsScreen.dart';
 import 'package:petcare/presentation/ui/user/serviceScreen/AllServiceHistoryScreen.dart';
+import 'package:petcare/presentation/ui/profile/EditProfileScreen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../auth/LoginScreen.dart';
 
@@ -18,6 +20,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? _profileAvatarUrl;
+  String? _profileDisplayName;
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +30,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AuthViewModel>(context, listen: false).checkCurrentUser();
       Provider.of<UserHomeViewModel>(context, listen: false).fetchPets();
+      _fetchProfile();
     });
+  }
+
+  Future<void> _fetchProfile() async {
+    try {
+      final client = Supabase.instance.client;
+      final user = client.auth.currentUser;
+      if (user == null) return;
+      final data = await client
+          .from('profiles')
+          .select('name, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+      if (!mounted) return;
+      setState(() {
+        _profileDisplayName = (data?['name'] as String?)?.trim().isNotEmpty == true
+            ? data!['name'] as String
+            : null;
+        _profileAvatarUrl = data?['avatar_url'] as String?;
+      });
+    } catch (_) {}
   }
 
   @override
@@ -68,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
 
           // Lấy thông tin từ AuthViewModel
-          final userName = authViewModel.user!.name ?? 'Người dùng';
+          final userName = _profileDisplayName ?? authViewModel.user!.name ?? 'Người dùng';
           final userEmail = authViewModel.user!.email;
           final userRole = authViewModel.user!.role;
           final petCount = petViewModel.pets.length.toString();
@@ -99,8 +125,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         backgroundColor: Theme.of(context).colorScheme.surface,
                         child: CircleAvatar(
                           radius: 50,
-                          // TODO: Thay bằng avatarUrl từ Supabase nếu có
-                          backgroundImage: const NetworkImage('https://i.pravatar.cc/150?img=3'),
+                          backgroundImage: _profileAvatarUrl != null && _profileAvatarUrl!.isNotEmpty
+                              ? NetworkImage(_profileAvatarUrl!)
+                              : const NetworkImage('https://i.pravatar.cc/150?img=3'),
                         ),
                       ),
                     ),
@@ -135,8 +162,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 10),
                     OutlinedButton.icon(
-                      onPressed: () {
-                        // TODO: Chuyển đến màn chỉnh sửa hồ sơ
+                      onPressed: () async {
+                        final updated = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                        );
+                        if (updated == true) {
+                          // Refresh pets and auth if needed
+                          Provider.of<AuthViewModel>(context, listen: false).checkCurrentUser();
+                          Provider.of<UserHomeViewModel>(context, listen: false).fetchPets(forceRefresh: true);
+                          await _fetchProfile();
+                        }
                       },
                       icon: const Icon(Icons.edit, size: 18),
                       label: const Text('Chỉnh sửa hồ sơ'),

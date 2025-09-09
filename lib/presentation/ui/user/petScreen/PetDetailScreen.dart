@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../data/model/PetModel.dart';
 import '../homeScreen/UserHomeViewModel.dart';
 import '../../pet/AddPetScreen.dart';
@@ -31,6 +32,34 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   DateTime? _selectedBirthDate;
 
   final _formKey = GlobalKey<FormState>();
+
+  Future<String?> _uploadPetImage(File file) async {
+    try {
+      final client = Supabase.instance.client;
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+      final storagePath = 'uploads/$fileName';
+
+      final bytes = await file.readAsBytes();
+      final response = await client.storage
+          .from('pet-images')
+          .uploadBinary(
+            storagePath,
+            bytes,
+            fileOptions: const FileOptions(upsert: false),
+          );
+
+      if (response.isEmpty) throw Exception('Không thể upload ảnh');
+
+      final imageUrl = client.storage
+          .from('pet-images')
+          .getPublicUrl(storagePath);
+      return imageUrl;
+    } catch (e) {
+      debugPrint('Lỗi khi upload ảnh: $e');
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -100,12 +129,18 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     setState(() {
       _isLoading = true;
     });
+    String imageUrl = oldPet.imageUrl;
+    if (_pickedImage != null) {
+      final uploadedUrl = await _uploadPetImage(_pickedImage!);
+      if (uploadedUrl != null) {
+        imageUrl = uploadedUrl;
+      }
+    }
     final updatedPet = PetModel(
       id: oldPet.id,
       name: _nameController.text.trim(),
       type: _selectedType ?? oldPet.type,
-      imageUrl: oldPet.imageUrl,
-      // TODO: nếu có upload ảnh mới thì cập nhật link mới
+      imageUrl: imageUrl,
       breed: _breedController.text.trim(),
       birthDate: _selectedBirthDate != null
           ? _selectedBirthDate!.toIso8601String()
