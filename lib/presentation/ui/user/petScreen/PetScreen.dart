@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../data/model/HealthMetricsModel.dart';
 import '../../../../data/model/ReminderModel.dart';
 import '../../../../data/model/AppointmentModel.dart';
 import '../../pet/AddPetScreen.dart';
@@ -17,6 +18,7 @@ import 'AddVaccinationRecordScreen.dart';
 import 'MedicalRecordDetailScreen.dart';
 import 'MedicalRecordsListScreen.dart';
 import 'widgets/AiTipsWidget.dart';
+import '../../../../data/model/PetTipsModel.dart';
 
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
@@ -885,7 +887,7 @@ class _PetScreenState extends State<PetScreen>
                         viewModel.selectedPetId == null
                             ? const Center(
                                 child: Text(
-                                  'Hãy chọn thú cưng để xem tips AI',
+                                  'Hãy chọn thú cưng để xem các tips',
                                 ),
                               )
                             : Consumer<UserHomeViewModel>(
@@ -898,72 +900,75 @@ class _PetScreenState extends State<PetScreen>
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        // AI Tips Widget
+                                        // AI Tips Widget (đã gộp cả danh mục và nội dung)
                                         const AiTipsWidget(),
-                                        
-                                        const SizedBox(height: 24),
-                                        
-                                        // Tips categories
-                                        Row(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.green.shade100,
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              padding: const EdgeInsets.all(6),
-                                              child: const Icon(
-                                                Icons.lightbulb_outline,
-                                                color: Colors.green,
-                                                size: 22,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            const Text(
-                                              "Danh mục tips",
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 16),
 
-                                        SizedBox(
-                                          height: 120,
-                                          child: ListView(
-                                            scrollDirection: Axis.horizontal,
-                                            children: [
-                                              _buildTipCategory(
-                                                icon: Icons.favorite,
-                                                title: "Sức khỏe",
-                                                color: Colors.red.shade100,
-                                                iconColor: Colors.red,
-                                              ),
-                                              _buildTipCategory(
-                                                icon: Icons.restaurant,
-                                                title: "Dinh dưỡng",
-                                                color: Colors.orange.shade100,
-                                                iconColor: Colors.orange,
-                                              ),
-                                              _buildTipCategory(
-                                                icon: Icons.fitness_center,
-                                                title: "Vận động",
-                                                color: Colors.blue.shade100,
-                                                iconColor: Colors.blue,
-                                              ),
-                                              _buildTipCategory(
-                                                icon: Icons.psychology,
-                                                title: "Tâm lý",
-                                                color: Colors.purple.shade100,
-                                                iconColor: Colors.purple,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                        const SizedBox(height: 10),
+                                        
+                                        // // Tips categories mặc định (chỉ hiển thị khi không có AI tips)
+                                        // if (viewModel.currentAiTips?.categories == null ||
+                                        //     !viewModel.currentAiTips!.categories!.hasAnyContent) ...[
+                                        //   Row(
+                                        //     children: [
+                                        //       Container(
+                                        //         decoration: BoxDecoration(
+                                        //           color: Colors.green.shade100,
+                                        //           borderRadius: BorderRadius.circular(10),
+                                        //         ),
+                                        //         padding: const EdgeInsets.all(6),
+                                        //         child: const Icon(
+                                        //           Icons.lightbulb_outline,
+                                        //           color: Colors.green,
+                                        //           size: 22,
+                                        //         ),
+                                        //       ),
+                                        //       const SizedBox(width: 10),
+                                        //       const Text(
+                                        //         "Danh mục tips",
+                                        //         style: TextStyle(
+                                        //           fontSize: 18,
+                                        //           fontWeight: FontWeight.bold,
+                                        //         ),
+                                        //       ),
+                                        //     ],
+                                        //   ),
+                                        //   const SizedBox(height: 16),
+                                        //
+                                        //   SizedBox(
+                                        //     height: 120,
+                                        //     child: ListView(
+                                        //       scrollDirection: Axis.horizontal,
+                                        //       children: [
+                                        //         _buildTipCategory(
+                                        //           icon: Icons.favorite,
+                                        //           title: "Sức khỏe",
+                                        //           color: Colors.red.shade100,
+                                        //           iconColor: Colors.red,
+                                        //         ),
+                                        //         _buildTipCategory(
+                                        //           icon: Icons.restaurant,
+                                        //           title: "Dinh dưỡng",
+                                        //           color: Colors.orange.shade100,
+                                        //           iconColor: Colors.orange,
+                                        //         ),
+                                        //         _buildTipCategory(
+                                        //           icon: Icons.fitness_center,
+                                        //           title: "Vận động",
+                                        //           color: Colors.blue.shade100,
+                                        //           iconColor: Colors.blue,
+                                        //         ),
+                                        //         _buildTipCategory(
+                                        //           icon: Icons.psychology,
+                                        //           title: "Tâm lý",
+                                        //           color: Colors.purple.shade100,
+                                        //           iconColor: Colors.purple,
+                                        //         ),
+                                        //       ],
+                                        //     ),
+                                        //   ),
+                                        // ],
 
-                                        const SizedBox(height: 24),
+                                        // const SizedBox(height: 16),
 
                                         // Featured tips
                                         const Text(
@@ -1494,7 +1499,24 @@ class _AllAppointmentsSheet extends StatelessWidget {
   }
 }
 
-class _GrowthChartCard extends StatelessWidget {
+class _GrowthChartCard extends StatefulWidget {
+  @override
+  State<_GrowthChartCard> createState() => _GrowthChartCardState();
+}
+
+class _GrowthChartCardState extends State<_GrowthChartCard> {
+  @override
+  void initState() {
+    super.initState();
+    // Kiểm tra growth tips khi widget được khởi tạo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = context.read<UserHomeViewModel>();
+      if (viewModel.selectedPetId != null) {
+        viewModel.checkAndFetchGrowthTips(viewModel.selectedPetId!);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<UserHomeViewModel>(
@@ -1517,12 +1539,20 @@ class _GrowthChartCard extends StatelessWidget {
           }
         }
 
+        // Kiểm tra có thay đổi cân nặng bất thường không
+        final hasAbnormalChange = _hasAbnormalWeightChange(metrics);
+        final growthTips = viewModel.currentGrowthTips;
+        final chartColor = hasAbnormalChange 
+            ? (growthTips?.warningColor ?? Colors.red) 
+            : Theme.of(context).colorScheme.primary;
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
+            border: hasAbnormalChange ? Border.all(color: chartColor, width: 2) : null,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(
@@ -1540,14 +1570,36 @@ class _GrowthChartCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.show_chart,
-                    color: Theme.of(context).colorScheme.primary,
+                    hasAbnormalChange ? (growthTips?.warningIcon ?? Icons.warning) : Icons.show_chart,
+                    color: chartColor,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     "Biểu đồ tăng trưởng",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16, 
+                      fontWeight: FontWeight.bold,
+                      color: hasAbnormalChange ? chartColor : null,
+                    ),
                   ),
+                  if (hasAbnormalChange && growthTips != null) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: chartColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        growthTips.warningDescription.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: chartColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 16),
@@ -1655,15 +1707,13 @@ class _GrowthChartCard extends StatelessWidget {
                         LineChartBarData(
                           spots: points,
                           isCurved: true,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: chartColor,
                           barWidth: 3,
                           isStrokeCapRound: true,
                           dotData: FlDotData(show: true),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primary.withOpacity(0.12),
+                            color: chartColor.withOpacity(0.12),
                           ),
                         ),
                       ],
@@ -1679,10 +1729,99 @@ class _GrowthChartCard extends StatelessWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
+              
+              // Hiển thị AI growth tips nếu có
+              if (hasAbnormalChange && growthTips != null) ...[
+                const SizedBox(height: 16),
+                _buildGrowthTipsCard(growthTips),
+              ],
             ],
           ),
         );
       },
+    );
+  }
+
+  /// Kiểm tra có thay đổi cân nặng bất thường không
+  bool _hasAbnormalWeightChange(List<HealthMetricsModel> metrics) {
+    if (metrics.length < 2) return false;
+    
+    final weights = metrics
+        .where((m) => m.weight != null)
+        .map((m) => m.weight!)
+        .toList();
+    
+    if (weights.length < 2) return false;
+    
+    // Tính tỷ lệ thay đổi giữa 2 điểm cuối cùng
+    final latest = weights.last;
+    final previous = weights[weights.length - 2];
+    
+    final changePercent = ((latest - previous) / previous).abs();
+    
+    // Nếu thay đổi > 10% trong 1 lần đo thì coi là bất thường
+    return changePercent > 0.1;
+  }
+
+  /// Hiển thị card AI growth tips
+  Widget _buildGrowthTipsCard(PetGrowthResponse growthTips) {
+    final warningColor = growthTips.warningColor;
+    
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: warningColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: warningColor.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome,
+                color: warningColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "AI Khuyến nghị",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: warningColor,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                growthTips.warningIcon,
+                color: warningColor,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                growthTips.warningDescription,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: warningColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            growthTips.tip,
+            style: TextStyle(
+              fontSize: 13,
+              color: warningColor.withOpacity(0.8),
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

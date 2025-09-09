@@ -426,4 +426,148 @@ class UserHomeViewModel with ChangeNotifier {
       await fetchAiTips(selectedPetId!, forceRefresh: true);
     }
   }
+
+  // Growth tips related
+  final Map<String, PetGrowthResponse> _growthTipsCache = {};
+  bool _isLoadingGrowthTips = false;
+
+  bool get isLoadingGrowthTips => _isLoadingGrowthTips;
+
+  PetGrowthResponse? get currentGrowthTips {
+    if (selectedPetId == null) return null;
+    return _growthTipsCache[selectedPetId!];
+  }
+
+  /// Phát hiện thay đổi cân nặng bất thường
+  bool _hasAbnormalWeightChange(List<HealthMetricsModel> metrics) {
+    if (metrics.length < 2) return false;
+    
+    final weights = metrics
+        .where((m) => m.weight != null)
+        .map((m) => m.weight!)
+        .toList();
+    
+    if (weights.length < 2) return false;
+    
+    // Kiểm tra thay đổi đột ngột (>10% trong 1 lần đo)
+    final latest = weights.last;
+    final previous = weights[weights.length - 2];
+    final suddenChangePercent = ((latest - previous) / previous).abs();
+    
+    if (suddenChangePercent > 0.1) {
+      return true; // Thay đổi đột ngột
+    }
+    
+    // Kiểm tra xu hướng dài hạn (nếu có ít nhất 3 điểm dữ liệu)
+    if (weights.length >= 3) {
+      return _hasUnsafeWeightTrend(weights);
+    }
+    
+    return false;
+  }
+
+  /// Phát hiện xu hướng cân nặng không an toàn
+  bool _hasUnsafeWeightTrend(List<double> weights) {
+    if (weights.length < 3) return false;
+    
+    // Tính xu hướng tăng/giảm đều
+    final trend = _calculateWeightTrend(weights);
+    final totalChangePercent = ((weights.last - weights.first) / weights.first).abs();
+    
+    // Ngưỡng an toàn: tăng/giảm > 15% trong thời gian dài
+    if (totalChangePercent > 0.15 && trend.abs() > 0.02) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  /// Tính xu hướng cân nặng (dương = tăng, âm = giảm)
+  double _calculateWeightTrend(List<double> weights) {
+    if (weights.length < 2) return 0.0;
+    
+    double sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    int n = weights.length;
+    
+    for (int i = 0; i < n; i++) {
+      sumX += i;
+      sumY += weights[i];
+      sumXY += i * weights[i];
+      sumXX += i * i;
+    }
+    
+    // Tính hệ số góc của đường thẳng hồi quy
+    double slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    return slope;
+  }
+
+  /// Lấy lịch sử cân nặng từ health metrics
+  List<double> _getWeightHistory(List<HealthMetricsModel> metrics) {
+    return metrics
+        .where((m) => m.weight != null)
+        .map((m) => m.weight!)
+        .toList();
+  }
+
+  /// Fetch growth tips nếu có thay đổi cân nặng bất thường
+  Future<void> checkAndFetchGrowthTips(String petId) async {
+    final metrics = healthMetrics.where((m) => m.petId == petId).toList();
+    
+    if (!_hasAbnormalWeightChange(metrics)) {
+      return; // Không có thay đổi bất thường, không cần fetch
+    }
+
+    _isLoadingGrowthTips = true;
+    notifyListeners();
+
+    try {
+      final pet = _pets.firstWhere((p) => p.id == petId);
+      final weightHistory = _getWeightHistory(metrics);
+      final warningType = _getWeightWarningType(metrics);
+      final growthResponse = await PetTipsService.getGrowthTipsForPet(pet, weightHistory, warningType);
+      _growthTipsCache[petId] = growthResponse;
+      _error = null;
+    } catch (e) {
+      _error = 'Lỗi khi tải growth tips: $e';
+    } finally {
+      _isLoadingGrowthTips = false;
+      notifyListeners();
+    }
+  }
+
+  /// Xác định loại cảnh báo cân nặng
+  String _getWeightWarningType(List<HealthMetricsModel> metrics) {
+    final weights = metrics
+        .where((m) => m.weight != null)
+        .map((m) => m.weight!)
+        .toList();
+    
+    if (weights.length < 2) return 'normal';
+    
+    // Kiểm tra thay đổi đột ngột
+    final latest = weights.last;
+    final previous = weights[weights.length - 2];
+    final suddenChangePercent = ((latest - previous) / previous).abs();
+    
+    if (suddenChangePercent > 0.1) {
+      return latest > previous ? 'sudden_increase' : 'sudden_decrease';
+    }
+    
+    // Kiểm tra xu hướng dài hạn
+    if (weights.length >= 3) {
+      final trend = _calculateWeightTrend(weights);
+      final totalChangePercent = ((weights.last - weights.first) / weights.first).abs();
+      
+      if (totalChangePercent > 0.15 && trend.abs() > 0.02) {
+        return trend > 0 ? 'gradual_increase' : 'gradual_decrease';
+      }
+    }
+    
+    return 'normal';
+  }
+
+  /// Clear growth tips cache
+  void clearGrowthTipsCache() {
+    _growthTipsCache.clear();
+  }
 }

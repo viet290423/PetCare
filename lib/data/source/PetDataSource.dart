@@ -315,7 +315,7 @@ class PetDataSourceImpl implements PetDataSource {
     DateTime? birthDateObj;
     if (json['birthDate'] != null && json['birthDate'].toString().isNotEmpty) {
       try {
-        birthDateObj = DateTime.parse(json['birthDate']);
+        birthDateObj = _parseBirthDate(json['birthDate'].toString());
       } catch (e) {
         print('Error parsing birthDate: $e');
       }
@@ -356,5 +356,70 @@ class PetDataSourceImpl implements PetDataSource {
       birthDateObj: birthDateObj,
       healthConditions: healthConditions,
     );
+  }
+
+  /// Parse birthDate với nhiều format khác nhau
+  DateTime? _parseBirthDate(String birthDateStr) {
+    if (birthDateStr.isEmpty) return null;
+    
+    // Loại bỏ khoảng trắng thừa
+    birthDateStr = birthDateStr.trim();
+    
+    // Thử các format khác nhau
+    List<String> formats = [
+      'yyyy-MM-dd',           // 2023-12-25
+      'dd/MM/yyyy',           // 25/12/2023
+      'MM/dd/yyyy',           // 12/25/2023
+      'dd-MM-yyyy',           // 25-12-2023
+      'MM-dd-yyyy',           // 12-25-2023
+      'yyyy/MM/dd',           // 2023/12/25
+      'yyyy-MM-ddTHH:mm:ss',  // 2023-12-25T10:30:00
+      'yyyy-MM-ddTHH:mm:ssZ', // 2023-12-25T10:30:00Z
+    ];
+    
+    for (String format in formats) {
+      try {
+        // Thử parse với format hiện tại
+        if (format == 'yyyy-MM-dd') {
+          return DateTime.parse(birthDateStr);
+        } else if (format == 'dd/MM/yyyy') {
+          final parts = birthDateStr.split('/');
+          if (parts.length == 3) {
+            return DateTime(int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
+          }
+        } else if (format == 'MM/dd/yyyy') {
+          final parts = birthDateStr.split('/');
+          if (parts.length == 3) {
+            return DateTime(int.parse(parts[2]), int.parse(parts[0]), int.parse(parts[1]));
+          }
+        } else if (format == 'dd-MM-yyyy') {
+          final parts = birthDateStr.split('-');
+          if (parts.length == 3) {
+            return DateTime(int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
+          }
+        } else if (format == 'MM-dd-yyyy') {
+          final parts = birthDateStr.split('-');
+          if (parts.length == 3) {
+            return DateTime(int.parse(parts[2]), int.parse(parts[0]), int.parse(parts[1]));
+          }
+        } else if (format == 'yyyy/MM/dd') {
+          final parts = birthDateStr.split('/');
+          if (parts.length == 3) {
+            return DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+          }
+        }
+      } catch (e) {
+        // Tiếp tục thử format tiếp theo
+        continue;
+      }
+    }
+    
+    // Nếu không parse được, thử DateTime.parse() cuối cùng
+    try {
+      return DateTime.parse(birthDateStr);
+    } catch (e) {
+      print('Cannot parse birthDate: $birthDateStr');
+      return null;
+    }
   }
 }
