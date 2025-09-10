@@ -4,7 +4,7 @@ import '../data/model/PetTipsModel.dart';
 import '../data/model/PetModel.dart';
 
 class PetTipsService {
-  static const String _baseUrl = 'https://pet-care-tips-irfd8mphv-viet290423s-projects.vercel.app/api';
+  static const String _baseUrl = 'https://pet-care-tips-bvdstvcpl-viet290423s-projects.vercel.app/api';
   
   /// Gọi API để lấy tips chăm sóc thú cưng từ AI
   static Future<PetTipsResponse> getPetTips({
