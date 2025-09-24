@@ -132,25 +132,25 @@ class _CommunityScreenState extends State<CommunityScreen> {
               controller: _scrollController,
               slivers: [
                 // Stories section (tương tự Instagram)
-                SliverToBoxAdapter(
-                  child: Container(
-                    height: 100,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      children: [
-                        _buildStoryItem(
-                          isAddStory: true,
-                          userName: 'Thêm tin',
-                          avatar: '',
-                        ),
-                        // TODO: Add real stories here
-                        _buildStoryItem(userName: 'Bạn', avatar: ''),
-                      ],
-                    ),
-                  ),
-                ),
+                // SliverToBoxAdapter(
+                //   child: Container(
+                //     height: 100,
+                //     margin: const EdgeInsets.symmetric(vertical: 8),
+                //     child: ListView(
+                //       scrollDirection: Axis.horizontal,
+                //       padding: const EdgeInsets.symmetric(horizontal: 12),
+                //       children: [
+                //         _buildStoryItem(
+                //           isAddStory: true,
+                //           userName: 'Thêm tin',
+                //           avatar: '',
+                //         ),
+                //         // TODO: Add real stories here
+                //         _buildStoryItem(userName: 'Bạn', avatar: ''),
+                //       ],
+                //     ),
+                //   ),
+                // ),
 
                 // Divider
                 SliverToBoxAdapter(

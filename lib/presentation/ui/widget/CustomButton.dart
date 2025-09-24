@@ -5,7 +5,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isLoading;
   final bool isOutlined;
-  final IconData? icon;
+  final Widget? icon;
 
   const CustomButton({
     super.key,
@@ -13,8 +13,7 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.isOutlined = false,
-    this.icon, 
-    required MaterialColor iconColor,
+    this.icon,
   });
 
   @override
@@ -22,11 +21,11 @@ class CustomButton extends StatelessWidget {
     if (isOutlined) {
       return OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
-        icon:
-            icon != null
-                ? Icon(icon, color: Colors.green)
-                : const SizedBox.shrink(),
-        label: Text(text, style: const TextStyle(color: Colors.green)),
+        icon: icon ?? const SizedBox.shrink(),
+        label: Text(
+          text,
+          style: const TextStyle(color: Colors.green),
+        ),
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(
@@ -45,10 +44,9 @@ class CustomButton extends StatelessWidget {
         minimumSize: const Size(double.infinity, 50),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      child:
-          isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
-              : Text(text, style: const TextStyle(fontSize: 18)),
+      child: isLoading
+          ? const CircularProgressIndicator(color: Colors.white)
+          : Text(text, style: const TextStyle(fontSize: 18)),
     );
   }
 }

@@ -214,7 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 }
                               },
                               isLoading: viewModel.isLoading,
-                              iconColor: Colors.green,
+                              // iconColor: Colors.green,
                             ),
 
                             const SizedBox(height: 15),
@@ -242,8 +242,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               // },
                               onPressed: () {},
                               isOutlined: true,
-                              icon: Icons.g_mobiledata,
-                              iconColor: Colors.red,
+                              icon: Image.asset(
+                                'assets/images/gg_icon.png',
+                                height: 24,
+                                width: 24,
+                              ),
                             ),
 
                             const SizedBox(height: 15),
@@ -326,8 +329,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               // },
                               onPressed: () {},
                               isOutlined: true,
-                              icon: Icons.facebook,
-                              iconColor: Colors.blue,
+                              icon: Image.asset(
+                                'assets/images/fb_logo.png',
+                                height: 24,
+                                width: 24,
+                              ),
                             ),
                           ],
                         ),

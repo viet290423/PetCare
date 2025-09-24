@@ -4,7 +4,7 @@ import '../data/model/PetTipsModel.dart';
 import '../data/model/PetModel.dart';
 
 class PetTipsService {
-  static const String _baseUrl = 'https://pet-care-tips-bvdstvcpl-viet290423s-projects.vercel.app/api';
+  static const String _baseUrl = 'https://pet-care-tips-74ziv4kru-viet290423s-projects.vercel.app/api';
   
   /// Gọi API để lấy tips chăm sóc thú cưng từ AI
   static Future<PetTipsResponse> getPetTips({
@@ -87,11 +87,11 @@ class PetTipsService {
     // Sử dụng species nếu có, nếu không thì dùng type
     String species = pet.species ?? pet.type.toLowerCase();
 
-    // Sử dụng weightKg nếu có, nếu không thì parse từ weight string
+    // Sử dụng weightKg nếu có, nếu không thì parse từ weight string (hỗ trợ đơn vị)
     double weightKg = pet.weightKg ?? 0.0;
     if (weightKg == 0.0 && pet.weight.isNotEmpty) {
       try {
-        weightKg = double.parse(pet.weight);
+        weightKg = _parseWeightToKg(pet.weight);
       } catch (e) {
         print('Error parsing weight: $e');
       }
@@ -105,6 +105,22 @@ class PetTipsService {
       conditions: conditions,
       mode: 'tips',
     );
+  }
+
+  /// Parse chuỗi cân nặng về kg. Hỗ trợ "2 g", "2kg", "2,5 kg", "2.5"
+  static double _parseWeightToKg(String raw) {
+    String s = raw.trim().toLowerCase();
+    // Chuẩn hoá dấu phẩy thành dấu chấm
+    s = s.replaceAll(',', '.');
+    // Xác định đơn vị
+    bool isGram = s.contains(' g') || s.endsWith('g');
+    // Lọc lấy phần số
+    final numberMatch = RegExp(r"[-+]?[0-9]*\.?[0-9]+").firstMatch(s);
+    if (numberMatch == null) {
+      throw FormatException('Invalid weight format: $raw');
+    }
+    final value = double.parse(numberMatch.group(0)!);
+    return isGram ? value / 1000.0 : value;
   }
 
   /// Lấy tips cho thú cưng dựa trên thông tin hiện tại

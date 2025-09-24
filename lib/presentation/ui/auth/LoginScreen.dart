@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                               isLoading: viewModel.isLoading,
-                              iconColor: Colors.green,
+                              // iconColor: Colors.green,
                             ),
                             const SizedBox(height: 10),
                             Align(
@@ -160,8 +160,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 10),
                             CustomButton(
                               text: 'Đăng nhập với Google',
-                              icon: Icons.g_mobiledata,
-                              iconColor: Colors.red,
+                              icon: Image.asset(
+                                'assets/images/gg_icon.png',
+                                height: 24,
+                                width: 24,
+                              ),
                               isOutlined: true,
                               onPressed: () async {
                                 final result = await viewModel.signInWithGoogle();
@@ -187,10 +190,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               },
                             ),
+                            const SizedBox(height: 10),
                             CustomButton(
                               text: 'Đăng nhập với Facebook',
-                              icon: Icons.facebook,
-                              iconColor: Colors.blue,
+                              icon: Image.asset(
+                                'assets/images/fb_logo.png',
+                                height: 24,
+                                width: 24,
+                              ),
                               isOutlined: true,
                               onPressed: () async {
                                 final result = await viewModel.signInWithFacebook();

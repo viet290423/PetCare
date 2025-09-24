@@ -383,7 +383,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 onChanged: (v) => setState(() => _selectedType = v),
                 decoration: _inputDecoration('Loài', Icons.pets),
                 validator: (v) => v == null ? 'Chọn loài' : null,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -431,7 +431,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 onChanged: (v) => setState(() => _selectedGender = v),
                 decoration: _inputDecoration('Giới tính', Icons.male),
                 validator: (v) => v == null ? 'Chọn giới tính' : null,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -465,8 +465,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                             height: 18,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
-                        : const Icon(Icons.save),
-                    label: Text('Lưu', style: TextStyle(fontWeight: FontWeight.bold)),
+                        : const Icon(Icons.save, color: Colors.white,),
+                    label: Text('Lưu', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

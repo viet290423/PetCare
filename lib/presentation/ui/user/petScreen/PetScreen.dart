@@ -46,7 +46,7 @@ class _PetScreenState extends State<PetScreen>
         await viewModel.fetchReminders(petId, forceRefresh: true);
         await viewModel.fetchAppointments(petId, forceRefresh: true);
         await viewModel.fetchAllRecords(petId, forceRefresh: true);
-        await viewModel.fetchAiTips(petId, forceRefresh: true);
+        await viewModel.fetchAiTips(petId);
         setState(() {
           _isInitialized = true;
         });
@@ -73,7 +73,7 @@ class _PetScreenState extends State<PetScreen>
           viewModel.selectedPetId!,
           forceRefresh: true,
         );
-        viewModel.fetchAiTips(viewModel.selectedPetId!, forceRefresh: true);
+        viewModel.fetchAiTips(viewModel.selectedPetId!);
       }
     }
   }
@@ -168,7 +168,9 @@ class _PetScreenState extends State<PetScreen>
                                     await viewModel.fetchReminders(pet.id);
                                     await viewModel.fetchAppointments(pet.id);
                                     await viewModel.fetchAllRecords(pet.id);
-                                    await viewModel.fetchAiTips(pet.id);
+                                    if (mounted) {
+                                      await viewModel.fetchAiTips(pet.id);
+                                    }
                                     setState(() {});
                                   },
                                   child: Material(
@@ -352,12 +354,11 @@ class _PetScreenState extends State<PetScreen>
                                                             .selectedPetId!,
                                                         forceRefresh: true,
                                                       );
-                                                  await viewModel
-                                                      .fetchAiTips(
-                                                        viewModel
-                                                            .selectedPetId!,
-                                                        forceRefresh: true,
-                                                      );
+                                                  if (mounted) {
+                                                    await viewModel.fetchAiTips(
+                                                      viewModel.selectedPetId!,
+                                                    );
+                                                  }
                                                 }
                                               },
                                               icon: const Icon(
@@ -1816,7 +1817,7 @@ class _GrowthChartCardState extends State<_GrowthChartCard> {
             growthTips.tip,
             style: TextStyle(
               fontSize: 13,
-              color: warningColor.withOpacity(0.8),
+              color: Colors.black,
               height: 1.4,
             ),
           ),

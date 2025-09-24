@@ -73,6 +73,7 @@ class MyApp extends StatelessWidget {
           );
           final darkScheme = ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark);
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'PetCare',
             themeMode: settings.themeMode,
             theme: ThemeData(
