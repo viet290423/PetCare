@@ -14,6 +14,7 @@ import '../../pet/AddPetScreen.dart';
 import 'ServiceViewModel.dart';
 import 'SelectDoctorScreen.dart';
 import '../../doctor/homeScreen/DoctorViewModel.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BookServiceScreenV2 extends StatefulWidget {
   final ServiceModel service;
@@ -65,8 +66,10 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
   Future<void> _selectDoctor() async {
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn ngày và giờ trước khi chọn bác sĩ'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.please_select_date_time_first,
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -76,12 +79,11 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
     final result = await Navigator.push<DoctorModel>(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => SelectDoctorScreen(
-              service: widget.service,
-              selectedDate: selectedDate!,
-              selectedTime: selectedTime!,
-            ),
+        builder: (context) => SelectDoctorScreen(
+          service: widget.service,
+          selectedDate: selectedDate!,
+          selectedTime: selectedTime!,
+        ),
       ),
     );
 
@@ -95,8 +97,8 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
   Future<void> _bookAppointment() async {
     if (selectedPet == null || selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn đầy đủ thông tin'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.please_select_all_info),
           backgroundColor: Colors.red,
         ),
       );
@@ -138,7 +140,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                 children: [
                   const Icon(Icons.error_outline, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('Lỗi: $error'),
+                  Text('${AppLocalizations.of(context)!.error}: $error'),
                 ],
               ),
               backgroundColor: Colors.red,
@@ -158,7 +160,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  const Text('Đặt lịch thành công!'),
+                  Text(AppLocalizations.of(context)!.booking_success),
                 ],
               ),
               backgroundColor: Colors.green,
@@ -187,12 +189,9 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
         elevation: 0,
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: const Text(
-          'Đặt lịch dịch vụ',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Text(
+          AppLocalizations.of(context)!.book_service,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back),
@@ -273,9 +272,11 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                                     Text(
                                       widget.service.price != null
                                           ? NumberFormat('#,###', 'vi_VN')
-                                              .format(widget.service.price)
-                                              .replaceAll(',', '.')
-                                          : 'Liên hệ để biết giá',
+                                                .format(widget.service.price)
+                                                .replaceAll(',', '.')
+                                          : AppLocalizations.of(
+                                              context,
+                                            )!.contact_for_price,
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -324,7 +325,9 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Mô tả dịch vụ',
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.service_description,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -351,28 +354,28 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
 
                   // Pet Selection
                   _buildSection(
-                    title: 'Chọn thú cưng',
+                    title: AppLocalizations.of(context)!.select_pet,
                     icon: Icons.pets,
                     child: _buildPetSelection(petViewModel),
                   ),
 
                   // Date Selection
                   _buildSection(
-                    title: 'Chọn ngày',
+                    title: AppLocalizations.of(context)!.select_date,
                     icon: Icons.calendar_today,
                     child: _buildDateSelection(),
                   ),
 
                   // Time Selection
                   _buildSection(
-                    title: 'Chọn giờ',
+                    title: AppLocalizations.of(context)!.select_time,
                     icon: Icons.access_time,
                     child: _buildTimeSelection(),
                   ),
 
                   // Doctor Selection
                   _buildSection(
-                    title: 'Chọn bác sĩ',
+                    title: AppLocalizations.of(context)!.select_doctor,
                     icon: Icons.medical_services,
                     child: _buildDoctorSelection(),
                   ),
@@ -393,8 +396,8 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                           ),
                           elevation: 2,
                         ),
-                        child: const Text(
-                          'Đặt lịch ngay',
+                        child: Text(
+                          AppLocalizations.of(context)!.book_now,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -464,7 +467,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
     if (petViewModel.error != null) {
       return Center(
         child: Text(
-          'Lỗi: ${petViewModel.error}',
+          '${AppLocalizations.of(context)!.error}: ${petViewModel.error}',
           style: const TextStyle(color: Colors.red),
         ),
       );
@@ -485,7 +488,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
             Icon(Icons.pets, color: Colors.grey[400], size: 48),
             const SizedBox(height: 16),
             Text(
-              'Bạn chưa có thú cưng nào',
+              AppLocalizations.of(context)!.no_pets_yet,
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 16,
@@ -501,7 +504,7 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                 );
               },
               icon: const Icon(Icons.add_circle_outline),
-              label: const Text('Thêm thú cưng mới'),
+              label: Text(AppLocalizations.of(context)!.add_new_pet),
               style: TextButton.styleFrom(foregroundColor: Colors.green),
             ),
           ],
@@ -528,8 +531,9 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color:
-                      isSelected ? Colors.green.shade50 : Colors.grey.shade50,
+                  color: isSelected
+                      ? Colors.green.shade50
+                      : Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected ? Colors.green : Colors.grey.shade300,
@@ -552,12 +556,12 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                       // ),
                       child: ClipOval(
                         child: Image.network(
-                            pet.imageUrl,
+                          pet.imageUrl,
                           fit: BoxFit.cover,
                           width: 75,
                           height: 75,
                         ),
-                      )
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -565,10 +569,9 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color:
-                            isSelected
-                                ? Colors.green.shade700
-                                : Colors.grey.shade700,
+                        color: isSelected
+                            ? Colors.green.shade700
+                            : Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -648,7 +651,11 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
               }
             },
             icon: const Icon(Icons.calendar_today),
-            label: Text(selectedDate == null ? 'Chọn ngày' : 'Thay đổi ngày'),
+            label: Text(
+              selectedDate == null
+                  ? AppLocalizations.of(context)!.select_date
+                  : AppLocalizations.of(context)!.change_date,
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
@@ -668,8 +675,8 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey.shade300),
         ),
-        child: const Text(
-          'Vui lòng chọn ngày trước',
+        child: Text(
+          AppLocalizations.of(context)!.please_select_date_first,
           style: TextStyle(color: Colors.grey),
         ),
       );
@@ -706,39 +713,39 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children:
-              timeSlots.map((time) {
-                final isSelected = selectedTime == time;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedTime = time;
-                      selectedDoctor = null; // Reset doctor when time changes
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.green : Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected ? Colors.green : Colors.grey.shade300,
-                      ),
-                    ),
-                    child: Text(
-                      time,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey.shade700,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
+          children: timeSlots.map((time) {
+            final isSelected = selectedTime == time;
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedTime = time;
+                  selectedDoctor = null; // Reset doctor when time changes
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.green : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isSelected ? Colors.green : Colors.grey.shade300,
                   ),
-                );
-              }).toList(),
+                ),
+                child: Text(
+                  time,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.grey.shade700,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
@@ -753,8 +760,8 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey.shade300),
         ),
-        child: const Text(
-          'Vui lòng chọn ngày và giờ trước',
+        child: Text(
+          AppLocalizations.of(context)!.please_select_date_time,
           style: TextStyle(color: Colors.grey),
         ),
       );
@@ -816,7 +823,9 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
             onPressed: _selectDoctor,
             icon: const Icon(Icons.medical_services),
             label: Text(
-              selectedDoctor == null ? 'Chọn bác sĩ' : 'Thay đổi bác sĩ',
+              selectedDoctor == null
+                  ? AppLocalizations.of(context)!.select_doctor
+                  : AppLocalizations.of(context)!.change_doctor,
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,

@@ -10,6 +10,7 @@ import '../widget/CustomTextFieldWithIcon.dart';
 import '../widget/HeaderSection.dart';
 import '../widget/NavigationLink.dart';
 import 'LoginScreen.dart';
+import '../../../l10n/app_localizations.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -40,19 +41,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Chọn vai trò'),
+          title: Text(AppLocalizations.of(context)!.select_role),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: const Text('Người dùng'),
+                title: Text(AppLocalizations.of(context)!.user),
                 onTap: () {
                   selectedRole = 'user';
                   Navigator.pop(context, 'user');
                 },
               ),
               ListTile(
-                title: const Text('Bác sĩ'),
+                title: Text(AppLocalizations.of(context)!.doctor as String),
                 onTap: () {
                   selectedRole = 'doctor';
                   Navigator.pop(context, 'doctor');
@@ -65,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Hủy'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
           ],
         );
@@ -112,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     children: [
                       // Tiêu đề và logo
-                      const HeaderSection(title: 'Đăng ký tài khoản'),
+                      HeaderSection(title: AppLocalizations.of(context)!.signup_title),
 
                       // Form đăng ký
                       Container(
@@ -135,7 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: [
                             // Trường Tên
                             CustomTextFieldWithIcon(
-                              labelText: 'Tên',
+                              labelText: AppLocalizations.of(context)!.name,
                               prefixIcon: Icons.person,
                               controller: _nameController,
                             ),
@@ -151,7 +152,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Trường Mật khẩu
                             CustomTextFieldWithIcon(
-                              labelText: 'Mật khẩu',
+                              labelText: AppLocalizations.of(context)!.password,
                               prefixIcon: Icons.lock,
                               suffixIcon:
                                   _obscurePassword
@@ -175,14 +176,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
                                   value: 'user',
-                                  child: Text('Người dùng'),
+                                  child: Text(AppLocalizations.of(context)!.user),
                                 ),
                                 DropdownMenuItem(
                                   value: 'doctor',
-                                  child: Text('Bác sĩ'),
+                                  child: Text(AppLocalizations.of(context)!.doctor as String),
                                 ),
                               ],
                               onChanged: (value) {
@@ -195,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Nút Đăng ký bằng email
                             CustomButton(
-                              text: 'Đăng ký',
+                              text: AppLocalizations.of(context)!.signup,
                               onPressed: () async {
                                 await viewModel.signUpUser(
                                   email: _emailController.text,
@@ -221,7 +222,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Nút Đăng ký bằng Google
                             CustomButton(
-                              text: 'Đăng ký với Google',
+                              text: AppLocalizations.of(context)!.login_with_google,
                               // onPressed: () async {
                               //   // Hiển thị dialog chọn vai trò
                               //   final selectedRole =
@@ -253,7 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Nút Đăng ký bằng Facebook
                             CustomButton(
-                              text: 'Đăng ký với Facebook',
+                              text: AppLocalizations.of(context)!.login_with_facebook,
                               // onPressed: () async {
                               //   final selectedRole =
                               //       await _showRoleSelectionDialog();
@@ -343,8 +344,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       // Liên kết đăng nhập
                       NavigationLink(
-                        text: 'Đã có tài khoản? ',
-                        linkText: 'Đăng nhập',
+                        text: AppLocalizations.of(context)!.has_account,
+                        linkText: AppLocalizations.of(context)!.login,
                         onTap: () {
                           Navigator.push(
                             context,

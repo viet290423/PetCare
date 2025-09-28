@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../data/model/AppointmentModel.dart';
 import '../../../../data/model/PetModel.dart';
 import '../../user/homeScreen/UserHomeViewModel.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AllServiceHistoryScreen extends StatefulWidget {
   const AllServiceHistoryScreen({super.key});
@@ -30,12 +31,12 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
     final hasCancelled = _appointments.any((a) => a.status == 'cancelled');
 
     final base = <Map<String, String>>[
-      {'value': 'all', 'label': 'Tất cả'},
+      {'value': 'all', 'label': AppLocalizations.of(context)!.all},
     ];
-    if (hasPending) base.add({'value': 'pending', 'label': 'Chờ xác nhận'});
-    if (hasConfirmed) base.add({'value': 'confirmed', 'label': 'Đã xác nhận'});
-    if (hasCompleted) base.add({'value': 'completed', 'label': 'Hoàn thành'});
-    if (hasCancelled) base.add({'value': 'cancelled', 'label': 'Đã hủy'});
+    if (hasPending) base.add({'value': 'pending', 'label': AppLocalizations.of(context)!.pending});
+    if (hasConfirmed) base.add({'value': 'confirmed', 'label': AppLocalizations.of(context)!.confirmed});
+    if (hasCompleted) base.add({'value': 'completed', 'label': AppLocalizations.of(context)!.completed});
+    if (hasCancelled) base.add({'value': 'cancelled', 'label': AppLocalizations.of(context)!.cancelled});
     if (!base.any((e) => e['value'] == _selectedStatus)) _selectedStatus = 'all';
     return base;
   }
@@ -70,7 +71,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
 
       _appointments = (resp as List).map((e) => AppointmentModel.fromJson(e)).toList();
     } catch (e) {
-      _error = 'Không thể tải lịch sử dịch vụ: $e';
+      _error = AppLocalizations.of(context)!.cannot_load_service_history(e.toString());
     } finally {
       _isLoading = false;
       if (mounted) setState(() {});
@@ -85,7 +86,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Lịch sử dịch vụ', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.service_history, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
@@ -129,7 +130,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
         children: [
           Icon(Icons.event_busy, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 8),
-          Text('Chưa có lịch sử dịch vụ', style: TextStyle(color: Colors.grey[600])),
+          Text(AppLocalizations.of(context)!.no_service_history, style: TextStyle(color: Colors.grey[600])),
         ],
       ),
     );
@@ -143,7 +144,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(children: [
-          _petChip(label: 'Tất cả', selected: _selectedPetId == null, onTap: () => setState(() => _selectedPetId = null)),
+          _petChip(label: AppLocalizations.of(context)!.all, selected: _selectedPetId == null, onTap: () => setState(() => _selectedPetId = null)),
           for (final pet in pets) ...[
             const SizedBox(width: 8),
             _petChip(
@@ -188,7 +189,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
 
         final searchField = TextField(
           decoration: InputDecoration(
-            hintText: 'Tìm theo dịch vụ, bác sĩ...',
+            hintText: AppLocalizations.of(context)!.search_by_service_doctor,
             prefixIcon: const Icon(Icons.search, size: 20),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -296,7 +297,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(appt.serviceTitle ?? 'Dịch vụ thú cưng', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+              Text(appt.serviceTitle ?? AppLocalizations.of(context)!.pet_service, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
               const SizedBox(height: 6),
               Row(children: [
                 Icon(Icons.pets, size: 14, color: Colors.green[600]),
@@ -305,7 +306,7 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
                 const SizedBox(width: 10),
                 Icon(Icons.person, size: 14, color: Colors.green[600]),
                 const SizedBox(width: 4),
-                Flexible(child: Text(appt.doctorName ?? 'Bác sĩ', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[700]))),
+                Flexible(child: Text(appt.doctorName ?? AppLocalizations.of(context)!.doctor, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[700]))),
                 const SizedBox(width: 10),
                 Icon(Icons.calendar_today, size: 14, color: Colors.green[600]),
                 const SizedBox(width: 4),
@@ -359,13 +360,13 @@ class _AllServiceHistoryScreenState extends State<AllServiceHistoryScreen> {
   String _statusText(String status) {
     switch (status) {
       case 'pending':
-        return 'Chờ xác nhận';
+        return AppLocalizations.of(context)!.pending;
       case 'confirmed':
-        return 'Đã xác nhận';
+        return AppLocalizations.of(context)!.confirmed;
       case 'completed':
-        return 'Hoàn thành';
+        return AppLocalizations.of(context)!.completed;
       case 'cancelled':
-        return 'Đã hủy';
+        return AppLocalizations.of(context)!.cancelled;
       default:
         return status;
     }

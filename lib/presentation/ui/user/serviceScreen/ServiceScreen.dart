@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../mapper/Icon_Mapper.dart';
 import 'ServiceDetailScreen.dart';
 import 'ServiceViewModel.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ServicesScreen extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Text(
-          'Dịch vụ',
+          AppLocalizations.of(context)!.services,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -55,7 +56,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     Icon(Icons.error_outline, size: 48, color: Colors.red),
                     SizedBox(height: 16),
                     Text(
-                      'Lỗi: ${viewModel.error}',
+                      '${AppLocalizations.of(context)!.error}: ${viewModel.error}',
                       style: TextStyle(fontSize: 16, color: Colors.red),
                     ),
                   ],

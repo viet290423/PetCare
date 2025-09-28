@@ -19,6 +19,7 @@ import 'MedicalRecordDetailScreen.dart';
 import 'MedicalRecordsListScreen.dart';
 import 'widgets/AiTipsWidget.dart';
 import '../../../../data/model/PetTipsModel.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PetScreen extends StatefulWidget {
   const PetScreen({super.key});
@@ -119,8 +120,8 @@ class _PetScreenState extends State<PetScreen>
                 Expanded(
                   child: Text(
                     selectedPet != null
-                        ? 'Hôm nay ${selectedPet.name} thế nào?'
-                        : 'Hãy chọn thú cưng để xem nhắc nhở',
+                        ? AppLocalizations.of(context)!.today_how_is(selectedPet.name)
+                        : AppLocalizations.of(context)!.select_pet_to_see_reminders,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 22,
@@ -145,7 +146,7 @@ class _PetScreenState extends State<PetScreen>
                   SizedBox(
                     height: 160,
                     child: pets.isEmpty
-                        ? Center(child: Text('Chưa có thú cưng nào.'))
+                        ? Center(child: Text(AppLocalizations.of(context)!.no_pets_yet))
                         : ListView.separated(
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.symmetric(
@@ -272,9 +273,9 @@ class _PetScreenState extends State<PetScreen>
                       controller: _tabController,
                       children: [
                         viewModel.selectedPetId == null
-                            ? const Center(
+                            ? Center(
                                 child: Text(
-                                  'Hãy chọn thú cưng để xem nhắc nhở',
+                                  AppLocalizations.of(context)!.select_pet_to_see_reminders,
                                 ),
                               )
                             : Consumer<UserHomeViewModel>(
@@ -317,8 +318,8 @@ class _PetScreenState extends State<PetScreen>
                                                   ),
                                                 ),
                                                 const SizedBox(width: 10),
-                                                const Text(
-                                                  "Nhắc nhở",
+                                                Text(
+                                                  AppLocalizations.of(context)!.reminders,
                                                   style: TextStyle(
                                                     fontSize: 21,
                                                     fontWeight: FontWeight.bold,
@@ -373,7 +374,7 @@ class _PetScreenState extends State<PetScreen>
                                         if (reminders.isEmpty)
                                           Center(
                                             child: Text(
-                                              'Không có nhắc nhở nào.',
+                                              AppLocalizations.of(context)!.no_reminders,
                                               style: TextStyle(
                                                 color: Theme.of(
                                                   context,
@@ -400,11 +401,11 @@ class _PetScreenState extends State<PetScreen>
                                                             final confirm = await showDialog<bool>(
                                                               context: context,
                                                               builder: (context) => AlertDialog(
-                                                                title: const Text(
-                                                                  'Xác nhận xóa',
+                                                                title: Text(
+                                                                  AppLocalizations.of(context)!.confirm_delete,
                                                                 ),
-                                                                content: const Text(
-                                                                  'Bạn có chắc muốn xóa nhắc nhở này?',
+                                                                content: Text(
+                                                                  AppLocalizations.of(context)!.confirm_delete_reminder,
                                                                 ),
                                                                 actions: [
                                                                   TextButton(
@@ -415,8 +416,8 @@ class _PetScreenState extends State<PetScreen>
                                                                           false,
                                                                         ),
                                                                     child:
-                                                                        const Text(
-                                                                          'Hủy',
+                                                                        Text(
+                                                                          AppLocalizations.of(context)!.cancel,
                                                                         ),
                                                                   ),
                                                                   TextButton(
@@ -427,8 +428,8 @@ class _PetScreenState extends State<PetScreen>
                                                                           true,
                                                                         ),
                                                                     child:
-                                                                        const Text(
-                                                                          'Xóa',
+                                                                        Text(
+                                                                          AppLocalizations.of(context)!.delete,
                                                                         ),
                                                                   ),
                                                                 ],
@@ -469,8 +470,8 @@ class _PetScreenState extends State<PetScreen>
                                                                           width:
                                                                               8,
                                                                         ),
-                                                                        const Text(
-                                                                          'Xóa nhắc nhở thành công!',
+                                                                        Text(
+                                                                          AppLocalizations.of(context)!.delete_reminder_success,
                                                                         ),
                                                                       ],
                                                                     ),
@@ -506,7 +507,7 @@ class _PetScreenState extends State<PetScreen>
                                                                               8,
                                                                         ),
                                                                         Text(
-                                                                          'Lỗi khi xóa nhắc nhở: $e',
+                                                                          AppLocalizations.of(context)!.delete_reminder_error(e.toString()),
                                                                         ),
                                                                       ],
                                                                     ),
@@ -687,7 +688,7 @@ class _PetScreenState extends State<PetScreen>
                                                   );
                                                 },
                                                 child: Text(
-                                                  'Xem tất cả',
+                                                  AppLocalizations.of(context)!.view_all,
                                                   style: TextStyle(
                                                     color: Theme.of(
                                                       context,
@@ -724,8 +725,8 @@ class _PetScreenState extends State<PetScreen>
                                                   ),
                                                 ),
                                                 const SizedBox(width: 10),
-                                                const Text(
-                                                  "Lịch hẹn",
+                                                Text(
+                                                  AppLocalizations.of(context)!.appointments,
                                                   style: TextStyle(
                                                     fontSize: 21,
                                                     fontWeight: FontWeight.bold,
@@ -739,7 +740,7 @@ class _PetScreenState extends State<PetScreen>
                                         if (appointments.isEmpty)
                                           Center(
                                             child: Text(
-                                              'Không có lịch hẹn nào.',
+                                              AppLocalizations.of(context)!.no_appointments,
                                               style: TextStyle(
                                                 color: Theme.of(
                                                   context,
@@ -796,7 +797,7 @@ class _PetScreenState extends State<PetScreen>
                                                       title: Text(
                                                         a.serviceTitle != null
                                                             ? a.serviceTitle!
-                                                            : 'Lịch hẹn #${a.id}',
+                                                            : '${AppLocalizations.of(context)!.appointments} #${a.id}',
                                                         style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -814,7 +815,7 @@ class _PetScreenState extends State<PetScreen>
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              'Thời gian: ${a.appointmentTime.toString().substring(0, 16)}',
+                                                              AppLocalizations.of(context)!.appointment_time(a.appointmentTime.toString().substring(0, 16)),
                                                               style:
                                                                   const TextStyle(
                                                                     fontSize:
@@ -824,7 +825,7 @@ class _PetScreenState extends State<PetScreen>
                                                             if (a.doctorName !=
                                                                 null)
                                                               Text(
-                                                                'Bác sĩ: ${a.doctorName}',
+                                                                AppLocalizations.of(context)!.doctor_name(a.doctorName!),
                                                                 style:
                                                                     const TextStyle(
                                                                       fontSize:
@@ -832,7 +833,7 @@ class _PetScreenState extends State<PetScreen>
                                                                     ),
                                                               ),
                                                             Text(
-                                                              'Trạng thái: ${a.status}',
+                                                              AppLocalizations.of(context)!.status(a.status),
                                                               style:
                                                                   const TextStyle(
                                                                     fontSize:
@@ -869,8 +870,8 @@ class _PetScreenState extends State<PetScreen>
                                                         ),
                                                   );
                                                 },
-                                                child: const Text(
-                                                  'Xem tất cả',
+                                                child: Text(
+                                                  AppLocalizations.of(context)!.view_all,
                                                   style: TextStyle(
                                                     color: Colors.green,
                                                     fontWeight: FontWeight.bold,
@@ -886,9 +887,9 @@ class _PetScreenState extends State<PetScreen>
                               ),
                         // Nội dung cho Tips
                         viewModel.selectedPetId == null
-                            ? const Center(
+                            ? Center(
                                 child: Text(
-                                  'Hãy chọn thú cưng để xem các tips',
+                                  AppLocalizations.of(context)!.select_pet_to_see_tips,
                                 ),
                               )
                             : Consumer<UserHomeViewModel>(
@@ -972,8 +973,8 @@ class _PetScreenState extends State<PetScreen>
                                         // const SizedBox(height: 16),
 
                                         // Featured tips
-                                        const Text(
-                                          "Tips chung",
+                                        Text(
+                                          AppLocalizations.of(context)!.general_tips,
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -982,36 +983,32 @@ class _PetScreenState extends State<PetScreen>
                                         const SizedBox(height: 12),
 
                                         _buildTipCard(
-                                          title: "Chăm sóc răng miệng cho thú cưng",
-                                          description:
-                                              "Đánh răng thường xuyên giúp ngăn ngừa các bệnh về răng miệng và hơi thở thơm mát.",
+                                          title: AppLocalizations.of(context)!.dental_care_tip,
+                                          description: AppLocalizations.of(context)!.dental_care_desc,
                                           icon: Icons.brush,
                                           color: Colors.blue.shade50,
                                           iconColor: Colors.blue,
                                         ),
 
                                         _buildTipCard(
-                                          title: "Tắm rửa đúng cách",
-                                          description:
-                                              "Tắm 2-3 lần/tháng với sữa tắm chuyên dụng, tránh để nước vào tai và mắt.",
+                                          title: AppLocalizations.of(context)!.bathing_tip,
+                                          description: AppLocalizations.of(context)!.bathing_desc,
                                           icon: Icons.shower,
                                           color: Colors.cyan.shade50,
                                           iconColor: Colors.cyan,
                                         ),
 
                                         _buildTipCard(
-                                          title: "Chế độ ăn cân bằng",
-                                          description:
-                                              "Cung cấp đầy đủ protein, vitamin và khoáng chất theo độ tuổi và cân nặng.",
+                                          title: AppLocalizations.of(context)!.nutrition_tip,
+                                          description: AppLocalizations.of(context)!.nutrition_desc,
                                           icon: Icons.restaurant_menu,
                                           color: Colors.green.shade50,
                                           iconColor: Colors.green,
                                         ),
 
                                         _buildTipCard(
-                                          title: "Vận động hàng ngày",
-                                          description:
-                                              "Dành 30-60 phút mỗi ngày để chơi đùa và tập thể dục cùng thú cưng.",
+                                          title: AppLocalizations.of(context)!.exercise_tip,
+                                          description: AppLocalizations.of(context)!.exercise_desc,
                                           icon: Icons.directions_run,
                                           color: Colors.orange.shade50,
                                           iconColor: Colors.orange,
@@ -1052,8 +1049,8 @@ class _PetScreenState extends State<PetScreen>
                                             ),
                                           ),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            "Hồ sơ & Chỉ số sức khỏe",
+                                          Text(
+                                            AppLocalizations.of(context)!.health_records,
                                             style: TextStyle(
                                               fontSize: 21,
                                               fontWeight: FontWeight.bold,
@@ -1093,7 +1090,7 @@ class _PetScreenState extends State<PetScreen>
                                           color: Colors.green,
                                           size: 28,
                                         ),
-                                        tooltip: 'Thêm chỉ số sức khỏe',
+                                        tooltip: AppLocalizations.of(context)!.add_health_metrics,
                                       ),
                                     ],
                                   ),
@@ -1104,8 +1101,8 @@ class _PetScreenState extends State<PetScreen>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
-                                        "Tóm tắt sức khỏe",
+                                      Text(
+                                        AppLocalizations.of(context)!.health_summary,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -1133,8 +1130,8 @@ class _PetScreenState extends State<PetScreen>
                                               ),
                                             );
                                           },
-                                          child: const Text(
-                                            'Xem tất cả',
+                                          child: Text(
+                                            AppLocalizations.of(context)!.view_all,
                                             style: TextStyle(
                                               color: Colors.green,
                                               fontWeight: FontWeight.bold,
@@ -1145,7 +1142,7 @@ class _PetScreenState extends State<PetScreen>
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "Hồ sơ y tế và tiêm chủng được cập nhật tự động từ bác sĩ",
+                                    AppLocalizations.of(context)!.medical_records_auto_update,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[600],
@@ -1158,17 +1155,17 @@ class _PetScreenState extends State<PetScreen>
                                     children: [
                                       Expanded(
                                         child: _buildHealthCard(
-                                          title: "Cân nặng",
+                                          title: AppLocalizations.of(context)!.weight,
                                           value:
                                               viewModel.getLatestWeight() !=
                                                   null
                                               ? "${viewModel.getLatestWeight()!.toStringAsFixed(1)} kg"
-                                              : "Chưa có dữ liệu",
+                                              : AppLocalizations.of(context)!.no_data,
                                           trend:
                                               viewModel.getLatestWeight() !=
                                                   null
-                                              ? "Cập nhật gần đây"
-                                              : "Cần cập nhật",
+                                              ? AppLocalizations.of(context)!.recently_updated
+                                              : AppLocalizations.of(context)!.needs_update,
                                           isPositive:
                                               viewModel.getLatestWeight() !=
                                               null,
@@ -1179,14 +1176,14 @@ class _PetScreenState extends State<PetScreen>
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: _buildHealthCard(
-                                          title: "Tình trạng",
+                                          title: AppLocalizations.of(context)!.health_status,
                                           value: viewModel.getHealthStatus(),
                                           trend:
                                               viewModel
                                                   .getOverdueVaccinations()
                                                   .isNotEmpty
-                                              ? "Cần chú ý"
-                                              : "Bình thường",
+                                              ? AppLocalizations.of(context)!.needs_attention
+                                              : AppLocalizations.of(context)!.normal,
                                           isPositive: viewModel
                                               .getOverdueVaccinations()
                                               .isEmpty,
@@ -1208,19 +1205,19 @@ class _PetScreenState extends State<PetScreen>
                                     children: [
                                       Expanded(
                                         child: _buildHealthCard(
-                                          title: "Tiêm chủng",
+                                          title: AppLocalizations.of(context)!.vaccination,
                                           value:
                                               viewModel
                                                   .getOverdueVaccinations()
                                                   .isEmpty
-                                              ? "Đầy đủ"
-                                              : "${viewModel.getOverdueVaccinations().length} mũi quá hạn",
+                                              ? AppLocalizations.of(context)!.complete
+                                              : AppLocalizations.of(context)!.overdue_shots(viewModel.getOverdueVaccinations().length),
                                           trend:
                                               viewModel
                                                   .getUpcomingVaccinations()
                                                   .isNotEmpty
-                                              ? "${viewModel.getUpcomingVaccinations().length} mũi sắp đến hạn"
-                                              : "Cập nhật",
+                                              ? AppLocalizations.of(context)!.upcoming_shots(viewModel.getUpcomingVaccinations().length)
+                                              : AppLocalizations.of(context)!.recently_updated,
                                           isPositive: viewModel
                                               .getOverdueVaccinations()
                                               .isEmpty,
@@ -1236,15 +1233,15 @@ class _PetScreenState extends State<PetScreen>
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: _buildHealthCard(
-                                          title: "Hồ sơ y tế",
+                                          title: AppLocalizations.of(context)!.medical_records,
                                           value:
-                                              "${viewModel.medicalRecords.length} bản ghi",
+                                              AppLocalizations.of(context)!.records_count(viewModel.medicalRecords.length),
                                           trend:
                                               viewModel
                                                   .medicalRecords
                                                   .isNotEmpty
-                                              ? "Cập nhật gần đây"
-                                              : "Chưa có dữ liệu",
+                                              ? AppLocalizations.of(context)!.recently_updated
+                                              : AppLocalizations.of(context)!.no_data,
                                           isPositive: viewModel
                                               .medicalRecords
                                               .isNotEmpty,
@@ -1258,8 +1255,8 @@ class _PetScreenState extends State<PetScreen>
                                   const SizedBox(height: 24),
 
                                   // Medical history
-                                  const Text(
-                                    "Lịch sử y tế",
+                                  Text(
+                                    AppLocalizations.of(context)!.medical_history,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -1281,7 +1278,7 @@ class _PetScreenState extends State<PetScreen>
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
-                                              'Chưa có hồ sơ y tế',
+                                              AppLocalizations.of(context)!.no_medical_records,
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.grey[600],
@@ -1289,7 +1286,7 @@ class _PetScreenState extends State<PetScreen>
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'Hồ sơ y tế sẽ hiển thị ở đây',
+                                              AppLocalizations.of(context)!.medical_records_will_show_here,
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 color: Colors.grey[500],
@@ -1331,7 +1328,7 @@ class _PetScreenState extends State<PetScreen>
                                               description: record.description,
                                               doctor:
                                                   record.doctorName ??
-                                                  "Không có thông tin",
+                                                  AppLocalizations.of(context)!.no_doctor_info,
                                               status: record.status,
                                               isCompleted:
                                                   record.status == 'completed',
@@ -1378,8 +1375,8 @@ class _AllRemindersSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
-                'Tất cả lời nhắc',
+              Text(
+                AppLocalizations.of(context)!.all_reminders,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -1452,8 +1449,8 @@ class _AllAppointmentsSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
-                'Tất cả lịch hẹn',
+              Text(
+                AppLocalizations.of(context)!.all_appointments,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -1473,18 +1470,18 @@ class _AllAppointmentsSheet extends StatelessWidget {
                         title: Text(
                           a.serviceTitle != null
                               ? a.serviceTitle!
-                              : 'Lịch hẹn #${a.id}',
+                              : '${AppLocalizations.of(context)!.appointments} #${a.id}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Thời gian: ${a.appointmentTime.toString().substring(0, 16)}',
+                              AppLocalizations.of(context)!.appointment_time(a.appointmentTime.toString().substring(0, 16)),
                             ),
                             if (a.doctorName != null)
-                              Text('Bác sĩ: ${a.doctorName}'),
-                            Text('Trạng thái: ${a.status}'),
+                              Text(AppLocalizations.of(context)!.doctor_name(a.doctorName!)),
+                            Text(AppLocalizations.of(context)!.status(a.status)),
                           ],
                         ),
                       ),
@@ -1576,7 +1573,7 @@ class _GrowthChartCardState extends State<_GrowthChartCard> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "Biểu đồ tăng trưởng",
+                    AppLocalizations.of(context)!.growth_chart,
                     style: TextStyle(
                       fontSize: 16, 
                       fontWeight: FontWeight.bold,
@@ -1613,7 +1610,7 @@ class _GrowthChartCardState extends State<_GrowthChartCard> {
                   ),
                   child: Center(
                     child: Text(
-                      "Chưa có dữ liệu cân nặng",
+                      AppLocalizations.of(context)!.no_weight_data,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontStyle: FontStyle.italic,
@@ -1724,7 +1721,7 @@ class _GrowthChartCardState extends State<_GrowthChartCard> {
               const SizedBox(height: 8),
               if (points.isNotEmpty)
                 Text(
-                  "Đơn vị: kg",
+                  AppLocalizations.of(context)!.unit_kg,
                   style: TextStyle(
                     fontSize: 11,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1788,7 +1785,7 @@ class _GrowthChartCardState extends State<_GrowthChartCard> {
               ),
               const SizedBox(width: 8),
               Text(
-                "AI Khuyến nghị",
+                AppLocalizations.of(context)!.ai_recommendation,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

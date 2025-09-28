@@ -5,6 +5,7 @@ import '../../../domain/entity/Post.dart';
 import 'widgets/PostCard.dart';
 import 'widgets/CreatePostSheet.dart';
 import '../messaging/ConversationsScreen.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -53,9 +54,9 @@ class _CommunityScreenState extends State<CommunityScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         centerTitle: false,
-        title: const Text(
-          'Cộng đồng thú cưng',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.pet_community,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -114,7 +115,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Thử lại'),
+                    child: Text(AppLocalizations.of(context)!.try_again),
                   ),
                 ],
               ),
@@ -253,7 +254,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              'Chưa có bài viết nào trong cộng đồng.\nHãy là người đầu tiên chia sẻ những khoảnh khắc đáng yêu của thú cưng!',
+              AppLocalizations.of(context)!.no_posts_yet,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -274,7 +275,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
               ),
             ),
             icon: const Icon(Icons.add),
-            label: const Text('Tạo bài viết đầu tiên'),
+            label: Text(AppLocalizations.of(context)!.create_first_post),
           ),
         ],
       ),

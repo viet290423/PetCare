@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../data/model/DoctorModel.dart';
 import '../../../../data/model/ServiceModel.dart';
 import '../../doctor/homeScreen/DoctorViewModel.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class SelectDoctorScreen extends StatefulWidget {
   final ServiceModel service;
@@ -38,12 +39,14 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Chọn Bác Sĩ',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          AppLocalizations.of(context)!.select_doctor,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         // backgroundColor: Colors.green,
         foregroundColor: Colors.white,
@@ -67,7 +70,8 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                   Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'Lỗi: ${doctorViewModel.error}',
+                    '${AppLocalizations.of(context)!.error}: ${doctorViewModel
+                        .error}',
                     style: const TextStyle(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
@@ -78,7 +82,7 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                         widget.service.id.toString(),
                       );
                     },
-                    child: const Text('Thử lại'),
+                    child: Text(AppLocalizations.of(context)!.try_again),
                   ),
                 ],
               ),
@@ -86,14 +90,14 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
           }
 
           if (doctorViewModel.doctors.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.people_outline, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
-                    'Không có bác sĩ nào phù hợp cho dịch vụ này',
+                    AppLocalizations.of(context)!.no_doctors_available,
                     style: TextStyle(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
@@ -119,7 +123,8 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dịch vụ: ${widget.service.title}',
+                      AppLocalizations.of(context)!.service(
+                          widget.service.title),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -128,14 +133,15 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Ngày: ${_formatDate(widget.selectedDate)}',
+                      AppLocalizations.of(context)!.date(
+                          _formatDate(widget.selectedDate)),
                       style: const TextStyle(
                         fontSize: 16,
                         // color: Colors.black87,
                       ),
                     ),
                     Text(
-                      'Giờ: ${widget.selectedTime}',
+                      AppLocalizations.of(context)!.time(widget.selectedTime),
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
@@ -152,26 +158,29 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                     final isSelected = selectedDoctorId == doctor.id;
                     final isAvailable =
                         doctor.isAvailable &&
-                        doctor.isWorkingOnDay(
-                          _getDayOfWeek(widget.selectedDate),
-                        );
+                            doctor.isWorkingOnDay(
+                              _getDayOfWeek(widget.selectedDate),
+                            );
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       elevation: isSelected ? 4 : 2,
                       color: isSelected
                           ? (isDark
-                                ? Colors.green.shade900.withOpacity(0.3)
-                                : Colors.green.shade50)
-                          : Theme.of(context).colorScheme.surface,
+                          ? Colors.green.shade900.withOpacity(0.3)
+                          : Colors.green.shade50)
+                          : Theme
+                          .of(context)
+                          .colorScheme
+                          .surface,
                       child: InkWell(
                         onTap: isAvailable
                             ? () {
-                                setState(() {
-                                  selectedDoctorId = doctor.id;
-                                  selectedDoctor = doctor;
-                                });
-                              }
+                          setState(() {
+                            selectedDoctorId = doctor.id;
+                            selectedDoctor = doctor;
+                          });
+                        }
                             : null,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -183,26 +192,26 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                                 backgroundColor: Colors.green.shade100,
                                 child: doctor.imageUrl.isNotEmpty
                                     ? ClipOval(
-                                        child: Image.network(
-                                          doctor.imageUrl,
-                                          width: 60,
-                                          height: 60,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                                return Icon(
-                                                  Icons.person,
-                                                  size: 30,
-                                                  color: Colors.green.shade600,
-                                                );
-                                              },
-                                        ),
-                                      )
-                                    : Icon(
+                                  child: Image.network(
+                                    doctor.imageUrl,
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) {
+                                      return Icon(
                                         Icons.person,
                                         size: 30,
                                         color: Colors.green.shade600,
-                                      ),
+                                      );
+                                    },
+                                  ),
+                                )
+                                    : Icon(
+                                  Icons.person,
+                                  size: 30,
+                                  color: Colors.green.shade600,
+                                ),
                               ),
                               const SizedBox(width: 16),
 
@@ -236,14 +245,17 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          '${doctor.rating} (${doctor.reviewCount} đánh giá)',
+                                          '${doctor.rating} (${doctor
+                                              .reviewCount} ${AppLocalizations
+                                              .of(context)!.reviews})',
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Kinh nghiệm: ${doctor.experience}',
+                                      AppLocalizations.of(context)!.experience(
+                                          doctor.experience),
                                       style: const TextStyle(fontSize: 12),
                                     ),
                                     if (!isAvailable) ...[
@@ -260,7 +272,8 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                                           ),
                                         ),
                                         child: Text(
-                                          'Không có lịch',
+                                          AppLocalizations.of(context)!
+                                              .no_schedule,
                                           style: TextStyle(
                                             fontSize: 10,
                                             color: Colors.red.shade700,
@@ -313,8 +326,8 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
-                        'Tiếp tục',
+                      child: Text(
+                        AppLocalizations.of(context)!.contiNue,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

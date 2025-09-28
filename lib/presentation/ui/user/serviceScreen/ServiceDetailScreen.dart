@@ -5,6 +5,7 @@ import 'package:petcare/presentation/ui/user/serviceScreen/BookServiceScreenV2.d
 
 import '../../../../data/model/ServiceModel.dart';
 import 'BookServiceScreen.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ServiceDetailScreen extends StatelessWidget {
   final ServiceModel service;
@@ -164,9 +165,9 @@ class ServiceDetailScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Danh mục',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!.category,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey,
                                   ),
@@ -215,9 +216,9 @@ class ServiceDetailScreen extends StatelessWidget {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
-                                'Mô tả dịch vụ',
-                                style: TextStyle(
+                              Text(
+                                AppLocalizations.of(context)!.service_description,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   // color: Colors.black87,
@@ -267,9 +268,9 @@ class ServiceDetailScreen extends StatelessWidget {
                                   size: 20,
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Chi tiết dịch vụ',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!.service_details,
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -317,9 +318,9 @@ class ServiceDetailScreen extends StatelessWidget {
                           Icons.calendar_today,
                           color: Colors.white,
                         ),
-                        label: const Text(
-                          'Đặt lịch ngay',
-                          style: TextStyle(
+                        label: Text(
+                          AppLocalizations.of(context)!.book_now,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),

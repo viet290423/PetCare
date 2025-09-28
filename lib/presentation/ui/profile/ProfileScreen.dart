@@ -9,6 +9,7 @@ import 'package:petcare/presentation/ui/user/petScreen/AllMedicalRecordsScreen.d
 import 'package:petcare/presentation/ui/user/serviceScreen/AllServiceHistoryScreen.dart';
 import 'package:petcare/presentation/ui/profile/EditProfileScreen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../auth/LoginScreen.dart';
 
@@ -60,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Hồ sơ cá nhân',
+          AppLocalizations.of(context)!.personal_profile,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -90,11 +91,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           // Kiểm tra user
           if (authViewModel.user == null) {
-            return const Center(child: Text('Không tìm thấy thông tin người dùng'));
+            return Center(child: Text(AppLocalizations.of(context)!.user_not_found));
           }
 
           // Lấy thông tin từ AuthViewModel
-          final userName = _profileDisplayName ?? authViewModel.user!.name ?? 'Người dùng';
+          final userName = _profileDisplayName ?? authViewModel.user!.name ?? AppLocalizations.of(context)!.user;
           final userEmail = authViewModel.user!.email;
           final userRole = authViewModel.user!.role;
           final petCount = petViewModel.pets.length.toString();
@@ -151,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const Icon(Icons.pets, size: 16, color: Colors.green),
                           const SizedBox(width: 4),
                           Text(
-                            userRole == 'doctor' ? 'Bác sĩ thú y' : 'Pet Lover',
+                            userRole == 'doctor' ? AppLocalizations.of(context)!.veterinarian : AppLocalizations.of(context)!.pet_lover,
                             style: const TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.bold,
@@ -175,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }
                       },
                       icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Chỉnh sửa hồ sơ'),
+                      label: Text(AppLocalizations.of(context)!.edit_profile),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.green,
                         side: const BorderSide(color: Colors.green),
@@ -192,20 +193,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   _buildQuickStat(
                     icon: Icons.pets,
-                    label: 'Thú cưng',
+                    label: AppLocalizations.of(context)!.pets,
                     value: petCount,
                     color: Colors.orange,
                   ),
                   _buildQuickStat(
                     icon: Icons.medical_services,
-                    label: 'Dịch vụ',
+                    label: AppLocalizations.of(context)!.services,
                     value: '12', // TODO: Lấy từ Supabase
                     color: Colors.blue,
                   ),
                   _buildQuickStat(
                     icon: Icons.favorite,
-                    label: 'Sức khỏe',
-                    value: 'Tốt', // TODO: Lấy từ Supabase
+                    label: AppLocalizations.of(context)!.health,
+                    value: AppLocalizations.of(context)!.good, // TODO: Lấy từ Supabase
                     color: Colors.redAccent,
                   ),
                 ],
@@ -218,8 +219,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.pets,
                 iconBg: Colors.orange.shade100,
                 iconColor: Colors.orange,
-                title: 'Quản lý thú cưng',
-                subtitle: 'Xem & chỉnh sửa hồ sơ thú cưng',
+                title: AppLocalizations.of(context)!.pet_management,
+                subtitle: AppLocalizations.of(context)!.view_edit_pet_profiles,
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => PetDetailScreen()));
                 },
@@ -229,8 +230,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.history,
                 iconBg: Colors.blue.shade100,
                 iconColor: Colors.blue,
-                title: 'Lịch sử dịch vụ',
-                subtitle: 'Xem lịch sử đặt dịch vụ',
+                title: AppLocalizations.of(context)!.service_history,
+                subtitle: AppLocalizations.of(context)!.view_service_booking_history,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -245,8 +246,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.medical_services,
                 iconBg: Colors.green.shade100,
                 iconColor: Colors.green,
-                title: 'Hồ sơ y tế',
-                subtitle: 'Lưu trữ kết quả khám, xét nghiệm',
+                title: AppLocalizations.of(context)!.medical_records,
+                subtitle: AppLocalizations.of(context)!.store_exam_test_results,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -261,8 +262,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.bar_chart,
                 iconBg: Colors.purple.shade100,
                 iconColor: Colors.purple,
-                title: 'Thống kê sức khỏe',
-                subtitle: 'Theo dõi sức khỏe thú cưng',
+                title: AppLocalizations.of(context)!.health_statistics,
+                subtitle: AppLocalizations.of(context)!.track_pet_health,
                 onTap: () {},
               ),
               _buildProfileCard(
@@ -270,8 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.restaurant,
                 iconBg: Colors.red.shade100,
                 iconColor: Colors.red,
-                title: 'Dinh dưỡng',
-                subtitle: 'Gợi ý thực đơn, dinh dưỡng',
+                title: AppLocalizations.of(context)!.nutrition,
+                subtitle: AppLocalizations.of(context)!.menu_nutrition_suggestions,
                 onTap: () {},
               ),
               const SizedBox(height: 16),
@@ -281,8 +282,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.logout,
                 iconBg: Colors.grey.shade200,
                 iconColor: Colors.red,
-                title: 'Đăng xuất',
-                subtitle: 'Thoát tài khoản',
+                title: AppLocalizations.of(context)!.logout,
+                subtitle: AppLocalizations.of(context)!.exit_account,
                 onTap: () async {
                   await Provider.of<AuthViewModel>(context, listen: false).signOutUser();
                   Navigator.pushAndRemoveUntil(

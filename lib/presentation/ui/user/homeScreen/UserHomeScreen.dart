@@ -12,6 +12,8 @@ import '../../doctor/homeScreen/DoctorViewModel.dart';
 import '../../doctor/AllDoctorsScreen.dart';
 import '../serviceScreen/ServiceDetailScreen.dart';
 import '../serviceScreen/ServiceViewModel.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../mapper/ServiceLocalizationMapper.dart';
 
 class UserHomeScreen extends StatefulWidget {
   final void Function(int index)? onTabNavigate;
@@ -104,13 +106,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
                 // Kiểm tra lỗi
                 if (serviceViewModel.error != null) {
-                  return Center(child: Text('Lỗi: ${serviceViewModel.error}'));
+                  return Center(child: Text('${AppLocalizations.of(context)!.error}: ${serviceViewModel.error}'));
                 }
                 if (diseaseViewModel.error != null) {
-                  return Center(child: Text('Lỗi: ${diseaseViewModel.error}'));
+                  return Center(child: Text('${AppLocalizations.of(context)!.error}: ${diseaseViewModel.error}'));
                 }
                 if (doctorViewModel.error != null) {
-                  return Center(child: Text('Lỗi: ${doctorViewModel.error}'));
+                  return Center(child: Text('${AppLocalizations.of(context)!.error}: ${doctorViewModel.error}'));
                 }
 
                 return SingleChildScrollView(
@@ -122,6 +124,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         // Banner giới thiệu
                         Container(
                           height: 200,
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             image: const DecorationImage(
@@ -142,12 +145,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               ),
                             ),
                             padding: const EdgeInsets.all(16),
-                            child: const Column(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Chăm Sóc Thú Cưng Chuyên Nghiệp',
+                                  AppLocalizations.of(context)!.professional_pet_care,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 24,
@@ -156,7 +159,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  'Dịch vụ chăm sóc toàn diện cho thú cưng của bạn',
+                                  AppLocalizations.of(context)!.comprehensive_pet_care_services,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -172,8 +175,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Dịch Vụ Chăm Sóc',
+                            Text(
+                              AppLocalizations.of(context)!.care_services,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -184,7 +187,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 widget.onTabNavigate?.call(2);
                               },
                               child: Text(
-                                "Xem tất cả",
+                                AppLocalizations.of(context)!.view_all,
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold,
@@ -222,8 +225,14 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               },
                               child: _buildServiceCard(
                                 icon: getIconFromName(service.icon),
-                                title: service.title,
-                                description: service.description,
+                                title: ServiceLocalizationMapper.getLocalizedTitle(
+                                  service.title, 
+                                  AppLocalizations.of(context)!
+                                ),
+                                description: ServiceLocalizationMapper.getLocalizedDescription(
+                                  service.description, 
+                                  AppLocalizations.of(context)!
+                                ),
                               ),
                             );
                           },
@@ -234,8 +243,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Đội Ngũ Bác Sĩ',
+                            Text(
+                              AppLocalizations.of(context)!.doctor_team,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -251,7 +260,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 );
                               },
                               child: Text(
-                                "Xem tất cả",
+                                AppLocalizations.of(context)!.view_all,
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold,
@@ -293,8 +302,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Bệnh Thường Gặp',
+                            Text(
+                              AppLocalizations.of(context)!.common_diseases,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -305,7 +314,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 // TODO: Navigate to all diseases screen
                               },
                               child: Text(
-                                "Xem tất cả",
+                                AppLocalizations.of(context)!.view_all,
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold,
@@ -334,7 +343,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               ),
                               child: TextField(
                                 decoration: InputDecoration(
-                                  hintText: 'Tìm kiếm bệnh...',
+                                  hintText: AppLocalizations.of(context)!.search_diseases,
                                   prefixIcon: const Icon(Icons.search),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -368,8 +377,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Liên Hệ',
+                              Text(
+                                AppLocalizations.of(context)!.contact,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 22,
@@ -379,12 +388,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               const SizedBox(height: 12),
                               _buildContactItem(
                                 Icons.location_on,
-                                '123 Đường Phan Đình Giót, Hà Đông, Hà Nội',
+                                AppLocalizations.of(context)!.contact_address,
                               ),
-                              _buildContactItem(Icons.phone, '0123 456 789'),
+                              _buildContactItem(Icons.phone, AppLocalizations.of(context)!.contact_phone),
                               _buildContactItem(
                                 Icons.email,
-                                'contact@petcare.com',
+                                AppLocalizations.of(context)!.contact_email,
                               ),
                             ],
                           ),
@@ -424,6 +433,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               description,
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -500,10 +511,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         const SizedBox(width: 4),
                         Text(
                           disease.severity == 'high'
-                              ? 'Nguy hiểm cao'
+                              ? AppLocalizations.of(context)!.high_danger
                               : disease.severity == 'medium'
-                              ? 'Nguy hiểm trung bình'
-                              : 'Nguy hiểm thấp',
+                              ? AppLocalizations.of(context)!.medium_danger
+                              : AppLocalizations.of(context)!.low_danger,
                           style: TextStyle(
                             color: severityColor,
                             fontSize: 12,
@@ -525,10 +536,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     ),
                     child: Text(
                       disease.petType == 'both'
-                          ? 'Chó & Mèo'
+                          ? AppLocalizations.of(context)!.dog_and_cat
                           : disease.petType == 'dog'
-                          ? 'Chó'
-                          : 'Mèo',
+                          ? AppLocalizations.of(context)!.dog
+                          : AppLocalizations.of(context)!.cat,
                       style: const TextStyle(
                         color: Colors.green,
                         fontSize: 12,
@@ -557,7 +568,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   const Icon(Icons.info_outline, size: 16, color: Colors.green),
                   const SizedBox(width: 4),
                   Text(
-                    '${disease.symptoms.length} triệu chứng chính',
+                    '${disease.symptoms.length} ${AppLocalizations.of(context)!.main_symptoms}',
                     style: const TextStyle(fontSize: 12, color: Colors.green),
                   ),
                   const Spacer(),
@@ -663,19 +674,19 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               child: GestureDetector(
                 onTap: () {
                   // TODO: Navigate to book appointment screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Tính năng đặt lịch sẽ được cập nhật sớm!'),
-                    ),
-                  );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)!.book_appointment_feature_coming_soon),
+                      ),
+                    );
                 },
                 child: ElevatedButton(
                   onPressed: () {
                     // TODO: Navigate to book appointment screen
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                          'Tính năng đặt lịch sẽ được cập nhật sớm!',
+                          AppLocalizations.of(context)!.book_appointment_feature_coming_soon,
                         ),
                       ),
                     );
@@ -688,7 +699,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
-                  child: const Text('Đặt lịch', style: TextStyle(fontSize: 12)),
+                  child: Text(AppLocalizations.of(context)!.book_appointment, style: TextStyle(fontSize: 12)),
                 ),
               ),
             ),

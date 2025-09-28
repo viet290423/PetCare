@@ -10,6 +10,7 @@ import '../widget/CustomButton.dart';
 import '../widget/CustomTextFieldWithIcon.dart';
 import '../widget/HeaderSection.dart';
 import '../widget/NavigationLink.dart';
+import '../../../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
                     children: [
-                      const HeaderSection(title: 'Đăng nhập'),
+                      HeaderSection(title: AppLocalizations.of(context)!.login),
 
                       Container(
                         padding: const EdgeInsets.all(20),
@@ -94,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 15),
                             CustomTextFieldWithIcon(
-                              labelText: 'Mật khẩu',
+                              labelText: AppLocalizations.of(context)!.password,
                               prefixIcon: Icons.lock,
                               suffixIcon:
                                   _obscurePassword
@@ -110,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 20),
                             CustomButton(
-                              text: 'Đăng nhập',
+                              text: AppLocalizations.of(context)!.login,
                               onPressed: () async {
                                 await viewModel.signInUser(
                                   email: _emailController.text,
@@ -122,13 +123,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     context: context,
                                     builder:
                                         (_) => AlertDialog(
-                                          title: const Text('Lỗi đăng nhập'),
+                                          title: Text(AppLocalizations.of(context)!.login_error),
                                           content: Text(viewModel.error!),
                                           actions: [
                                             TextButton(
                                               onPressed:
                                                   () => Navigator.pop(context),
-                                              child: const Text('Đóng'),
+                                              child: Text(AppLocalizations.of(context)!.close),
                                             ),
                                           ],
                                         ),
@@ -143,8 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               alignment: Alignment.centerRight,
                               child: GestureDetector(
                                 onTap: () {},
-                                child: const Text(
-                                  'Quên mật khẩu?',
+                                child: Text(
+                                  AppLocalizations.of(context)!.forgot_password,
                                   style: TextStyle(
                                     color: Colors.green,
                                     fontSize: 14,
@@ -153,13 +154,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            const Text(
-                              'Hoặc',
-                              style: TextStyle(color: Colors.grey),
+                            Text(
+                              AppLocalizations.of(context)!.or,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                             const SizedBox(height: 10),
                             CustomButton(
-                              text: 'Đăng nhập với Google',
+                              text: AppLocalizations.of(context)!.login_with_google,
                               icon: Image.asset(
                                 'assets/images/gg_icon.png',
                                 height: 24,
@@ -174,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       (failure) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(failure.message ?? 'Đăng nhập Google thất bại'),
+                                        content: Text(failure.message ?? AppLocalizations.of(context)!.login_google_failed),
                                       ),
                                     );
                                   },
@@ -192,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 10),
                             CustomButton(
-                              text: 'Đăng nhập với Facebook',
+                              text: AppLocalizations.of(context)!.login_with_facebook,
                               icon: Image.asset(
                                 'assets/images/fb_logo.png',
                                 height: 24,
@@ -207,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       (failure) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(failure.message ?? 'Đăng nhập Facebook thất bại'),
+                                        content: Text(failure.message ?? AppLocalizations.of(context)!.login_facebook_failed),
                                       ),
                                     );
                                   },
@@ -317,8 +318,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 20),
                       NavigationLink(
-                        text: 'Bạn chưa có tài khoản? ',
-                        linkText: 'Đăng ký',
+                        text: AppLocalizations.of(context)!.no_account,
+                        linkText: AppLocalizations.of(context)!.signup,
                         onTap: () {
                           Navigator.push(
                             context,

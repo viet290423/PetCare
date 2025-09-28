@@ -80,7 +80,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
-          'Trang chủ - Bác sĩ',
+          'Trang chủ',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green,
