@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../data/model/MedicalRecordModel.dart';
@@ -61,9 +62,9 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          ' Hồ sơ bệnh án',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.medical_records_title,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green,
         elevation: 0,
@@ -96,7 +97,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
           Icon(Icons.error_outline, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            'Lỗi',
+            AppLocalizations.of(context)!.error,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -112,7 +113,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _loadMedicalRecords,
-            child: const Text('Thử lại'),
+            child: Text(AppLocalizations.of(context)!.try_again),
           ),
         ],
       ),
@@ -128,7 +129,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             Icon(Icons.medical_services, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'Chưa có hồ sơ bệnh án nào',
+              AppLocalizations.of(context)!.no_records_yet,
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.grey[600],
@@ -137,7 +138,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Các hồ sơ bệnh án sẽ hiển thị ở đây',
+              AppLocalizations.of(context)!.medical_records_will_show_here,
               style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             ),
           ],

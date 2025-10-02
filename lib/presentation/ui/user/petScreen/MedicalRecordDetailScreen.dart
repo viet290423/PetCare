@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../data/model/MedicalRecordModel.dart';
 import '../../../../data/model/PetModel.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class MedicalRecordDetailScreen extends StatefulWidget {
   final MedicalRecordModel record;
@@ -24,8 +25,8 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Chi tiết hồ sơ',
+        title: Text(
+          AppLocalizations.of(context)!.medical_detail_title,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         // backgroundColor: Colors.green,
@@ -38,37 +39,37 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
           children: [
             _buildHeader(typeColor),
             const SizedBox(height: 12),
-            _buildSection('Thông tin thú cưng', [
-              _kv('Tên thú cưng', widget.pet.name),
-              _kv('Giống', widget.pet.breed),
-              _kv('Giới tính', widget.pet.gender),
+            _buildSection(AppLocalizations.of(context)!.pet_info_label, [
+              _kv(AppLocalizations.of(context)!.pet_name, widget.pet.name),
+              _kv(AppLocalizations.of(context)!.breed, widget.pet.breed),
+              _kv(AppLocalizations.of(context)!.gender, widget.pet.gender),
             ]),
             const SizedBox(height: 12),
-            _buildSection('Thông tin hồ sơ', [
-              _kv('Loại', _typeText(widget.record.recordType)),
+            _buildSection(AppLocalizations.of(context)!.record_info, [
+              _kv(AppLocalizations.of(context)!.record_type, _typeText(widget.record.recordType)),
               _kv(
-                'Ngày khám',
+                AppLocalizations.of(context)!.exam_date,
                 '${widget.record.recordDate.day}/${widget.record.recordDate.month}/${widget.record.recordDate.year}',
               ),
-              _kv('Bác sĩ', widget.record.doctorName ?? 'Không có'),
-              _kv('Trạng thái', _statusText(widget.record.status)),
+              _kv(AppLocalizations.of(context)!.doctor, widget.record.doctorName ?? AppLocalizations.of(context)!.no_doctor),
+              _kv(AppLocalizations.of(context)!.record_status, _statusText(widget.record.status)),
               if (widget.record.cost != null)
-                _kv('Chi phí', '${widget.record.cost!.toStringAsFixed(0)} VNĐ'),
+                _kv(AppLocalizations.of(context)!.cost, '${widget.record.cost!.toStringAsFixed(0)} VNĐ'),
               if (widget.record.nextVisitDate != null)
-                _kv('Ngày tái khám', widget.record.nextVisitDate!),
+                _kv(AppLocalizations.of(context)!.next_visit, widget.record.nextVisitDate!),
             ]),
             if (widget.record.description.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _buildTextBlock('Chẩn đoán & điều trị', widget.record.description),
+              _buildTextBlock(AppLocalizations.of(context)!.diagnosis_treatment, widget.record.description),
             ],
             if (widget.record.notes != null && widget.record.notes!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _buildTextBlock('Ghi chú', widget.record.notes!),
+              _buildTextBlock(AppLocalizations.of(context)!.notes, widget.record.notes!),
             ],
             if (widget.record.medications != null &&
                 widget.record.medications!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _buildChips('Thuốc', widget.record.medications!),
+              _buildChips(AppLocalizations.of(context)!.medications, widget.record.medications!),
             ],
             if (widget.record.attachments != null &&
                 widget.record.attachments!.isNotEmpty) ...[
@@ -255,8 +256,8 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Tệp đính kèm',
+          Text(
+            AppLocalizations.of(context)!.attachments,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -309,15 +310,15 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
   String _typeText(String type) {
     switch (type) {
       case 'checkup':
-        return 'Khám định kỳ';
+        return AppLocalizations.of(context)!.regular_checkup;
       case 'vaccination':
-        return 'Tiêm chủng';
+        return AppLocalizations.of(context)!.vaccination;
       case 'treatment':
-        return 'Điều trị';
+        return AppLocalizations.of(context)!.treatment;
       case 'surgery':
-        return 'Phẫu thuật';
+        return AppLocalizations.of(context)!.surgery;
       case 'test':
-        return 'Xét nghiệm';
+        return AppLocalizations.of(context)!.test;
       default:
         return type;
     }
@@ -326,13 +327,13 @@ class _MedicalRecordDetailScreenState extends State<MedicalRecordDetailScreen> {
   String _statusText(String status) {
     switch (status) {
       case 'completed':
-        return 'Hoàn thành';
+        return AppLocalizations.of(context)!.completed_status;
       case 'ongoing':
-        return 'Đang thực hiện';
+        return AppLocalizations.of(context)!.ongoing_status;
       case 'scheduled':
-        return 'Đã lên lịch';
+        return AppLocalizations.of(context)!.scheduled_status;
       case 'cancelled':
-        return 'Đã hủy';
+        return AppLocalizations.of(context)!.cancelled_status;
       default:
         return status;
     }

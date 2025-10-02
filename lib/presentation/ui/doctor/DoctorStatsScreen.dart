@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../auth/AuthViewModel.dart';
 import 'AppointmentViewModel.dart';
@@ -20,9 +21,9 @@ class _DoctorStatsScreenState extends State<DoctorStatsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Thống kê',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.statistics,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green,
         elevation: 0,
@@ -129,16 +130,16 @@ class _DoctorStatsScreenState extends State<DoctorStatsScreen> {
         children: [
           Icon(Icons.calendar_today, color: Colors.green, size: 20),
           const SizedBox(width: 8),
-          const Text(
-            'Thời gian:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          Text(
+            AppLocalizations.of(context)!.period,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const Spacer(),
-          _buildPeriodChip('Tuần', 'week'),
+          _buildPeriodChip(AppLocalizations.of(context)!.week, 'week'),
           const SizedBox(width: 8),
-          _buildPeriodChip('Tháng', 'month'),
+          _buildPeriodChip(AppLocalizations.of(context)!.month, 'month'),
           const SizedBox(width: 8),
-          _buildPeriodChip('Năm', 'year'),
+          _buildPeriodChip(AppLocalizations.of(context)!.year, 'year'),
         ],
       ),
     );
@@ -179,7 +180,7 @@ class _DoctorStatsScreenState extends State<DoctorStatsScreen> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Tổng lịch hẹn',
+                  AppLocalizations.of(context)!.total_appointments,
                   stats['total'].toString(),
                   Icons.calendar_today,
                   Colors.blue,

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../provider/MessagingProvider.dart';
 import '../messaging/ChatScreen.dart';
 import '../../../data/model/DoctorModel.dart';
@@ -37,7 +38,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               final userId = widget.doctor.userId;
               if (userId == null || userId.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Không tìm thấy tài khoản bác sĩ để nhắn tin')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.chat_no_doctor_account)),
                 );
                 return;
               }
@@ -46,7 +47,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               if (!mounted) return;
               if (conv == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Không thể khởi tạo cuộc trò chuyện')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.chat_init_failed)),
                 );
                 return;
               }
@@ -140,14 +141,14 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 6),
-                          Text(
-                            widget.doctor.specialization,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                  Text(
+                    widget.doctor.specialization,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                           const SizedBox(height: 12),
                           Row(
                             children: [
@@ -159,7 +160,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '(${widget.doctor.reviewCount} đánh giá)',
+                                '(${widget.doctor.reviewCount} ${AppLocalizations.of(context)!.reviews})',
                                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                               ),
                             ],
@@ -180,15 +181,15 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // About section
-                  _buildSection('Giới thiệu', widget.doctor.description, Icons.info_outline),
+                  _buildSection(AppLocalizations.of(context)!.about_section, widget.doctor.description, Icons.info_outline),
                   const SizedBox(height: 20),
 
                   // Experience
-                  _buildSection('Kinh nghiệm', widget.doctor.experience, Icons.work),
+                  _buildSection(AppLocalizations.of(context)!.experience_section, widget.doctor.experience, Icons.work),
                   const SizedBox(height: 20),
 
                   // Education
-                  _buildSection('Học vấn', widget.doctor.education, Icons.school),
+                  _buildSection(AppLocalizations.of(context)!.education_section, widget.doctor.education, Icons.school),
                   const SizedBox(height: 20),
 
                   // Certifications
@@ -211,9 +212,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text(
-                        'Đặt lịch khám',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      child: Text(
+                        AppLocalizations.of(context)!.book_medical_appointment,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -279,9 +280,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
             children: [
               Icon(Icons.verified, color: Colors.green, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Chứng chỉ & Bằng cấp',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                AppLocalizations.of(context)!.certifications_section,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../auth/AuthViewModel.dart';
 import '../settings/SettingsScreen.dart';
@@ -26,9 +27,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Hồ sơ bác sĩ',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.doctor_profile,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         actions: [
           IconButton(
@@ -63,7 +64,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               children: [
                 _buildHeaderSection(doctor),
                 const SizedBox(height: 16),
-                _buildSectionTitle('Tổng quan hôm nay', Icons.today),
+                _buildSectionTitle(AppLocalizations.of(context)!.today_overview, Icons.today),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
@@ -71,19 +72,19 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                     children: [
                       _buildQuickStat(
                         icon: Icons.calendar_today,
-                        label: 'Hôm nay',
+                        label: AppLocalizations.of(context)!.today,
                         value: todayStats['total'].toString(),
                         color: Colors.blue,
                       ),
                       _buildQuickStat(
                         icon: Icons.check_circle,
-                        label: 'Hoàn thành',
+                        label: AppLocalizations.of(context)!.completed_status,
                         value: todayStats['completed'].toString(),
                         color: Colors.green,
                       ),
                       _buildQuickStat(
                         icon: Icons.pending_actions,
-                        label: 'Chờ duyệt',
+                        label: AppLocalizations.of(context)!.pending,
                         value: todayStats['pending'].toString(),
                         color: Colors.orange,
                       ),
@@ -91,17 +92,17 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildSectionTitle('Sắp diễn ra', Icons.schedule),
+                _buildSectionTitle(AppLocalizations.of(context)!.upcoming, Icons.schedule),
                 _buildNextAppointmentCard(nextAppointment),
                 const SizedBox(height: 16),
-                _buildSectionTitle('Hành động', Icons.grid_view),
+                _buildSectionTitle(AppLocalizations.of(context)!.actions, Icons.grid_view),
                 _buildProfileCard(
                   context,
                   icon: Icons.schedule,
                   iconBg: Colors.blue.shade100,
                   iconColor: Colors.blue,
-                  title: 'Quản lý lịch làm việc',
-                  subtitle: 'Xem & cập nhật lịch làm việc',
+                  title: AppLocalizations.of(context)!.manage_work_schedule,
+                  subtitle: AppLocalizations.of(context)!.view_update_schedule,
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorScheduleScreen()));
                   },
@@ -111,8 +112,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                   icon: Icons.medical_services,
                   iconBg: Colors.green.shade100,
                   iconColor: Colors.green,
-                  title: 'Hồ sơ y tế',
-                  subtitle: 'Xem hồ sơ khám chữa bệnh',
+                  title: AppLocalizations.of(context)!.medical_records_title,
+                  subtitle: AppLocalizations.of(context)!.view_medical_records_doctor,
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => MedicalRecordsScreen()));
                   },
@@ -122,15 +123,15 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                   icon: Icons.bar_chart,
                   iconBg: Colors.purple.shade100,
                   iconColor: Colors.purple,
-                  title: 'Thống kê lịch hẹn',
-                  subtitle: 'Theo dõi hiệu suất làm việc',
+                  title: AppLocalizations.of(context)!.appointment_stats,
+                  subtitle: AppLocalizations.of(context)!.track_performance,
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorStatsScreen()));
                   },
                 ),
                 const SizedBox(height: 16),
                 const Divider(),
-                _buildSectionTitle('Sắp tới', Icons.upcoming),
+                _buildSectionTitle(AppLocalizations.of(context)!.next_up, Icons.upcoming),
                 _buildRecentAppointments(appointments),
                 const SizedBox(height: 20),
               ],

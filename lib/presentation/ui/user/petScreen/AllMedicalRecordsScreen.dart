@@ -6,6 +6,7 @@ import '../../../../data/model/MedicalRecordModel.dart';
 import '../../../../data/model/PetModel.dart';
 import '../homeScreen/UserHomeViewModel.dart';
 import 'MedicalRecordDetailScreen.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AllMedicalRecordsScreen extends StatefulWidget {
   const AllMedicalRecordsScreen({super.key});
@@ -25,13 +26,13 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
   String _selectedStatus = 'all';
   String _searchQuery = '';
 
-  final List<Map<String, String>> _types = const [
-    {'value': 'all', 'label': 'Tất cả loại'},
-    {'value': 'checkup', 'label': 'Khám định kỳ'},
-    {'value': 'vaccination', 'label': 'Tiêm chủng'},
-    {'value': 'treatment', 'label': 'Điều trị'},
-    {'value': 'surgery', 'label': 'Phẫu thuật'},
-    {'value': 'test', 'label': 'Xét nghiệm'},
+  List<Map<String, String>> get _types => [
+    {'value': 'all', 'label': AppLocalizations.of(context)!.all_types},
+    {'value': 'checkup', 'label': AppLocalizations.of(context)!.regular_checkup},
+    {'value': 'vaccination', 'label': AppLocalizations.of(context)!.vaccination},
+    {'value': 'treatment', 'label': AppLocalizations.of(context)!.treatment},
+    {'value': 'surgery', 'label': AppLocalizations.of(context)!.surgery},
+    {'value': 'test', 'label': AppLocalizations.of(context)!.test},
   ];
 
   List<Map<String, String>> get _statusOptions {
@@ -42,12 +43,12 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
     final hasCancelled = _records.any((r) => r.status == 'cancelled');
 
     final base = <Map<String, String>>[
-      {'value': 'all', 'label': 'Tất cả'},
+      {'value': 'all', 'label': AppLocalizations.of(context)!.all_statuses},
     ];
-    if (hasCompleted) base.add({'value': 'completed', 'label': 'Hoàn thành'});
-    if (hasOngoing) base.add({'value': 'ongoing', 'label': 'Đang thực hiện'});
-    if (hasScheduled) base.add({'value': 'scheduled', 'label': 'Đã lên lịch'});
-    if (hasCancelled) base.add({'value': 'cancelled', 'label': 'Đã hủy'});
+    if (hasCompleted) base.add({'value': 'completed', 'label': AppLocalizations.of(context)!.completed_status});
+    if (hasOngoing) base.add({'value': 'ongoing', 'label': AppLocalizations.of(context)!.ongoing_status});
+    if (hasScheduled) base.add({'value': 'scheduled', 'label': AppLocalizations.of(context)!.scheduled_status});
+    if (hasCancelled) base.add({'value': 'cancelled', 'label': AppLocalizations.of(context)!.cancelled_status});
     if (!base.any((e) => e['value'] == _selectedStatus)) _selectedStatus = 'all';
     return base;
   }
@@ -83,7 +84,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
 
       _records = (resp as List).map((e) => MedicalRecordModel.fromJson(e)).toList();
     } catch (e) {
-      _error = 'Không thể tải hồ sơ: $e';
+      _error = '${AppLocalizations.of(context)!.error}: $e';
     } finally {
       _isLoading = false;
       if (mounted) setState(() {});
@@ -98,7 +99,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Hồ sơ y tế'),
+        title: Text(AppLocalizations.of(context)!.medical_records_title),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
@@ -144,7 +145,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
         children: [
           Icon(Icons.medical_information, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 8),
-          Text('Chưa có hồ sơ nào', style: TextStyle(color: Colors.grey[600])),
+          Text(AppLocalizations.of(context)!.no_records_yet, style: TextStyle(color: Colors.grey[600])),
         ],
       ),
     );
@@ -160,7 +161,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
         child: Row(
           children: [
             _petChip(
-              label: 'Tất cả',
+              label: AppLocalizations.of(context)!.all,
               selected: _selectedPetId == null,
               onTap: () => setState(() => _selectedPetId = null),
             ),
@@ -217,7 +218,7 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
           final bool isCompact = constraints.maxWidth < 380;
           final searchField = TextField(
             decoration: InputDecoration(
-              hintText: 'Tìm theo tiêu đề, mô tả...',
+              hintText: AppLocalizations.of(context)!.search_by_title_desc,
               prefixIcon: const Icon(Icons.search, size: 20),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -450,15 +451,15 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
   String _typeText(String type) {
     switch (type) {
       case 'checkup':
-        return 'Khám định kỳ';
+        return AppLocalizations.of(context)!.regular_checkup;
       case 'vaccination':
-        return 'Tiêm chủng';
+        return AppLocalizations.of(context)!.vaccination;
       case 'treatment':
-        return 'Điều trị';
+        return AppLocalizations.of(context)!.treatment;
       case 'surgery':
-        return 'Phẫu thuật';
+        return AppLocalizations.of(context)!.surgery;
       case 'test':
-        return 'Xét nghiệm';
+        return AppLocalizations.of(context)!.test;
       default:
         return type;
     }
@@ -467,13 +468,13 @@ class _AllMedicalRecordsScreenState extends State<AllMedicalRecordsScreen> {
   String _statusText(String status) {
     switch (status) {
       case 'completed':
-        return 'Hoàn thành';
+        return AppLocalizations.of(context)!.completed_status;
       case 'ongoing':
-        return 'Đang thực hiện';
+        return AppLocalizations.of(context)!.ongoing_status;
       case 'scheduled':
-        return 'Đã lên lịch';
+        return AppLocalizations.of(context)!.scheduled_status;
       case 'cancelled':
-        return 'Đã hủy';
+        return AppLocalizations.of(context)!.cancelled_status;
       default:
         return status;
     }

@@ -1156,6 +1156,912 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Service Details'**
   String get service_details;
+
+  /// No description provided for @pet_info_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Information'**
+  String get pet_info_title;
+
+  /// No description provided for @no_pets_available.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any pets yet.'**
+  String get no_pets_available;
+
+  /// No description provided for @update_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Update successful!'**
+  String get update_success;
+
+  /// No description provided for @species.
+  ///
+  /// In en, this message translates to:
+  /// **'Species'**
+  String get species;
+
+  /// No description provided for @breed.
+  ///
+  /// In en, this message translates to:
+  /// **'Breed'**
+  String get breed;
+
+  /// No description provided for @birth_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Date'**
+  String get birth_date;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @pet_weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get pet_weight;
+
+  /// No description provided for @fur_color.
+  ///
+  /// In en, this message translates to:
+  /// **'Fur Color'**
+  String get fur_color;
+
+  /// No description provided for @add_pet_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Pet'**
+  String get add_pet_tooltip;
+
+  /// No description provided for @pet_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Name'**
+  String get pet_name;
+
+  /// No description provided for @pet_types.
+  ///
+  /// In en, this message translates to:
+  /// **'Dog,Cat,Bird,Fish,Other'**
+  String get pet_types;
+
+  /// No description provided for @pet_genders.
+  ///
+  /// In en, this message translates to:
+  /// **'Male,Female'**
+  String get pet_genders;
+
+  /// No description provided for @select_species.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Species'**
+  String get select_species;
+
+  /// No description provided for @select_species_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter vaccine name'**
+  String get select_species_error;
+
+  /// No description provided for @empty_field_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot be empty'**
+  String get empty_field_error;
+
+  /// No description provided for @invalid_weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid weight'**
+  String get invalid_weight;
+
+  /// No description provided for @select_gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Gender'**
+  String get select_gender;
+
+  /// No description provided for @weight_kg.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get weight_kg;
+
+  /// No description provided for @select_birth_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Birth Date'**
+  String get select_birth_date;
+
+  /// No description provided for @choose_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Date'**
+  String get choose_date;
+
+  /// No description provided for @pet_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Information'**
+  String get pet_info;
+
+  /// No description provided for @pet_breed_gender.
+  ///
+  /// In en, this message translates to:
+  /// **'{breed} • {gender}'**
+  String pet_breed_gender(Object breed, Object gender);
+
+  /// No description provided for @medical_records_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Records'**
+  String get medical_records_section;
+
+  /// No description provided for @all_types.
+  ///
+  /// In en, this message translates to:
+  /// **'All Types'**
+  String get all_types;
+
+  /// No description provided for @regular_checkup.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular Checkup'**
+  String get regular_checkup;
+
+  /// No description provided for @vaccination_record.
+  ///
+  /// In en, this message translates to:
+  /// **'Title *'**
+  String get vaccination_record;
+
+  /// No description provided for @treatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment'**
+  String get treatment;
+
+  /// No description provided for @surgery.
+  ///
+  /// In en, this message translates to:
+  /// **'Surgery'**
+  String get surgery;
+
+  /// No description provided for @test.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get test;
+
+  /// No description provided for @all_statuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all_statuses;
+
+  /// No description provided for @completed_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed_status;
+
+  /// No description provided for @ongoing_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing'**
+  String get ongoing_status;
+
+  /// No description provided for @scheduled_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get scheduled_status;
+
+  /// No description provided for @cancelled_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled_status;
+
+  /// No description provided for @medical_records_pet.
+  ///
+  /// In en, this message translates to:
+  /// **'Records of {name}'**
+  String medical_records_pet(Object name);
+
+  /// No description provided for @count_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Completed'**
+  String count_completed(Object count);
+
+  /// No description provided for @count_ongoing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Ongoing'**
+  String count_ongoing(Object count);
+
+  /// No description provided for @count_scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Scheduled'**
+  String count_scheduled(Object count);
+
+  /// No description provided for @search_by_title_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse by title, description...'**
+  String get search_by_title_desc;
+
+  /// No description provided for @no_matching_records.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching records'**
+  String get no_matching_records;
+
+  /// No description provided for @medical_detail_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Details'**
+  String get medical_detail_title;
+
+  /// No description provided for @pet_info_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Information'**
+  String get pet_info_label;
+
+  /// No description provided for @record_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Information'**
+  String get record_info;
+
+  /// No description provided for @record_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get record_type;
+
+  /// No description provided for @exam_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam Date'**
+  String get exam_date;
+
+  /// No description provided for @no_doctor.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get no_doctor;
+
+  /// No description provided for @record_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get record_status;
+
+  /// No description provided for @cost.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost'**
+  String get cost;
+
+  /// No description provided for @next_visit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Visit'**
+  String get next_visit;
+
+  /// No description provided for @diagnosis_treatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis & Treatment'**
+  String get diagnosis_treatment;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @medications.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications'**
+  String get medications;
+
+  /// No description provided for @attachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get attachments;
+
+  /// No description provided for @medical_records_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Records'**
+  String get medical_records_title;
+
+  /// No description provided for @no_records_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet'**
+  String get no_records_yet;
+
+  /// No description provided for @add_medical_record_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Medical Record'**
+  String get add_medical_record_title;
+
+  /// No description provided for @edit_medical_record_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Medical Record'**
+  String get edit_medical_record_title;
+
+  /// No description provided for @record_type_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Type *'**
+  String get record_type_label;
+
+  /// No description provided for @title_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Title *'**
+  String get title_label;
+
+  /// No description provided for @title_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter title'**
+  String get title_error;
+
+  /// No description provided for @record_type_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot be empty'**
+  String get record_type_error;
+
+  /// No description provided for @exam_date_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam Date *'**
+  String get exam_date_label;
+
+  /// No description provided for @doctor_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor'**
+  String get doctor_name_label;
+
+  /// No description provided for @status_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Status *'**
+  String get status_label;
+
+  /// No description provided for @cost_currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost (VND)'**
+  String get cost_currency;
+
+  /// No description provided for @next_visit_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Visit'**
+  String get next_visit_label;
+
+  /// No description provided for @description_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Description *'**
+  String get description_label;
+
+  /// No description provided for @description_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter description'**
+  String get description_error;
+
+  /// No description provided for @notes_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes_label;
+
+  /// No description provided for @update_record.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update_record;
+
+  /// No description provided for @add_record.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Record'**
+  String get add_record;
+
+  /// No description provided for @update_success_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Record updated successfully!'**
+  String get update_success_text;
+
+  /// No description provided for @add_success_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Record added successfully!'**
+  String get add_success_text;
+
+  /// No description provided for @add_vaccination_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vaccination History'**
+  String get add_vaccination_title;
+
+  /// No description provided for @edit_vaccination_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Vaccination History'**
+  String get edit_vaccination_title;
+
+  /// No description provided for @vaccine_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccine Name *'**
+  String get vaccine_name_label;
+
+  /// No description provided for @vaccine_type_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccine Type *'**
+  String get vaccine_type_label;
+
+  /// No description provided for @vaccination_date_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination Date *'**
+  String get vaccination_date_label;
+
+  /// No description provided for @next_booster_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Booster'**
+  String get next_booster_label;
+
+  /// No description provided for @manufacturer_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Manufacturer'**
+  String get manufacturer_label;
+
+  /// No description provided for @batch_number_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch Number'**
+  String get batch_number_label;
+
+  /// No description provided for @administered_by_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Administered By'**
+  String get administered_by_label;
+
+  /// No description provided for @vaccination_schedule_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Vaccination Schedule'**
+  String get vaccination_schedule_info;
+
+  /// No description provided for @core_vaccines.
+  ///
+  /// In en, this message translates to:
+  /// **'Core vaccines'**
+  String get core_vaccines;
+
+  /// No description provided for @core_vaccines_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'6-8 weeks, 10-12 weeks, 14-16 weeks, 1 year'**
+  String get core_vaccines_schedule;
+
+  /// No description provided for @rabies_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'12-16 weeks, annual booster'**
+  String get rabies_schedule;
+
+  /// No description provided for @non_core.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-core'**
+  String get non_core;
+
+  /// No description provided for @non_core_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'As recommended by doctor'**
+  String get non_core_schedule;
+
+  /// No description provided for @update_vaccination.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update_vaccination;
+
+  /// No description provided for @add_vaccination.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vaccination History'**
+  String get add_vaccination;
+
+  /// No description provided for @update_vaccination_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination history updated successfully!'**
+  String get update_vaccination_success;
+
+  /// No description provided for @add_vaccination_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination history added successfully!'**
+  String get add_vaccination_success;
+
+  /// No description provided for @vaccine_core.
+  ///
+  /// In en, this message translates to:
+  /// **'Core vaccine'**
+  String get vaccine_core;
+
+  /// No description provided for @vaccine_non_core.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-core vaccine'**
+  String get vaccine_non_core;
+
+  /// No description provided for @vaccine_rabies.
+  ///
+  /// In en, this message translates to:
+  /// **'Rabies vaccine'**
+  String get vaccine_rabies;
+
+  /// No description provided for @vaccine_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other vaccine'**
+  String get vaccine_other;
+
+  /// No description provided for @add_health_metrics_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Health Metrics'**
+  String get add_health_metrics_title;
+
+  /// No description provided for @edit_health_metrics_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Health Metrics'**
+  String get edit_health_metrics_title;
+
+  /// No description provided for @record_date_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Date *'**
+  String get record_date_label;
+
+  /// No description provided for @temperature_celsius.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature (°C)'**
+  String get temperature_celsius;
+
+  /// No description provided for @heart_rate_bpm.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart Rate (bpm)'**
+  String get heart_rate_bpm;
+
+  /// No description provided for @respiratory_rate_bpm.
+  ///
+  /// In en, this message translates to:
+  /// **'Respiratory Rate (bpm)'**
+  String get respiratory_rate_bpm;
+
+  /// No description provided for @blood_pressure_systolic.
+  ///
+  /// In en, this message translates to:
+  /// **'Systolic Blood Pressure'**
+  String get blood_pressure_systolic;
+
+  /// No description provided for @blood_pressure_diastolic.
+  ///
+  /// In en, this message translates to:
+  /// **'Diastolic Blood Pressure'**
+  String get blood_pressure_diastolic;
+
+  /// No description provided for @notes_label_vitals.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes_label_vitals;
+
+  /// No description provided for @normal_ranges.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal Ranges'**
+  String get normal_ranges;
+
+  /// No description provided for @temperature_range.
+  ///
+  /// In en, this message translates to:
+  /// **'37.5 - 39.2°C'**
+  String get temperature_range;
+
+  /// No description provided for @heart_rate_range.
+  ///
+  /// In en, this message translates to:
+  /// **'60 - 140 bpm'**
+  String get heart_rate_range;
+
+  /// No description provided for @respiratory_rate_range.
+  ///
+  /// In en, this message translates to:
+  /// **'10 - 30 bpm'**
+  String get respiratory_rate_range;
+
+  /// No description provided for @blood_pressure_range.
+  ///
+  /// In en, this message translates to:
+  /// **'110/60 - 160/100 mmHg'**
+  String get blood_pressure_range;
+
+  /// No description provided for @update_metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update_metrics;
+
+  /// No description provided for @add_metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Metrics'**
+  String get add_metrics;
+
+  /// No description provided for @update_metrics_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Metrics updated successfully!'**
+  String get update_metrics_success;
+
+  /// No description provided for @add_metrics_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Metrics added successfully!'**
+  String get add_metrics_success;
+
+  /// No description provided for @save_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save_text;
+
+  /// No description provided for @about_section.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about_section;
+
+  /// No description provided for @experience_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get experience_section;
+
+  /// No description provided for @education_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get education_section;
+
+  /// No description provided for @certifications_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Certifications'**
+  String get certifications_section;
+
+  /// No description provided for @book_medical_appointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Book appointment'**
+  String get book_medical_appointment;
+
+  /// No description provided for @chat_no_doctor_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor account not found for messaging'**
+  String get chat_no_doctor_account;
+
+  /// No description provided for @chat_init_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to initialize conversation'**
+  String get chat_init_failed;
+
+  /// No description provided for @doctor_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Profile'**
+  String get doctor_profile;
+
+  /// No description provided for @today_overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Overview'**
+  String get today_overview;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @upcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get upcoming;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @manage_work_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Work Schedule'**
+  String get manage_work_schedule;
+
+  /// No description provided for @view_update_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'View & update schedule'**
+  String get view_update_schedule;
+
+  /// No description provided for @view_medical_records_doctor.
+  ///
+  /// In en, this message translates to:
+  /// **'View medical records'**
+  String get view_medical_records_doctor;
+
+  /// No description provided for @appointment_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment Statistics'**
+  String get appointment_stats;
+
+  /// No description provided for @track_performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Track performance'**
+  String get track_performance;
+
+  /// No description provided for @upcoming_appointments.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming appointments'**
+  String get upcoming_appointments;
+
+  /// No description provided for @no_upcoming_appointments.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming appointments'**
+  String get no_upcoming_appointments;
+
+  /// No description provided for @view_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'View schedule'**
+  String get view_schedule;
+
+  /// No description provided for @unspecified_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Unspecified service'**
+  String get unspecified_service;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @work_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Work Schedule'**
+  String get work_schedule;
+
+  /// No description provided for @appointments_on_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments on {date}'**
+  String appointments_on_date(Object date);
+
+  /// No description provided for @appointments_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} appointments'**
+  String appointments_count(Object count);
+
+  /// No description provided for @no_appointments_any.
+  ///
+  /// In en, this message translates to:
+  /// **'No appointments'**
+  String get no_appointments_any;
+
+  /// No description provided for @no_appointments_on_date.
+  ///
+  /// In en, this message translates to:
+  /// **'No appointments on {date}'**
+  String no_appointments_on_date(Object date);
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period:'**
+  String get period;
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year;
+
+  /// No description provided for @total_appointments.
+  ///
+  /// In en, this message translates to:
+  /// **'Total appointments'**
+  String get total_appointments;
+
+  /// No description provided for @next_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Next up'**
+  String get next_up;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

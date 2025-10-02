@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../data/model/PetModel.dart';
 import '../homeScreen/UserHomeViewModel.dart';
 import '../../pet/AddPetScreen.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PetDetailScreen extends StatefulWidget {
   const PetDetailScreen({super.key});
@@ -156,7 +157,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     Navigator.pop(context);
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Cập nhật thành công!')));
+    ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.update_success)));
   }
 
   @override
@@ -169,7 +170,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
         // backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
-          "Thông tin thú cưng",
+          AppLocalizations.of(context)!.pet_info_title,
           style: const TextStyle(fontWeight: FontWeight.bold,),
         ),
         leading: IconButton(
@@ -183,7 +184,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               builder: (context, viewModel, child) {
                 final pets = viewModel.pets;
                 if (pets.isEmpty) {
-                  return const Center(child: Text('Bạn chưa có thú cưng nào.'));
+                  return Center(child: Text(AppLocalizations.of(context)!.no_pets_available));
                 }
                 return Column(
                   children: [
@@ -266,12 +267,12 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                                   endIndent: 40,
                                 ),
                                 const SizedBox(height: 8),
-                                _petInfoRow(Icons.pets, 'Loài', pet.type),
-                                _petInfoRow(Icons.category, 'Giống', pet.breed),
-                                _petInfoRow(Icons.cake, 'Ngày sinh', pet.birthDate),
-                                _petInfoRow(Icons.male, 'Giới tính', pet.gender),
-                                _petInfoRow(Icons.monitor_weight, 'Cân nặng', '${pet.weight}'),
-                                _petInfoRow(Icons.color_lens, 'Màu lông', pet.color),
+                                _petInfoRow(Icons.pets, AppLocalizations.of(context)!.species, pet.type),
+                                _petInfoRow(Icons.category, AppLocalizations.of(context)!.breed, pet.breed),
+                                _petInfoRow(Icons.cake, AppLocalizations.of(context)!.birth_date, pet.birthDate),
+                                _petInfoRow(Icons.male, AppLocalizations.of(context)!.gender, pet.gender),
+                                _petInfoRow(Icons.monitor_weight, AppLocalizations.of(context)!.pet_weight, '${pet.weight}'),
+                                _petInfoRow(Icons.color_lens, AppLocalizations.of(context)!.fur_color, pet.color),
                               ],
                             ),
                           );
@@ -298,7 +299,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.add, color: Colors.white, size: 32),
-        tooltip: 'Thêm thú cưng',
+        tooltip: AppLocalizations.of(context)!.add_pet_tooltip,
         elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
@@ -324,8 +325,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   }
 
   Widget _buildEditForm(PetModel pet, UserHomeViewModel viewModel) {
-    final types = ['Chó', 'Mèo', 'Chim', 'Cá', 'Khác'];
-    final genders = ['Đực', 'Cái'];
+    final types = AppLocalizations.of(context)!.pet_types.split(',');
+    final genders = AppLocalizations.of(context)!.pet_genders.split(',');
     return AbsorbPointer(
       absorbing: _isLoading,
       child: Form(
@@ -372,8 +373,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               const SizedBox(height: 18),
               TextFormField(
                 controller: _nameController,
-                decoration: _inputDecoration('Tên thú cưng', Icons.pets),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Không được để trống' : null,
+                decoration: _inputDecoration(AppLocalizations.of(context)!.pet_name, Icons.pets),
+                validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.empty_field_error : null,
                 style: TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 12),
@@ -381,15 +382,15 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 value: _selectedType,
                 items: types.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (v) => setState(() => _selectedType = v),
-                decoration: _inputDecoration('Loài', Icons.pets),
-                validator: (v) => v == null ? 'Chọn loài' : null,
+                decoration: _inputDecoration(AppLocalizations.of(context)!.species, Icons.pets),
+                validator: (v) => v == null ? AppLocalizations.of(context)!.select_species : null,
                 style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _breedController,
-                decoration: _inputDecoration('Giống', Icons.category),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Không được để trống' : null,
+                decoration: _inputDecoration(AppLocalizations.of(context)!.breed, Icons.category),
+                validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.empty_field_error : null,
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 12),
@@ -406,13 +407,13 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                   }
                 },
                 child: InputDecorator(
-                  decoration: _inputDecoration('Ngày sinh', Icons.cake),
+                  decoration: _inputDecoration(AppLocalizations.of(context)!.select_birth_date, Icons.cake),
                   child: Row(
                     children: [
                       Text(
                         _selectedBirthDate != null
                             ? '${_selectedBirthDate!.day}/${_selectedBirthDate!.month}/${_selectedBirthDate!.year}'
-                            : 'Chọn ngày sinh',
+                            : AppLocalizations.of(context)!.choose_date,
                         style: TextStyle(
                           color: _selectedBirthDate != null ? Colors.black : Colors.grey,
                           fontSize: 16,
@@ -429,19 +430,19 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 value: _selectedGender,
                 items: genders.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (v) => setState(() => _selectedGender = v),
-                decoration: _inputDecoration('Giới tính', Icons.male),
-                validator: (v) => v == null ? 'Chọn giới tính' : null,
+                decoration: _inputDecoration(AppLocalizations.of(context)!.gender, Icons.male),
+                validator: (v) => v == null ? AppLocalizations.of(context)!.select_gender : null,
                 style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _weightController,
                 keyboardType: TextInputType.number,
-                decoration: _inputDecoration('Cân nặng (kg)', Icons.monitor_weight),
+                decoration: _inputDecoration(AppLocalizations.of(context)!.weight_kg, Icons.monitor_weight),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Không được để trống';
+                  if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.empty_field_error;
                   final num? w = num.tryParse(v);
-                  if (w == null || w <= 0) return 'Cân nặng không hợp lệ';
+                  if (w == null || w <= 0) return AppLocalizations.of(context)!.invalid_weight;
                   return null;
                 },
                 style: TextStyle(fontSize: 16),
@@ -449,8 +450,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _colorController,
-                decoration: _inputDecoration('Màu lông', Icons.color_lens),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Không được để trống' : null,
+                decoration: _inputDecoration(AppLocalizations.of(context)!.fur_color, Icons.color_lens),
+                validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.empty_field_error : null,
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 24),
@@ -466,7 +467,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
                         : const Icon(Icons.save, color: Colors.white,),
-                    label: Text('Lưu', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                    label: Text(AppLocalizations.of(context)!.save_text, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -476,7 +477,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                   OutlinedButton.icon(
                     onPressed: _isLoading ? null : () => Navigator.pop(context),
                     icon: const Icon(Icons.close, color: Colors.green),
-                    label: Text('Hủy', style: TextStyle(color: Colors.green)),
+                    label: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.green)),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.green, width: 1.5),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -564,4 +564,473 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get service_details => 'Service Details';
+
+  @override
+  String get pet_info_title => 'Pet Information';
+
+  @override
+  String get no_pets_available => 'You don\'t have any pets yet.';
+
+  @override
+  String get update_success => 'Update successful!';
+
+  @override
+  String get species => 'Species';
+
+  @override
+  String get breed => 'Breed';
+
+  @override
+  String get birth_date => 'Birth Date';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get pet_weight => 'Weight';
+
+  @override
+  String get fur_color => 'Fur Color';
+
+  @override
+  String get add_pet_tooltip => 'Add Pet';
+
+  @override
+  String get pet_name => 'Pet Name';
+
+  @override
+  String get pet_types => 'Dog,Cat,Bird,Fish,Other';
+
+  @override
+  String get pet_genders => 'Male,Female';
+
+  @override
+  String get select_species => 'Select Species';
+
+  @override
+  String get select_species_error => 'Please enter vaccine name';
+
+  @override
+  String get empty_field_error => 'Cannot be empty';
+
+  @override
+  String get invalid_weight => 'Invalid weight';
+
+  @override
+  String get select_gender => 'Select Gender';
+
+  @override
+  String get weight_kg => 'Weight (kg)';
+
+  @override
+  String get select_birth_date => 'Select Birth Date';
+
+  @override
+  String get choose_date => 'Choose Date';
+
+  @override
+  String get pet_info => 'Pet Information';
+
+  @override
+  String pet_breed_gender(Object breed, Object gender) {
+    return '$breed • $gender';
+  }
+
+  @override
+  String get medical_records_section => 'Medical Records';
+
+  @override
+  String get all_types => 'All Types';
+
+  @override
+  String get regular_checkup => 'Regular Checkup';
+
+  @override
+  String get vaccination_record => 'Title *';
+
+  @override
+  String get treatment => 'Treatment';
+
+  @override
+  String get surgery => 'Surgery';
+
+  @override
+  String get test => 'Test';
+
+  @override
+  String get all_statuses => 'All';
+
+  @override
+  String get completed_status => 'Completed';
+
+  @override
+  String get ongoing_status => 'Ongoing';
+
+  @override
+  String get scheduled_status => 'Scheduled';
+
+  @override
+  String get cancelled_status => 'Cancelled';
+
+  @override
+  String medical_records_pet(Object name) {
+    return 'Records of $name';
+  }
+
+  @override
+  String count_completed(Object count) {
+    return '$count Completed';
+  }
+
+  @override
+  String count_ongoing(Object count) {
+    return '$count Ongoing';
+  }
+
+  @override
+  String count_scheduled(Object count) {
+    return '$count Scheduled';
+  }
+
+  @override
+  String get search_by_title_desc => 'Browse by title, description...';
+
+  @override
+  String get no_matching_records => 'No matching records';
+
+  @override
+  String get medical_detail_title => 'Record Details';
+
+  @override
+  String get pet_info_label => 'Pet Information';
+
+  @override
+  String get record_info => 'Record Information';
+
+  @override
+  String get record_type => 'Type';
+
+  @override
+  String get exam_date => 'Exam Date';
+
+  @override
+  String get no_doctor => 'None';
+
+  @override
+  String get record_status => 'Status';
+
+  @override
+  String get cost => 'Cost';
+
+  @override
+  String get next_visit => 'Next Visit';
+
+  @override
+  String get diagnosis_treatment => 'Diagnosis & Treatment';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get medications => 'Medications';
+
+  @override
+  String get attachments => 'Attachments';
+
+  @override
+  String get medical_records_title => 'Medical Records';
+
+  @override
+  String get no_records_yet => 'No records yet';
+
+  @override
+  String get add_medical_record_title => 'Add Medical Record';
+
+  @override
+  String get edit_medical_record_title => 'Edit Medical Record';
+
+  @override
+  String get record_type_label => 'Record Type *';
+
+  @override
+  String get title_label => 'Title *';
+
+  @override
+  String get title_error => 'Please enter title';
+
+  @override
+  String get record_type_error => 'Cannot be empty';
+
+  @override
+  String get exam_date_label => 'Exam Date *';
+
+  @override
+  String get doctor_name_label => 'Doctor';
+
+  @override
+  String get status_label => 'Status *';
+
+  @override
+  String get cost_currency => 'Cost (VND)';
+
+  @override
+  String get next_visit_label => 'Next Visit';
+
+  @override
+  String get description_label => 'Description *';
+
+  @override
+  String get description_error => 'Please enter description';
+
+  @override
+  String get notes_label => 'Notes';
+
+  @override
+  String get update_record => 'Update';
+
+  @override
+  String get add_record => 'Add Record';
+
+  @override
+  String get update_success_text => 'Record updated successfully!';
+
+  @override
+  String get add_success_text => 'Record added successfully!';
+
+  @override
+  String get add_vaccination_title => 'Add Vaccination History';
+
+  @override
+  String get edit_vaccination_title => 'Edit Vaccination History';
+
+  @override
+  String get vaccine_name_label => 'Vaccine Name *';
+
+  @override
+  String get vaccine_type_label => 'Vaccine Type *';
+
+  @override
+  String get vaccination_date_label => 'Vaccination Date *';
+
+  @override
+  String get next_booster_label => 'Next Booster';
+
+  @override
+  String get manufacturer_label => 'Manufacturer';
+
+  @override
+  String get batch_number_label => 'Batch Number';
+
+  @override
+  String get administered_by_label => 'Administered By';
+
+  @override
+  String get vaccination_schedule_info => 'Recommended Vaccination Schedule';
+
+  @override
+  String get core_vaccines => 'Core vaccines';
+
+  @override
+  String get core_vaccines_schedule => '6-8 weeks, 10-12 weeks, 14-16 weeks, 1 year';
+
+  @override
+  String get rabies_schedule => '12-16 weeks, annual booster';
+
+  @override
+  String get non_core => 'Non-core';
+
+  @override
+  String get non_core_schedule => 'As recommended by doctor';
+
+  @override
+  String get update_vaccination => 'Update';
+
+  @override
+  String get add_vaccination => 'Add Vaccination History';
+
+  @override
+  String get update_vaccination_success => 'Vaccination history updated successfully!';
+
+  @override
+  String get add_vaccination_success => 'Vaccination history added successfully!';
+
+  @override
+  String get vaccine_core => 'Core vaccine';
+
+  @override
+  String get vaccine_non_core => 'Non-core vaccine';
+
+  @override
+  String get vaccine_rabies => 'Rabies vaccine';
+
+  @override
+  String get vaccine_other => 'Other vaccine';
+
+  @override
+  String get add_health_metrics_title => 'Add Health Metrics';
+
+  @override
+  String get edit_health_metrics_title => 'Edit Health Metrics';
+
+  @override
+  String get record_date_label => 'Record Date *';
+
+  @override
+  String get temperature_celsius => 'Temperature (°C)';
+
+  @override
+  String get heart_rate_bpm => 'Heart Rate (bpm)';
+
+  @override
+  String get respiratory_rate_bpm => 'Respiratory Rate (bpm)';
+
+  @override
+  String get blood_pressure_systolic => 'Systolic Blood Pressure';
+
+  @override
+  String get blood_pressure_diastolic => 'Diastolic Blood Pressure';
+
+  @override
+  String get notes_label_vitals => 'Notes';
+
+  @override
+  String get normal_ranges => 'Normal Ranges';
+
+  @override
+  String get temperature_range => '37.5 - 39.2°C';
+
+  @override
+  String get heart_rate_range => '60 - 140 bpm';
+
+  @override
+  String get respiratory_rate_range => '10 - 30 bpm';
+
+  @override
+  String get blood_pressure_range => '110/60 - 160/100 mmHg';
+
+  @override
+  String get update_metrics => 'Update';
+
+  @override
+  String get add_metrics => 'Add Metrics';
+
+  @override
+  String get update_metrics_success => 'Metrics updated successfully!';
+
+  @override
+  String get add_metrics_success => 'Metrics added successfully!';
+
+  @override
+  String get save_text => 'Save';
+
+  @override
+  String get about_section => 'About';
+
+  @override
+  String get experience_section => 'Experience';
+
+  @override
+  String get education_section => 'Education';
+
+  @override
+  String get certifications_section => 'Certifications';
+
+  @override
+  String get book_medical_appointment => 'Book appointment';
+
+  @override
+  String get chat_no_doctor_account => 'Doctor account not found for messaging';
+
+  @override
+  String get chat_init_failed => 'Unable to initialize conversation';
+
+  @override
+  String get doctor_profile => 'Doctor Profile';
+
+  @override
+  String get today_overview => 'Today\'s Overview';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get upcoming => 'Upcoming';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get manage_work_schedule => 'Manage Work Schedule';
+
+  @override
+  String get view_update_schedule => 'View & update schedule';
+
+  @override
+  String get view_medical_records_doctor => 'View medical records';
+
+  @override
+  String get appointment_stats => 'Appointment Statistics';
+
+  @override
+  String get track_performance => 'Track performance';
+
+  @override
+  String get upcoming_appointments => 'Upcoming appointments';
+
+  @override
+  String get no_upcoming_appointments => 'No upcoming appointments';
+
+  @override
+  String get view_schedule => 'View schedule';
+
+  @override
+  String get unspecified_service => 'Unspecified service';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get work_schedule => 'Work Schedule';
+
+  @override
+  String appointments_on_date(Object date) {
+    return 'Appointments on $date';
+  }
+
+  @override
+  String appointments_count(Object count) {
+    return '$count appointments';
+  }
+
+  @override
+  String get no_appointments_any => 'No appointments';
+
+  @override
+  String no_appointments_on_date(Object date) {
+    return 'No appointments on $date';
+  }
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get period => 'Period:';
+
+  @override
+  String get week => 'Week';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get total_appointments => 'Total appointments';
+
+  @override
+  String get next_up => 'Upcoming';
 }

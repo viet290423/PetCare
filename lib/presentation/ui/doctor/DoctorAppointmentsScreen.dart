@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../data/model/AppointmentModel.dart';
 import 'AppointmentViewModel.dart';
 
@@ -42,9 +43,9 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'Lịch Hẹn',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.appointments,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green,
         elevation: 0,
@@ -56,11 +57,11 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs: const [
-            Tab(text: 'Hôm nay'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context)!.today),
             Tab(text: 'Ngày mai'),
             Tab(text: 'Tuần này'),
-            Tab(text: 'Tất cả'),
+            Tab(text: AppLocalizations.of(context)!.all),
           ],
         ),
       ),
@@ -82,7 +83,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                   Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'Lỗi: ${appointmentViewModel.error}',
+                    '${AppLocalizations.of(context)!.error}: ${appointmentViewModel.error}',
                     style: const TextStyle(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
@@ -93,7 +94,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                         widget.doctorId,
                       );
                     },
-                    child: const Text('Thử lại'),
+                    child: Text(AppLocalizations.of(context)!.try_again),
                   ),
                 ],
               ),
@@ -273,7 +274,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
             Icon(Icons.event_busy, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'Không có lịch hẹn nào',
+              AppLocalizations.of(context)!.no_appointments_any,
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
           ],
@@ -491,7 +492,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text('Hoàn thành'),
+                          child: Text(AppLocalizations.of(context)!.completed_status),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -518,7 +519,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                                 Icons.medical_information,
                                 size: 16,
                               ),
-                              label: const Text('Ghi hồ sơ'),
+                              label: Text(AppLocalizations.of(context)!.add_record),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.green,
                                 side: const BorderSide(color: Colors.green),
@@ -544,7 +545,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
                                 // }
                               },
                               icon: const Icon(Icons.vaccines, size: 16),
-                              label: const Text('Ghi tiêm chủng'),
+                              label: Text(AppLocalizations.of(context)!.add_vaccination_title),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.orange,
                                 side: const BorderSide(color: Colors.orange),

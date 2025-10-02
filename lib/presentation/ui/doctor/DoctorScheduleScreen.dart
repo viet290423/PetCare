@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../../data/model/AppointmentModel.dart';
 import '../auth/AuthViewModel.dart';
@@ -58,9 +59,9 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Lịch làm việc',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.work_schedule,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green,
         elevation: 0,
@@ -178,7 +179,9 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
                 Icon(Icons.event, color: Colors.green, size: 24),
                 const SizedBox(width: 8),
                 Text(
-                  'Lịch hẹn ngày ${DateFormat('dd/MM/yyyy').format(_selectedDay!)}',
+                  AppLocalizations.of(context)!.appointments_on_date(
+                    DateFormat('dd/MM/yyyy').format(_selectedDay!),
+                  ),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -186,7 +189,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${events.length} lịch hẹn',
+                  AppLocalizations.of(context)!.appointments_count(events.length.toString()),
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
@@ -217,7 +220,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
           Icon(Icons.event_busy, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            'Không có lịch hẹn nào',
+            AppLocalizations.of(context)!.no_appointments_any,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -226,7 +229,9 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Ngày ${DateFormat('dd/MM/yyyy').format(_selectedDay!)} không có lịch hẹn nào',
+            AppLocalizations.of(context)!.no_appointments_on_date(
+              DateFormat('dd/MM/yyyy').format(_selectedDay!),
+            ),
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
         ],
@@ -267,7 +272,7 @@ class _DoctorScheduleScreenState extends State<DoctorScheduleScreen> {
           ),
         ),
         title: Text(
-          appointment.serviceTitle ?? 'Dịch vụ không xác định',
+          appointment.serviceTitle ?? AppLocalizations.of(context)!.unspecified_service,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
