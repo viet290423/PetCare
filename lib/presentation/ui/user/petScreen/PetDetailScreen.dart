@@ -67,12 +67,14 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     super.initState();
     _pageController = PageController(viewportFraction: 0.95, initialPage: 0);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       setState(() => _isLoadingPage = true);
       final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
       await viewModel.fetchPets(forceRefresh: true);
       if (viewModel.pets.isNotEmpty && viewModel.selectedPetId == null) {
         viewModel.selectedPetId = viewModel.pets.first.id;
       }
+      if (!mounted) return;
       setState(() => _isLoadingPage = false);
     });
   }
@@ -119,6 +121,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
+      if (!mounted) return;
       setState(() {
         _pickedImage = File(picked.path);
       });
@@ -151,6 +154,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
       color: _colorController.text.trim(),
     );
     await viewModel.updatePet(updatedPet);
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
@@ -294,6 +298,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           if (result == true) {
             final viewModel = Provider.of<UserHomeViewModel>(context, listen: false);
             await viewModel.fetchPets(forceRefresh: true);
+            if (!mounted) return;
             setState(() {});
           }
         },
@@ -403,6 +408,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                     lastDate: DateTime.now(),
                   );
                   if (picked != null) {
+                    if (!mounted) return;
                     setState(() => _selectedBirthDate = picked);
                   }
                 },

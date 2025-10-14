@@ -238,10 +238,10 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
                 radius: 35,
                 backgroundColor: Colors.green.shade100,
                 child:
-                    doctor.imageUrl.isNotEmpty
+                    doctor.imageUrl!.isNotEmpty
                         ? ClipOval(
                           child: Image.network(
-                            doctor.imageUrl,
+                            doctor.imageUrl!,
                             width: 70,
                             height: 70,
                             fit: BoxFit.cover,

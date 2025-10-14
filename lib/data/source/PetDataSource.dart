@@ -70,11 +70,24 @@ class PetDataSourceImpl implements PetDataSource {
     final userId = client.auth.currentUser?.id;
     if (userId == null) throw Exception('Người dùng chưa đăng nhập');
 
-    final data = {...pet.toJson(), 'user_id': userId};
+    // Chỉ ghi các cột thực sự tồn tại trong bảng 'pets'
+    final Map<String, dynamic> data = {
+      'id': pet.id,
+      'name': pet.name,
+      'type': pet.type,
+      'imageUrl': pet.imageUrl,
+      'breed': pet.breed,
+      'birthDate': pet.birthDate,
+      'gender': pet.gender,
+      'weight': pet.weight,
+      'color': pet.color,
+      'user_id': userId,
+    };
 
     try {
       await client.from('pets').insert(data);
     } catch (e) {
+      print("Lỗi khi thêm thú cưng: $e");
       throw Exception('Thêm thú cưng thất bại: ${e.toString()}');
     }
   }
@@ -150,7 +163,18 @@ class PetDataSourceImpl implements PetDataSource {
   @override
   Future<void> updatePet(PetModel pet) async {
     try {
-      await client.from('pets').update(pet.toJson()).eq('id', pet.id);
+      // Chỉ cập nhật các cột tồn tại trong bảng 'pets'
+      final Map<String, dynamic> update = {
+        'name': pet.name,
+        'type': pet.type,
+        'imageUrl': pet.imageUrl,
+        'breed': pet.breed,
+        'birthDate': pet.birthDate,
+        'gender': pet.gender,
+        'weight': pet.weight,
+        'color': pet.color,
+      };
+      await client.from('pets').update(update).eq('id', pet.id);
     } catch (e) {
       throw Exception('Lỗi khi cập nhật thú cưng: $e');
     }
@@ -325,7 +349,7 @@ class PetDataSourceImpl implements PetDataSource {
     double? weightKg;
     if (json['weight'] != null && json['weight'].toString().isNotEmpty) {
       try {
-        weightKg = double.parse(json['weight'].toString());
+        weightKg = _parseWeightToKg(json['weight'].toString());
       } catch (e) {
         print('Error parsing weight: $e');
       }
@@ -419,6 +443,22 @@ class PetDataSourceImpl implements PetDataSource {
       return DateTime.parse(birthDateStr);
     } catch (e) {
       print('Cannot parse birthDate: $birthDateStr');
+      return null;
+    }
+  }
+
+  /// Parse weight string to kg. Supports formats like '5', '5.0', '5 kg', '500 g', '2 g'.
+  double? _parseWeightToKg(String v) {
+    if (v.isEmpty) return null;
+    try {
+      String s = v.trim().toLowerCase().replaceAll(',', '.');
+      // Extract numeric part
+      final match = RegExp(r"[-+]?[0-9]*\.?[0-9]+").firstMatch(s);
+      if (match == null) return null;
+      final value = double.parse(match.group(0)!);
+      final isGram = s.contains(' g') || s.endsWith('g');
+      return isGram ? value / 1000.0 : value; // default assume kg
+    } catch (_) {
       return null;
     }
   }

@@ -45,7 +45,7 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
       // Ưu tiên lấy thông tin từ doctor nếu có (cho doctor users)
       if (doctor != null) {
         _userDisplayName = doctor.name;
-        _userAvatarUrl = doctor.imageUrl.isNotEmpty ? doctor.imageUrl : null;
+        _userAvatarUrl = doctor.imageUrl!.isNotEmpty ? doctor.imageUrl : null;
       } else {
         // Fallback về thông tin từ AuthUser
         _userDisplayName = currentUser.name?.isNotEmpty == true 

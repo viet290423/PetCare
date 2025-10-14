@@ -79,9 +79,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
-                  child: widget.doctor.imageUrl.isNotEmpty
+                  child: widget.doctor.imageUrl!.isNotEmpty
                       ? Image.network(
-                          widget.doctor.imageUrl,
+                          widget.doctor!.imageUrl!,
                           width: double.infinity,
                           height: 280,
                           fit: BoxFit.cover,

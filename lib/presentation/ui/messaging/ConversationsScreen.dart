@@ -24,7 +24,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tin nhắn'),
+        title: Text('Tin nhắn',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+
+        ),
       ),
       body: Consumer<MessagingProvider>(
         builder: (context, provider, child) {

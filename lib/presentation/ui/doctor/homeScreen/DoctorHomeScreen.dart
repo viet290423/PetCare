@@ -253,11 +253,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
                   ),
                   child: CircleAvatar(
                     radius: 35,
-                    backgroundImage: doctor?.imageUrl.isNotEmpty == true
-                        ? NetworkImage(doctor!.imageUrl)
+                    backgroundImage: doctor?.imageUrl!.isNotEmpty == true
+                        ? NetworkImage(doctor!.imageUrl!)
                         : null,
                     backgroundColor: Colors.white,
-                    child: doctor?.imageUrl.isEmpty == true
+                    child: doctor?.imageUrl!.isEmpty == true
                         ? Icon(Icons.person, size: 40, color: Colors.green[700])
                         : null,
                   ),

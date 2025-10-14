@@ -6,7 +6,7 @@ class DoctorModel {
   final List<String> specializations;
   final String experience;
   final String education;
-  final String imageUrl;
+  final String? imageUrl;
   final String description;
   final List<String> certifications;
   final double rating;
@@ -24,7 +24,7 @@ class DoctorModel {
     required this.specializations,
     required this.experience,
     required this.education,
-    required this.imageUrl,
+    this.imageUrl,
     required this.description,
     required this.certifications,
     required this.rating,

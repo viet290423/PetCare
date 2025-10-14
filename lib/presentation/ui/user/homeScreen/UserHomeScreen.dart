@@ -606,8 +606,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               // child: const Icon(Icons.person, size: 40, color: Colors.grey),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  doctor.imageUrl,
+                child: doctor.imageUrl != null ? Image.network(
+                  doctor.imageUrl!,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(
@@ -616,6 +616,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       color: Colors.grey,
                     );
                   },
+                ) : Icon(
+                  Icons.person,
+                  size: 40,
+                  color: Colors.grey[400],
                 ),
               ),
             ),

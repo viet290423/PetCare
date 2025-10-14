@@ -48,6 +48,7 @@ class _PetScreenState extends State<PetScreen>
         await viewModel.fetchAppointments(petId, forceRefresh: true);
         await viewModel.fetchAllRecords(petId, forceRefresh: true);
         await viewModel.fetchAiTips(petId);
+        if (!mounted) return;
         setState(() {
           _isInitialized = true;
         });
@@ -146,7 +147,31 @@ class _PetScreenState extends State<PetScreen>
                   SizedBox(
                     height: 160,
                     child: pets.isEmpty
-                        ? Center(child: Text(AppLocalizations.of(context)!.no_pets_yet))
+                        ? Center(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(AppLocalizations.of(context)!.no_pets_yet, style: TextStyle(fontSize: 18)),
+                            TextButton.icon(
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const AddPetScreen()),
+                                );
+                                if (result == true) {
+                                  await viewModel.fetchPets(forceRefresh: true);
+                                  if (viewModel.pets.isNotEmpty && viewModel.selectedPetId == null) {
+                                    viewModel.selectedPetId = viewModel.pets.first.id;
+                                  }
+                                  if (!mounted) return;
+                                  setState(() {});
+                                }
+                              },
+                              icon: const Icon(Icons.add_circle_outline),
+                              label: Text(AppLocalizations.of(context)!.add_new_pet, style: TextStyle(fontSize: 16)),
+                              style: TextButton.styleFrom(foregroundColor: Colors.green),
+                            ),
+                          ],
+                        ))
                         : ListView.separated(
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.symmetric(
@@ -172,6 +197,7 @@ class _PetScreenState extends State<PetScreen>
                                     if (mounted) {
                                       await viewModel.fetchAiTips(pet.id);
                                     }
+                                    if (!mounted) return;
                                     setState(() {});
                                   },
                                   child: Material(

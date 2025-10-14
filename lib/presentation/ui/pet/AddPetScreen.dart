@@ -429,7 +429,14 @@ class _AddPetScreenState extends State<AddPetScreen> {
                       color: _colorController.text,
                     );
                     await viewModel.addPet(pet);
-                    if (mounted) Navigator.pop(context);
+                    if (!mounted) return;
+                    if (viewModel.error == null) {
+                      Navigator.pop(context, true);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(viewModel.error ?? 'Thêm thú cưng thất bại')),
+                      );
+                    }
                   }
                 },
               ),

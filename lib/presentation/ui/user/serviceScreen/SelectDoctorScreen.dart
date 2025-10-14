@@ -190,10 +190,10 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
                               CircleAvatar(
                                 radius: 30,
                                 backgroundColor: Colors.green.shade100,
-                                child: doctor.imageUrl.isNotEmpty
+                                child: doctor.imageUrl!.isNotEmpty
                                     ? ClipOval(
                                   child: Image.network(
-                                    doctor.imageUrl,
+                                    doctor.imageUrl!,
                                     width: 60,
                                     height: 60,
                                     fit: BoxFit.cover,
