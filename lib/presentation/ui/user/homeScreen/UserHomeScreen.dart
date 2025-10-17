@@ -63,25 +63,25 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           ),
         ),
-        actions: [
-          GestureDetector(
-            child: const CircleAvatar(
-              backgroundColor: Colors.green,
-              child: Icon(Icons.pets, color: Colors.white),
-            ),
-            onTap: () async {
-              final authViewModel = context.read<AuthViewModel>();
-              await authViewModel.signOutUser();
-              if (context.mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (Route<dynamic> route) => false,
-                );
-              }
-            },
-          ),
-        ],
+        // actions: [
+        //   GestureDetector(
+        //     child: const CircleAvatar(
+        //       backgroundColor: Colors.green,
+        //       child: Icon(Icons.pets, color: Colors.white),
+        //     ),
+        //     onTap: () async {
+        //       // final authViewModel = context.read<AuthViewModel>();
+        //       // await authViewModel.signOutUser();
+        //       // if (context.mounted) {
+        //       //   Navigator.pushAndRemoveUntil(
+        //       //     context,
+        //       //     MaterialPageRoute(builder: (_) => const LoginScreen()),
+        //       //     (Route<dynamic> route) => false,
+        //       //   );
+        //       // }
+        //     },
+        //   ),
+        // ],
       ),
       body: SafeArea(
         child: Consumer3<ServicesViewModel, DiseaseViewModel, DoctorViewModel>(
@@ -427,6 +427,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               title,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
             Text(

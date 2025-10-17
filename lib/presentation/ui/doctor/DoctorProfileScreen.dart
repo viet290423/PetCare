@@ -5,6 +5,7 @@ import '../../../l10n/app_localizations.dart';
 
 import '../auth/AuthViewModel.dart';
 import '../settings/SettingsScreen.dart';
+import 'AppointmentDetailScreen.dart';
 import 'AppointmentViewModel.dart';
 import '../auth/LoginScreen.dart';
 import 'DoctorScheduleScreen.dart';
@@ -340,10 +341,15 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               children: [
                 OutlinedButton.icon(
                   onPressed: () {
-                    // TODO: navigate to detail screen if exists
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AppointmentDetailScreen(appointment: appointment),
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.visibility, size: 16),
-                  label: const Text('Chi tiết'),
+                  label: Text(AppLocalizations.of(context)!.details),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.green,
                     side: const BorderSide(color: Colors.green),
@@ -351,18 +357,18 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: start appointment flow
-                  },
-                  icon: const Icon(Icons.play_arrow, size: 16),
-                  label: const Text('Bắt đầu'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
+                // ElevatedButton.icon(
+                //   onPressed: () {
+                //     // TODO: start appointment flow
+                //   },
+                //   icon: const Icon(Icons.play_arrow, size: 16),
+                //   label: const Text('Bắt đầu'),
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.green,
+                //     foregroundColor: Colors.white,
+                //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                //   ),
+                // ),
               ],
             )
           ],

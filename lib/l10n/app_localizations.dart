@@ -431,6 +431,30 @@ abstract class AppLocalizations {
   /// **'Facebook login failed'**
   String get login_facebook_failed;
 
+  /// No description provided for @login_with_google.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with Google'**
+  String get signup_with_google;
+
+  /// No description provided for @login_google_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google login failed'**
+  String get signup_google_failed;
+
+  /// No description provided for @login_with_facebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with Facebook'**
+  String get signup_with_facebook;
+
+  /// No description provided for @login_facebook_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Facebook login failed'**
+  String get signup_facebook_failed;
+
   /// No description provided for @no_account.
   ///
   /// In en, this message translates to:

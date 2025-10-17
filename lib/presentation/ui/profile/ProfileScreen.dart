@@ -23,6 +23,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String? _profileAvatarUrl;
   String? _profileDisplayName;
+  int? _serviceCount;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Provider.of<AuthViewModel>(context, listen: false).checkCurrentUser();
       Provider.of<UserHomeViewModel>(context, listen: false).fetchPets();
       _fetchProfile();
+      _fetchServiceCount();
     });
   }
 
@@ -51,6 +53,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? data!['name'] as String
             : null;
         _profileAvatarUrl = data?['avatar_url'] as String?;
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _fetchServiceCount() async {
+    try {
+      final client = Supabase.instance.client;
+      final user = client.auth.currentUser;
+      if (user == null) return;
+      final resp = await client
+          .from('appointments')
+          .select('id')
+          .eq('user_id', user.id);
+      if (!mounted) return;
+      setState(() {
+        _serviceCount = (resp as List).length;
       });
     } catch (_) {}
   }
@@ -128,7 +146,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           radius: 50,
                           backgroundImage: _profileAvatarUrl != null && _profileAvatarUrl!.isNotEmpty
                               ? NetworkImage(_profileAvatarUrl!)
-                              : const NetworkImage('https://i.pravatar.cc/150?img=3'),
+                              : null,
+                          backgroundColor: _profileAvatarUrl != null && _profileAvatarUrl!.isNotEmpty
+                              ? null
+                              : Colors.grey.shade300,
+                          child: _profileAvatarUrl != null && _profileAvatarUrl!.isNotEmpty
+                              ? null
+                              : const Icon(Icons.person, size: 40, color: Colors.white70),
                         ),
                       ),
                     ),
@@ -200,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildQuickStat(
                     icon: Icons.medical_services,
                     label: AppLocalizations.of(context)!.services,
-                    value: '12', // TODO: Lấy từ Supabase
+                    value: (_serviceCount ?? 0).toString(),
                     color: Colors.blue,
                   ),
                   _buildQuickStat(

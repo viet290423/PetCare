@@ -177,6 +177,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login_facebook_failed => 'Facebook login failed';
 
   @override
+  String get signup_with_google => 'Sign up with Google';
+
+  @override
+  String get signup_google_failed => 'Google sign up failed';
+
+  @override
+  String get signup_with_facebook => 'Sign up with Facebook';
+
+  @override
+  String get signup_facebook_failed => 'Facebook sign up failed';
+
+  @override
   String get no_account => 'Don\'t have an account? ';
 
   @override

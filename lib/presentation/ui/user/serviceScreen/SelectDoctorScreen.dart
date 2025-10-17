@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/model/DoctorModel.dart';
@@ -49,8 +50,12 @@ class _SelectDoctorScreenState extends State<SelectDoctorScreen> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         // backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        // foregroundColor: Colors.white,
         forceMaterialTransparency: true,
+        leading: IconButton(
+          icon: const Icon(CupertinoIcons.back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Consumer<DoctorViewModel>(
         builder: (context, doctorViewModel, child) {

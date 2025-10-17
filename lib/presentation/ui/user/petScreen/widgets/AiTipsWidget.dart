@@ -21,8 +21,8 @@ class _AiTipsWidgetState extends State<AiTipsWidget> {
           return _buildLoadingState();
         }
 
-        if (viewModel.error != null) {
-          return _buildErrorState(context, viewModel.error!);
+        if (viewModel.tipsError != null) {
+          return _buildErrorState(context);
         }
 
         final aiTips = viewModel.currentAiTips;
@@ -58,7 +58,7 @@ class _AiTipsWidgetState extends State<AiTipsWidget> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error) {
+  Widget _buildErrorState(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -70,7 +70,7 @@ class _AiTipsWidgetState extends State<AiTipsWidget> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Không thể tải tips AI',
+            'Tips AI đang bận',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -79,7 +79,7 @@ class _AiTipsWidgetState extends State<AiTipsWidget> {
           ),
           const SizedBox(height: 8),
           Text(
-            error,
+            'AI đang xử lý hoặc gặp sự cố tạm thời. Vui lòng thử lại sau.',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],

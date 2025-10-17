@@ -177,6 +177,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get login_facebook_failed => 'Đăng nhập Facebook thất bại';
 
   @override
+  String get signup_with_google => 'Đăng ký với Google';
+
+  @override
+  String get signup_google_failed => 'Đăng ký Google thất bại';
+
+  @override
+  String get signup_with_facebook => 'Đăng ký với Facebook';
+
+  @override
+  String get signup_facebook_failed => 'Đăng ký Facebook thất bại';
+
+  @override
   String get no_account => 'Bạn chưa có tài khoản? ';
 
   @override

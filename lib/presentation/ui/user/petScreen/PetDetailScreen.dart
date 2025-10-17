@@ -481,6 +481,51 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                     ),
                   ),
                   OutlinedButton.icon(
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: Text(AppLocalizations.of(context)!.confirm_delete),
+                                content: Text(AppLocalizations.of(context)!.confirm_delete + ' ' + AppLocalizations.of(context)!.pet_info_title.toLowerCase() + '?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(false),
+                                    child: Text(AppLocalizations.of(context)!.cancel),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(true),
+                                    child: Text(AppLocalizations.of(context)!.delete),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              try {
+                                await viewModel.deletePet(pet.id);
+                                if (!mounted) return;
+                                Navigator.pop(context); // close bottom sheet
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(AppLocalizations.of(context)!.delete + ' ' + AppLocalizations.of(context)!.pet_info_title.toLowerCase() + ' ' + AppLocalizations.of(context)!.update_success.toLowerCase())),
+                                );
+                              } catch (e) {
+                                if (!mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(AppLocalizations.of(context)!.delete + ' thất bại: ' + e.toString())),
+                                );
+                              }
+                            }
+                          },
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    label: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.red, width: 1.5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                  ),
+                  OutlinedButton.icon(
                     onPressed: _isLoading ? null : () => Navigator.pop(context),
                     icon: const Icon(Icons.close, color: Colors.green),
                     label: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.green)),

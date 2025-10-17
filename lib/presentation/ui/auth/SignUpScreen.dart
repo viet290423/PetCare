@@ -166,32 +166,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 });
                               },
                             ),
-                            const SizedBox(height: 15),
-
-                            // Chọn loại tài khoản
-                            DropdownButtonFormField<String>(
-                              value: _role,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              items: [
-                                DropdownMenuItem(
-                                  value: 'user',
-                                  child: Text(AppLocalizations.of(context)!.user),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'doctor',
-                                  child: Text(AppLocalizations.of(context)!.doctor as String),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  _role = value!;
-                                });
-                              },
-                            ),
                             const SizedBox(height: 20),
 
                             // Nút Đăng ký bằng email
@@ -222,27 +196,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Nút Đăng ký bằng Google
                             CustomButton(
-                              text: AppLocalizations.of(context)!.login_with_google,
-                              // onPressed: () async {
-                              //   // Hiển thị dialog chọn vai trò
-                              //   final selectedRole =
-                              //       await _showRoleSelectionDialog();
-                              //   if (selectedRole != null) {
-                              //     await viewModel.signInWithGoogle(
-                              //       role: selectedRole,
-                              //     );
-                              //     if (viewModel.error != null) {
-                              //       ScaffoldMessenger.of(context).showSnackBar(
-                              //         SnackBar(
-                              //           content: Text(viewModel.error!),
-                              //           backgroundColor: Colors.red,
-                              //         ),
-                              //       );
-                              //     }
-                              //   }
-                              // },
-                              onPressed: () {},
+                              text: AppLocalizations.of(context)!.signup_with_google,
+                              onPressed: () async {
+                                await viewModel.signInWithGoogle();
+                                if (viewModel.error != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(viewModel.error!),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
                               isOutlined: true,
+                              isLoading: viewModel.isLoading,
                               icon: Image.asset(
                                 'assets/images/gg_icon.png',
                                 height: 24,
@@ -254,7 +221,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Nút Đăng ký bằng Facebook
                             CustomButton(
-                              text: AppLocalizations.of(context)!.login_with_facebook,
+                              text: AppLocalizations.of(context)!.signup_with_facebook,
                               // onPressed: () async {
                               //   final selectedRole =
                               //       await _showRoleSelectionDialog();

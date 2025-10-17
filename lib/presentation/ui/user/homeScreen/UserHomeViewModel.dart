@@ -48,6 +48,7 @@ class UserHomeViewModel with ChangeNotifier {
   // Cache cho AI tips
   final Map<String, PetTipsResponse> _aiTipsCache = {};
   bool _isLoadingTips = false;
+  String? _aiTipsError;
   // AI tips cache signatures & timestamps
   final Map<String, String> _aiTipsSignatureByPet = {};
   final Map<String, DateTime> _aiTipsUpdatedAt = {};
@@ -82,6 +83,7 @@ class UserHomeViewModel with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isLoadingTips => _isLoadingTips;
   String? get error => _error;
+  String? get tipsError => _aiTipsError;
   String? selectedPetId;
 
   // AI Tips getter
@@ -301,6 +303,39 @@ class UserHomeViewModel with ChangeNotifier {
     // Nếu cần làm mới thủ công, dùng refreshAiTips() hoặc clearGrowthTipsCache()
   }
 
+  Future<void> deletePet(String petId) async {
+    try {
+      await Supabase.instance.client.from('pets').delete().eq('id', petId);
+
+      // Xóa khỏi danh sách local
+      _pets.removeWhere((p) => p.id == petId);
+
+      // Xóa caches liên quan
+      _remindersCache.remove(petId);
+      _appointmentsCache.remove(petId);
+      _medicalRecordsCache.remove(petId);
+      _healthMetricsCache.remove(petId);
+      _vaccinationRecordsCache.remove(petId);
+      _aiTipsCache.remove(petId);
+      _aiTipsSignatureByPet.remove(petId);
+      _aiTipsUpdatedAt.remove(petId);
+      _growthTipsCache.remove(petId);
+      _growthSignatureByPet.remove(petId);
+      _growthUpdatedAt.remove(petId);
+
+      // Điều chỉnh selectedPetId
+      if (selectedPetId == petId) {
+        selectedPetId = _pets.isNotEmpty ? _pets.first.id : null;
+      }
+
+      notifyListeners();
+    } catch (e) {
+      _error = 'Lỗi khi xóa thú cưng: $e';
+      notifyListeners();
+      rethrow;
+    }
+  }
+
   // Helper methods for records
   List<MedicalRecordModel> getRecentMedicalRecords({int limit = 5}) {
     final records = medicalRecords;
@@ -430,6 +465,7 @@ class UserHomeViewModel with ChangeNotifier {
     }
 
     _isLoadingTips = true;
+    _aiTipsError = null;
     notifyListeners();
 
     try {
@@ -437,9 +473,10 @@ class UserHomeViewModel with ChangeNotifier {
       _aiTipsCache[petId] = tipsResponse;
       _aiTipsSignatureByPet[petId] = currentSignature;
       _aiTipsUpdatedAt[petId] = DateTime.now();
-      _error = null;
+      _aiTipsError = null;
     } catch (e) {
-      _error = 'Lỗi khi tải tips AI: $e';
+      // Không set _error để tránh làm sập toàn màn hình
+      _aiTipsError = 'failed';
     } finally {
       _isLoadingTips = false;
       notifyListeners();

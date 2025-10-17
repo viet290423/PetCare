@@ -406,6 +406,13 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
                     if (localImageFile != null) {
                       final uploadedUrl = await context
                           .read<PetViewModel>()
@@ -430,6 +437,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                     );
                     await viewModel.addPet(pet);
                     if (!mounted) return;
+                    Navigator.of(context, rootNavigator: true).pop();
                     if (viewModel.error == null) {
                       Navigator.pop(context, true);
                     } else {

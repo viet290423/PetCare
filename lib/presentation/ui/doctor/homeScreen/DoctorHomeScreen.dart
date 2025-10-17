@@ -86,22 +86,22 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
         backgroundColor: Colors.green,
         elevation: 0,
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              final authViewModel = context.read<AuthViewModel>();
-              await authViewModel.signOutUser();
-              if (context.mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (Route<dynamic> route) => false,
-                );
-              }
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.logout, color: Colors.white),
+        //     onPressed: () async {
+        //       final authViewModel = context.read<AuthViewModel>();
+        //       await authViewModel.signOutUser();
+        //       if (context.mounted) {
+        //         Navigator.pushAndRemoveUntil(
+        //           context,
+        //           MaterialPageRoute(builder: (_) => const LoginScreen()),
+        //           (Route<dynamic> route) => false,
+        //         );
+        //       }
+        //     },
+        //   ),
+        // ],
       ),
 
       body: Consumer2<AuthViewModel, AppointmentViewModel>(

@@ -25,8 +25,18 @@ class NotificationService {
       const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@drawable/img');
 
+      const DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings(
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
+      );
+
       const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
+      InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsDarwin,
+      );
 
       await _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
@@ -100,6 +110,19 @@ class NotificationService {
         print('NotificationService: Permission granted: $granted');
         return granted ?? false;
       }
+      if (Platform.isIOS) {
+        final IOSFlutterLocalNotificationsPlugin? iosImplementation =
+            _flutterLocalNotificationsPlugin
+                .resolvePlatformSpecificImplementation<
+                    IOSFlutterLocalNotificationsPlugin>();
+        final bool? granted = await iosImplementation?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        print('NotificationService: iOS permission granted: $granted');
+        return granted ?? false;
+      }
       return false;
     } catch (e) {
       print('NotificationService: Error requesting permissions: $e');
@@ -136,8 +159,16 @@ class NotificationService {
         playSound: true,
       );
 
+      const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+          DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
+
       const NotificationDetails platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics,
       );
 
       // Xử lý lặp lại dựa trên repeatType
@@ -159,15 +190,14 @@ class NotificationService {
           matchDateTimeComponents = null; // Không lặp lại
       }
 
-      // Sử dụng timezone cụ thể cho Việt Nam (Asia/Ho_Chi_Minh)
-      final vietnamLocation = tz.getLocation('Asia/Ho_Chi_Minh');
+      // Sử dụng timezone của thiết bị để lịch chính xác trên Simulator/Device
       final scheduledDate = tz.TZDateTime.from(
         reminder.dateTime,
-        vietnamLocation,
+        tz.local,
       );
 
-      print('NotificationService: Vietnam timezone: ${vietnamLocation.name}');
-      print('NotificationService: Scheduled date (Vietnam): $scheduledDate');
+      print('NotificationService: Local timezone: ${tz.local.name}');
+      print('NotificationService: Scheduled date (local): $scheduledDate');
 
       final title = '${reminder.type} - ${petName ?? ''}';
       final body =

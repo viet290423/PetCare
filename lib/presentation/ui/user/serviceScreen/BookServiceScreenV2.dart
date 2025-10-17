@@ -497,11 +497,20 @@ class _BookServiceScreenV2State extends State<BookServiceScreenV2>
             ),
             const SizedBox(height: 12),
             TextButton.icon(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const AddPetScreen()),
                 );
+                if (result == true) {
+                  await petViewModel.fetchPets(forceRefresh: true);
+                  if (petViewModel.pets.isNotEmpty) {
+                    // getPets() orders by created_at desc, pick the newest
+                    setState(() {
+                      selectedPet = petViewModel.pets.first;
+                    });
+                  }
+                }
               },
               icon: const Icon(Icons.add_circle_outline),
               label: Text(AppLocalizations.of(context)!.add_new_pet),
