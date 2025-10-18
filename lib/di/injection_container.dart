@@ -29,6 +29,7 @@ import 'package:petcare/domain/usecase/pet/GetMedicalRecordsUseCase.dart';
 import 'package:petcare/domain/usecase/pet/GetHealthMetricsUseCase.dart';
 import 'package:petcare/domain/usecase/pet/GetVaccinationRecordsUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddMedicalRecordUseCase.dart';
+import 'package:petcare/domain/usecase/pet/UpdateMedicalRecordUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddHealthMetricsUseCase.dart';
 import 'package:petcare/domain/usecase/pet/AddVaccinationRecordUseCase.dart';
 import 'package:petcare/domain/usecase/service/AddServiceUseCase.dart';
@@ -135,6 +136,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetHealthMetricsUseCase(sl()));
   sl.registerLazySingleton(() => GetVaccinationRecordsUseCase(sl()));
   sl.registerLazySingleton(() => AddMedicalRecordUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateMedicalRecordUseCase(sl()));
   sl.registerLazySingleton(() => AddHealthMetricsUseCase(sl()));
   sl.registerLazySingleton(() => AddVaccinationRecordUseCase(sl()));
 

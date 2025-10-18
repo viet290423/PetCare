@@ -309,18 +309,18 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                // TODO: Navigate to all diseases screen
-                              },
-                              child: Text(
-                                AppLocalizations.of(context)!.view_all,
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                            // GestureDetector(
+                            //   onTap: () {
+                            //     // TODO: Navigate to all diseases screen
+                            //   },
+                            //   child: Text(
+                            //     AppLocalizations.of(context)!.view_all,
+                            //     style: TextStyle(
+                            //       color: Colors.green,
+                            //       fontWeight: FontWeight.bold,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -341,23 +341,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                   ),
                                 ],
                               ),
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: AppLocalizations.of(context)!.search_diseases,
-                                  prefixIcon: const Icon(Icons.search),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                ),
-                                onChanged: (value) {
-                                  // TODO: Implement search functionality
-                                },
-                              ),
+                              // child: TextField(
+                              //   decoration: InputDecoration(
+                              //     hintText: AppLocalizations.of(context)!.search_diseases,
+                              //     prefixIcon: const Icon(Icons.search),
+                              //     border: OutlineInputBorder(
+                              //       borderRadius: BorderRadius.circular(8),
+                              //       borderSide: BorderSide.none,
+                              //     ),
+                              //     contentPadding: const EdgeInsets.symmetric(
+                              //       horizontal: 16,
+                              //       vertical: 12,
+                              //     ),
+                              //   ),
+                              //   onChanged: (value) {
+                              //     // TODO: Implement search functionality
+                              //   },
+                              // ),
                             ),
                             // Disease cards
                             ...diseaseViewModel.diseases

@@ -11,6 +11,7 @@ import '../widget/CustomTextFieldWithIcon.dart';
 import '../widget/HeaderSection.dart';
 import '../widget/NavigationLink.dart';
 import '../../../l10n/app_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -143,7 +144,52 @@ class _LoginScreenState extends State<LoginScreen> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: GestureDetector(
-                                onTap: () {},
+                                onTap: () async {
+                                  final emailController = TextEditingController(text: _emailController.text);
+                                  final email = await showDialog<String>(
+                                    context: context,
+                                    builder: (ctx) {
+                                      return AlertDialog(
+                                        title: Text(AppLocalizations.of(context)!.forgot_password),
+                                        content: TextField(
+                                          controller: emailController,
+                                          keyboardType: TextInputType.emailAddress,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Email',
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(ctx),
+                                            child: Text(AppLocalizations.of(context)!.close),
+                                          ),
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(ctx, emailController.text.trim()),
+                                            child: Text("Gửi"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  if (email == null || email.isEmpty) return;
+
+                                  try {
+                                    await Supabase.instance.client.auth.resetPasswordForEmail(
+                                      email,
+                                      redirectTo: 'io.supabase.flutter://login-callback',
+                                    );
+                                    if (!mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư.')),
+                                    );
+                                  } catch (e) {
+                                    if (!mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Có lỗi xảy ra, vui lòng thử lại.')),
+                                    );
+                                  }
+                                },
                                 child: Text(
                                   AppLocalizations.of(context)!.forgot_password,
                                   style: TextStyle(

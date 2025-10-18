@@ -86,11 +86,13 @@ class AppointmentViewModel extends ChangeNotifier {
   }
 
   void setSelectedDate(String date) {
+    if (_selectedDate == date) return;
     _selectedDate = date;
     notifyListeners();
   }
 
   void setSelectedStatus(String status) {
+    if (_selectedStatus == status) return;
     _selectedStatus = status;
     notifyListeners();
   }

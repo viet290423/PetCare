@@ -55,6 +55,7 @@ dependencies:
   flutter_timezone: ^4.1.1
   table_calendar: ^3.0.9
   fl_chart: ^0.69.0
+  uni_links: ^0.5.1
   flutter_localizations:
     sdk: flutter
   intl: any

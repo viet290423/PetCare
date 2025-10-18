@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/model/MedicalRecordModel.dart';
 import '../../../data/model/PetModel.dart';
 import '../auth/AuthViewModel.dart';
+import 'EditMedicalRecordByDoctorScreen.dart';
 
 class MedicalRecordsScreen extends StatefulWidget {
   const MedicalRecordsScreen({super.key});
@@ -314,8 +315,17 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.edit, size: 16),
-                  onPressed: () {
-                    // TODO: Navigate to edit medical record screen
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditMedicalRecordByDoctorScreen(record: record),
+                      ),
+                    );
+                    if (result == true) {
+                      // reload list after edit success
+                      _loadMedicalRecords();
+                    }
                   },
                 ),
                 IconButton(

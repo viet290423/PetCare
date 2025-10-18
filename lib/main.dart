@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:petcare/presentation/ui/auth/LoginScreen.dart';
@@ -20,6 +21,8 @@ import 'package:provider/provider.dart';
 import 'package:petcare/presentation/provider/SettingsProvider.dart';
 import 'package:petcare/di/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'presentation/ui/auth/ResetPasswordScreen.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
@@ -126,6 +129,8 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _hasNavigated = false;
+  StreamSubscription? _authSub;
+  StreamSubscription? _linkSub;
 
   @override
   void initState() {
@@ -133,6 +138,61 @@ class _AuthWrapperState extends State<AuthWrapper> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AuthViewModel>(context, listen: false).checkCurrentUser();
     });
+
+    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.passwordRecovery) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
+          );
+        });
+      }
+    });
+
+    _initDeepLinks();
+  }
+
+  Future<void> _initDeepLinks() async {
+    // Handle initial link when app is opened by recovery email
+    try {
+      final initialUri = await getInitialUri();
+      if (initialUri != null) {
+        await _handleIncomingUri(initialUri);
+      }
+    } catch (_) {}
+
+    // Handle links while app is running
+    _linkSub = uriLinkStream.listen((uri) async {
+      if (uri != null) {
+        await _handleIncomingUri(uri);
+      }
+    }, onError: (_) {});
+  }
+
+  Future<void> _handleIncomingUri(Uri uri) async {
+    // Expect something like io.supabase.flutter://login-callback#...&type=recovery or query param
+    final isRecovery =
+        uri.queryParameters['type'] == 'recovery' || uri.fragment.contains('type=recovery');
+    if (isRecovery) {
+      try {
+        await Supabase.instance.client.auth.exchangeCodeForSession(uri as String);
+      } catch (_) {
+        // ignore; if already exchanged or not needed, continue
+      }
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    _linkSub?.cancel();
+    super.dispose();
   }
 
   @override

@@ -63,8 +63,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> with TickerProvider
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Reset AppointmentViewModel về 'today' khi màn hình được focus
-    final appointmentVM = Provider.of<AppointmentViewModel>(context, listen: false);
-    appointmentVM.setSelectedDate('today');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appointmentVM = Provider.of<AppointmentViewModel>(context, listen: false);
+      appointmentVM.setSelectedDate('today');
+    });
   }
 
   @override
